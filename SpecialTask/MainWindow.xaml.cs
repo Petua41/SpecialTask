@@ -24,5 +24,10 @@ namespace SpecialTask
         {
             InitializeComponent();
         }
+
+        private void ConsoleRTBInput(object sender, TextChangedEventArgs args)
+        {
+
+        }
     }
 }

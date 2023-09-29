@@ -22,7 +22,7 @@ namespace SpecialTask
 			if (singleton != null) throw new SingletonError();
 			else
 			{
-				currentWindow = new();
+				currentWindow = new(0);
 				existingWindows = new List<WindowToDraw> { currentWindow };
 			}
 		}
@@ -38,22 +38,71 @@ namespace SpecialTask
 
 		public void CreateWindow()
 		{
-			// TODO
+			existingWindows.Add(new WindowToDraw(existingWindows.Count));
 		}
 
-		public void DestroyWindow()
+		public void DestroyWindow(int numberOfWindow)						// Это надо потестить
 		{
-			// TODO
+			ValidateWindowNumber(numberOfWindow);
+			for (int i = numberOfWindow + 1; i < existingWindows.Count; i++)
+			{
+				existingWindows[i].ChangeTitle(i - 1);
+			}
+			existingWindows[numberOfWindow].Destroy();
+			existingWindows.RemoveAt(numberOfWindow);
 		}
 
 		public void SwitchToWindow(int numberOfWindow)
 		{
+			ValidateWindowNumber(numberOfWindow);
 			// TODO
+		}
+
+		public List<Shape> ShapesOnCurrentWindow()
+		{
+			return currentWindow.ShapesOnThisWindow();
+		}
+
+		private void ValidateWindowNumber(int numberOfWindow)
+		{
+			if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
 		}
 	}
 
 	class WindowToDraw
 	{
-		// TODO
+		private System.Windows.Controls.Canvas canvas;
+		private System.Windows.Window window;
+		private List<Shape> allShapesOnThisWindow = new();					// Хранятся в порядке создания
+		private List<int> zOrder = new List<int>();							// Индексы в предыдущем списке в Z-порядке
+
+		public WindowToDraw(int number)
+		{
+			// TODO: здесь надо создавать окно WPF, Canvas WPF (скорее всего из темплейта), и присваивать это всё куда надо
+			ChangeTitle(number);
+		}
+		
+		public System.Windows.Controls.Canvas Canvas
+		{ get { return canvas; } }
+
+		public void ChangeTitle(int newNumber)
+		{
+			// TODO: это совсем потом
+		}
+
+		public List<Shape> ShapesOnThisWindow()
+		{
+			return allShapesOnThisWindow;
+		}
+
+		public void RemoveShapeFromLists(Shape shapeToDelete)
+		{
+			// TODO
+		}
+
+		public void Destroy()
+		{
+			// TODO
+		}
 	}
 }

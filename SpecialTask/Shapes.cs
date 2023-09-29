@@ -8,34 +8,43 @@ namespace SpecialTask
 {
 	public enum EColor 
 	{
-		None
+		None,
+		Green,
+		Magenta
 	} // TODO
 
 	static class ColorsController
 	{
 		public static System.Windows.Media.Color GetWPFColor(EColor color)
 		{
-            return color switch
-            {
-                EColor.None => System.Windows.Media.Colors.Transparent,
-                _ => throw new ColorExcepttion(),
-            };
-        }
+			return color switch
+			{
+				EColor.None => System.Windows.Media.Colors.Transparent,
+				EColor.Green => System.Windows.Media.Colors.Green,
+				EColor.Magenta => System.Windows.Media.Colors.Magenta,
+				_ => throw new ColorExcepttion(),
+			};
+		}
 
 		public static EColor GetColorFromString(string colorString)
 		{
 			colorString = colorString.Trim().ToLower();
 			return colorString switch
 			{
+				"green" => EColor.Green,
+				"magenta" => EColor.Magenta,
 				_ => EColor.None,
 			};
 		}
 	}
 
+	/// <summary>
+	/// Представляет абстрактный класс для всех фигур
+	/// </summary>
 	abstract class Shape
 	{
 		private static int firstAvailibleUniqueNumber = 0;
-		private string uniqueName;
+		public string uniqueName;
 
 		public Shape()
 		{
@@ -45,17 +54,21 @@ namespace SpecialTask
 		public static string GetNextUniqueName()
 		{
 			return string.Format("Unknown_Shape_{0}", firstAvailibleUniqueNumber++);
-        }
+		}
 
-		public abstract void Edit(string attribute, object value);
+		public abstract object Edit(string attribute, object value);
 
 		public abstract void Redraw();
 
-        public string UniqueName 
+		public abstract void Destroy();			// А экземпляр вообще может самоуничтожться?
+
+		public string UniqueName 
 		{ 
 			get => uniqueName; 
 		}
-    }
+
+		public abstract (int, int) Center { get; }
+	}
 
 	class Circle: Shape
 	{
@@ -64,7 +77,7 @@ namespace SpecialTask
 		private int centerY;
 		private EColor color;
 		private int lineThickness;
-		private string uniqueName;
+		public new string uniqueName;
 
 		private static int firstAvailibleUniqueNumber = 0;
 
@@ -83,29 +96,58 @@ namespace SpecialTask
 			return string.Format("Circle_{0}", firstAvailibleUniqueNumber++);
 		}
 
-		public override void Edit(string attribute, object value)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="attribute"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidShapeAttributeException">Редактирование несуществующего атрибута</exception>
+		/// <exception cref="ShapeAttributeCastException">Невозможно привести атрибут к нужному типу</exception>
+		public override object Edit(string attribute, object value)
 		{
 			attribute = attribute.ToLower();
+			object oldValue;
+
 			try
 			{
 				switch (attribute)
 				{
 					case "centerx":
-						CenterX = (int)value; break;
+						oldValue = CenterX;
+						CenterX = (int)value;
+						break;
 					case "centery":
-						CenterY = (int)value; break;
+						oldValue = CenterY;
+						CenterY = (int)value;
+						break;
 					case "color":
-						color = (EColor)value; break;
+						oldValue = Color;
+						Color = (EColor)value;
+						break;
+					case "radius":
+						oldValue = Radius;
+						Radius = (int)value;
+						break;
 					case "linethickness":
-						lineThickness = (int)value; break;
+						oldValue = LineThickness;
+						LineThickness = (int)value;
+						break;
 					default:
 						throw new InvalidShapeAttributeException();
 				}
 			}
 			catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+
+			return oldValue;
 		}
 
-		private int Radius
+        public override (int, int) Center
+		{
+			get => (CenterX, CenterY);
+		}
+
+        private int Radius
 		{
 			get => radius;
 			set
@@ -116,12 +158,17 @@ namespace SpecialTask
 			}
 		}
 
-        public override void Redraw()
-        {
-            // TODO
-        }
+		public override void Redraw()
+		{
+			// TODO
+		}
 
-        private int CenterX
+		public override void Destroy()
+		{
+			// TODO
+		}
+
+		private int CenterX
 		{
 			get => centerX;
 			set
@@ -132,22 +179,22 @@ namespace SpecialTask
 		}
 		private int CenterY 
 		{
-            get => centerY;
-            set
-            {
-                centerY = value;
-                Redraw();
-            }
-        }
+			get => centerY;
+			set
+			{
+				centerY = value;
+				Redraw();
+			}
+		}
 		private EColor Color
 		{
-            get => color;
-            set
-            {
-                color = value;
-                Redraw();
-            }
-        }
+			get => color;
+			set
+			{
+				color = value;
+				Redraw();
+			}
+		}
 
 		private int LineThickness
 		{
@@ -168,7 +215,7 @@ namespace SpecialTask
 		private int rightBottomY;
 		private EColor color;
 		private int lineThickness;
-		private string uniqueName;
+		public new string uniqueName;
 
 		private static int firstAvailibleUniqueNumber = 0;
 
@@ -183,9 +230,272 @@ namespace SpecialTask
 			uniqueName = GetNextUniqueName();
 		}
 
+		public static new string GetNextUniqueName()
+		{
+			return string.Format("Square_{0}", firstAvailibleUniqueNumber++);
+		}
+
+        public override (int, int) Center
+		{
+			get => ((leftTopX + rightBottomX) / 2, (leftTopY + rightBottomY) / 2);
+		}
+
+        public override void Redraw()
+        {
+            // TODO
+        }
+
+        public override void Destroy()
+        {
+            // TODO
+        }
+
+        public override object Edit(string attribute, object value)
+        {
+            attribute = attribute.ToLower();
+            object oldValue;
+
+            try
+            {
+                switch (attribute)
+                {
+                    case "lefttopx":
+                        oldValue = LeftTopX;
+                        LeftTopX = (int)value;
+                        break;
+                    case "lefttopy":
+                        oldValue = LeftTopY;
+                        LeftTopY = (int)value;
+                        break;
+                    case "rightbottomx":
+                        oldValue = RightBottomX;
+                        RightBottomX = (int)value;
+                        break;
+                    case "rightbottomy":
+                        oldValue = RightBottomY;
+                        RightBottomY = (int)value;
+                        break;
+					case "color":
+						oldValue = Color;
+						Color = (EColor)value;
+						break;
+                    case "linethickness":
+                        oldValue = LineThickness;
+                        LineThickness = (int)value;
+                        break;
+                    default:
+                        throw new InvalidShapeAttributeException();
+                }
+            }
+            catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+
+            return oldValue;
+        }
+
+		private int LeftTopX
+		{
+			get => leftTopX;
+			set
+			{
+				leftTopX = value;
+				Redraw();
+			}
+		}
+
+		private int LeftTopY
+		{
+			get => leftTopY;
+			set
+			{
+				leftTopY = value;
+				Redraw();
+			}
+		}
+
+		private int RightBottomX
+		{
+			get => rightBottomX;
+			set
+			{
+				rightBottomX = value;
+				Redraw();
+			}
+		}
+
+		private int RightBottomY
+		{
+			get => rightBottomY;
+			set
+			{
+				rightBottomY = value;
+				Redraw();
+			}
+		}
+
+		private EColor Color
+		{
+			get => color;
+			set
+			{
+				color = value;
+				Redraw();
+			}
+		}
+
+		private int LineThickness
+		{
+			get => lineThickness;
+			set
+			{
+				lineThickness = value;
+				Redraw();
+			}
+		}
+    }
+
+	class Line: Shape
+	{
+		private int firstX;
+		private int firstY;
+		private int secondX;
+		private int secondY;
+		private EColor color;
+		private int lineThickness;
+		public new string uniqueName;
+
+        private static int firstAvailibleUniqueNumber = 0;
+
+        public Line(int firstX, int firstY, int secondX, int secondY, EColor color, int lineThickness)
+        {
+            this.firstX = firstX;
+            this.firstY = firstY;
+            this.secondX = secondX;
+            this.secondY = secondY;
+            this.color = color;
+            this.lineThickness = lineThickness;
+            uniqueName = GetNextUniqueName();
+        }
+
         public static new string GetNextUniqueName()
         {
-            return string.Format("Square_{0}", firstAvailibleUniqueNumber++);
+            return string.Format("Line_{0}", firstAvailibleUniqueNumber++);
+        }
+
+        public override (int, int) Center
+        {
+            get => ((firstX + secondX) / 2, (firstY + secondY) / 2);
+        }
+
+        public override void Redraw()
+        {
+            // TODO
+        }
+
+        public override void Destroy()
+        {
+            // TODO
+        }
+
+        public override object Edit(string attribute, object value)
+        {
+            attribute = attribute.ToLower();
+            object oldValue;
+
+            try
+            {
+                switch (attribute)
+                {
+                    case "firstx":
+                        oldValue = FirstX;
+                        FirstX = (int)value;
+                        break;
+                    case "firsty":
+                        oldValue = FirstY;
+                        FirstY = (int)value;
+                        break;
+                    case "secondx":
+                        oldValue = SecondX;
+                        SecondX = (int)value;
+                        break;
+                    case "secondy":
+                        oldValue = SecondY;
+                        SecondY = (int)value;
+                        break;
+                    case "color":
+                        oldValue = Color;
+                        Color = (EColor)value;
+                        break;
+                    case "linethickness":
+                        oldValue = LineThickness;
+                        LineThickness = (int)value;
+                        break;
+                    default:
+                        throw new InvalidShapeAttributeException();
+                }
+            }
+            catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+
+            return oldValue;
+        }
+
+        private int FirstX
+        {
+            get => firstX;
+            set
+            {
+                firstX = value;
+                Redraw();
+            }
+        }
+
+        private int FirstY
+        {
+            get => firstY;
+            set
+            {
+                firstY = value;
+                Redraw();
+            }
+        }
+
+        private int SecondX
+        {
+            get => secondX;
+            set
+            {
+                secondX = value;
+                Redraw();
+            }
+        }
+
+        private int SecondY
+        {
+            get => secondY;
+            set
+            {
+                secondY = value;
+                Redraw();
+            }
+        }
+
+        private EColor Color
+        {
+            get => color;
+            set
+            {
+                color = value;
+                Redraw();
+            }
+        }
+
+        private int LineThickness
+        {
+            get => lineThickness;
+            set
+            {
+                lineThickness = value;
+                Redraw();
+            }
         }
     }
 }

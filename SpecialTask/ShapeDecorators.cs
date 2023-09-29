@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpecialTask
 {
 	enum EStreakTexture { None } // TODO
 
-	abstract class ShapeDecorator : Shape 
+	abstract class ShapeDecorator : Shape
 	{
 		private Shape? decoratedShape;
 
@@ -35,50 +31,57 @@ namespace SpecialTask
 			this.streakTexture = streakTexture;
 		}
 
-        public override void Edit(string attribute, object value)
-        {
+		public override object Edit(string attribute, object value)
+		{
+			object oldValue;
 			if (decoratedShape == null) throw new HangingDecoratorException();
 
-            switch (attribute)
+			try
 			{
-				case "streakColor":
-					try
-					{
+				switch (attribute)
+				{
+					case "streakColor":
+						oldValue = streakColor;
 						streakColor = (EColor)value;
-					}
-					catch (InvalidCastException)
-					{
-
-						throw new ShapeAttributeCastException();
-					}
-					break;
-				case "streakTexture":
-					try
-					{
+						break;
+					case "streakTexture":
+						oldValue = streakTexture;
 						streakTexture = (EStreakTexture)value;
-					}
-                    catch (InvalidCastException)
-                    {
+						break;
+					default:
+						oldValue = decoratedShape.Edit(attribute, value);
+						break;
+				}
+			}
+			catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
 
-                        throw new ShapeAttributeCastException();
-                    }
-					break;
-				default:
-					decoratedShape.Edit(attribute, value);
-					break;
-            }
-        }
+			return oldValue;
+		}
 
 		public override void Redraw()
 		{
+			if (decoratedShape == null) throw new HangingDecoratorException();
 			decoratedShape.Redraw();
 			RedrawStreak();
+		}
 
+        public override (int, int) Center
+		{
+			get
+			{
+				if (decoratedShape == null) throw new HangingDecoratorException();
+				return decoratedShape.Center;
+			}
+		}
+
+        public override void Destroy()
+		{
+			// TODO
 		}
 
 		private void RedrawStreak()
 		{
 			// TODO
 		}
-    }
+	}
 }

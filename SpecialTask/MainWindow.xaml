@@ -6,7 +6,14 @@
         xmlns:local="clr-namespace:SpecialTask"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+    <RichTextBox x:Name="ConsoleRTB" Background="#FF171717" BorderBrush="{x:Null}" 
+                 CaretBrush="#FFFFF500" Foreground="White" SelectionTextBrush="Black" SelectionBrush="#FF8A8A8A" 
+                 FontFamily="Consolas" FontSize="14" IsUndoEnabled="False" AcceptsTab="True" AutoWordSelection="False"
+                 ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" TextChanged="ConsoleRTBInput">
+        <FlowDocument>
+            <Paragraph>
+                <Run Text="Have much fun!>>"/>
+            </Paragraph>
+        </FlowDocument>
+    </RichTextBox>
 </Window>
