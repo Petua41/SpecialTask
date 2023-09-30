@@ -22,9 +22,9 @@ namespace SpecialTask
 #else
 			logLevel = ELogLevels.Warning;
 #endif
-			logFilename = string.Format("Logs/log_{0}", DateTime.Now.ToString().Replace(' ', '_'));
+			logFilename = string.Format("Logs/log_{0}", DateTime.Now.ToString().Replace(' ', '_').Replace(':', '.'));
 			if (!Directory.Exists("Logs")) Directory.CreateDirectory("Logs");
-			writer = new(logFilename);
+			writer = new(File.Create(logFilename));
 			LogGreetings();
 		}
 
@@ -45,6 +45,8 @@ namespace SpecialTask
 
 		private static void Log(string message, ELogLevels level) 
 		{
+			Console.WriteLine(writer);
+
 			if (level < logLevel) { return; }
 
 			string logLevelString = logLevel switch

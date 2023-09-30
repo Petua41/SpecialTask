@@ -12,7 +12,7 @@ namespace SpecialTask
 	enum EConsoleCommandArgumentTypes { Int, Color, PseudoBool, String, Path, Texture }
 
 	/// <summary>
-	/// Бизнес-класс консоли. Принимает запросы от класса-обёртки WPFConsole
+	/// Бизнес-класс консоли. Выступает посредником между классом-обёрткой WPFConsole и остальной бизнес-логикой приложения
 	/// </summary>
 	public class STConsole
 	{
@@ -43,6 +43,10 @@ namespace SpecialTask
 		public void Display(string message)
 		{
 			MyMap<string, EColor> messageSplittedByColors = SplitMessageByColors(message);
+			foreach (KeyValuePair<string, EColor> kvp in messageSplittedByColors)
+			{
+				wpfConsole.Display(kvp.Key, kvp.Value);
+			}
 		}
 
 		public void ProcessInput(string inputString)
@@ -50,7 +54,7 @@ namespace SpecialTask
 			CommandsParser.ParseCommand(inputString);
 		}
 
-		public MyMap<string, EColor> SplitMessageByColors(string message)		// This must be private, but I wanna test it
+		public static MyMap<string, EColor> SplitMessageByColors(string message)		// This must be private, but I wanna test it
 		{
 			MyMap<string, EColor> messageSplittedByColors = new();
 

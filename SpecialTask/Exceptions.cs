@@ -65,5 +65,9 @@ namespace SpecialTask
     /// <summary>
     /// Возникает, если название цвета в escape-последовательности не распознано
     /// </summary>
-    class EscapeSequenceParsingError: ColorExcepttion { }
+    class EscapeSequenceParsingError: MessageDisplayingError { }
+    /// <summary>
+    /// Возникает, когда по какой-то причине невозможно отобразить сообщение в консоли
+    /// </summary>
+    class  MessageDisplayingError: Exception { }
 }
