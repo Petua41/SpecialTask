@@ -127,17 +127,12 @@
 	<!-- save_as -->
 	<command userInput="save_as" commandClass="SaveAsCommand">
 		Save file as
-		<!-- TODO: сначала надо ответить на (7)-->
-	</command>
-	<!-- save_pdf -->
-	<command userInput="save_pdf" commandClass="SavePDFCommand">
-		Export to PDF
-		<!-- TODO: сначала надо ответить на (7)-->
+		<argument shortArgument="-f" longArgument="--filename" type="String" commandParameterName="filename"/>
 	</command>
 	<!-- load -->
 	<command userInput="load" commandClass="LoadCommand">
 		Load file
-		<!-- TODO: сначала надо ответить на (7)-->
+		<argument shortArgument="-f" longArgument="--filename" type="String" commandParameterName="filename"/>
 	</command>
   <!-- exit -->
   <command userInput="exit" commandClass="ExitCommand">

@@ -15,20 +15,20 @@ namespace SpecialTask
 	public class WPFConsole
 	{
 		private static WPFConsole? singleton;
-		private readonly RichTextBox consoleRTB;
+		private readonly MainWindow mainWindowInstance;
 		private readonly STConsole stConsole;
 
 		private WPFConsole()
 		{
 			if (singleton != null) throw new SingletonError();
-
-			try { consoleRTB = (RichTextBox)Application.Current.FindResource("ConsoleRTB"); }
-			catch (ResourceReferenceKeyNotFoundException ex)
+			/*
+			try { mainWindowInstance = (MainWindow)Application.Current.MainWindow; }
+			catch (Exception ex)
 			{
-				Logger.Instance.Error(string.Format("{0} exception while trying to get ConsoleRichTextBox!", ex.GetType().ToString()));
+				Logger.Instance.Error(string.Format("{0} exception while trying to get MainWindow instance!", ex.GetType().ToString()));
 				throw;
 			}
-
+			*/
 			stConsole = STConsole.Instance;
 		}
 
@@ -43,8 +43,7 @@ namespace SpecialTask
 
 		public void Display(string message, EColor color=EColor.None)
 		{
-			consoleRTB.Foreground = new System.Windows.Media.SolidColorBrush(ColorsController.GetWPFColor(color));
-			consoleRTB.AppendText(message);
+			mainWindowInstance.Display(message, ColorsController.GetWPFColor(color));
 		}
 
 		public void NewLine()
@@ -84,10 +83,27 @@ namespace SpecialTask
 			return stConsole.Autocomplete(currentInput);
 		}
 
-		/// <summary>
-		/// Блокирует ввод в косоль. ДОЛЖЕН вызываться каждый раз перед выводом текста, состоящего из нескольких частей
-		/// </summary>
-		public void LockInput()
+		public string ProcessUpArrow()
+		{
+			// TODO: я ещё не решил, как будут храниться предыдущие команды
+			throw new NotImplementedException();
+		}
+
+        public string ProcessDownArrow()
+        {
+            // TODO: я ещё не решил, как будут храниться предыдущие команды
+            throw new NotImplementedException();
+        }
+
+		public void ChangeUndoStackDepth(int depth)
+		{
+			CommandsFacade.ChangeUndoStackDepth(depth);
+		}
+
+        /// <summary>
+        /// Блокирует ввод в косоль. ДОЛЖЕН вызываться каждый раз перед выводом текста, состоящего из нескольких частей
+        /// </summary>
+        public void LockInput()
 		{
 			// TODO: поскольку пока что не всё ясно с "низкоуровневой" консолью, неизвестно что тут будет. Но точно не больше одной строчки
 		}

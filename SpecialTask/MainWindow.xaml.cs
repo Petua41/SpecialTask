@@ -16,10 +16,11 @@ namespace SpecialTask
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		//WPFConsole wpfConsole;
+		private readonly WPFConsole wpfConsole;
 		private string currentInput = "";
 		private bool inputBlocked = false;
-		Brush defaultForegroundBrush = new SolidColorBrush(Colors.White);
+		private readonly Brush defaultForegroundBrush = new SolidColorBrush(Colors.White);
+		private readonly Logger logger;
 
 		private readonly Dictionary<Key, char> numberKeys = new()
 		{
@@ -49,10 +50,12 @@ namespace SpecialTask
 		{
 			InitializeComponent();
 
-			Logger logger = Logger.Instance;			// Получаем Logger здесь, чтобы он инициализировался с правильным временем создания
+			logger = Logger.Instance;		// Можно было бы везде использовать Logger.Instance, но, если мы получаем его здесь, то у него будет правильное время создания
+			wpfConsole = WPFConsole.Instance;
 
-			//wpfConsole = WPFConsole.Instance;
-			Display("\n>> ", Colors.Green);
+			ParseCommandLineArguments();
+
+            Display("\n>> ", Colors.Green);
 			ConsoleTB.Focus();
 		}
 
@@ -192,10 +195,19 @@ namespace SpecialTask
 			switch (key)
 			{
 				case Key.Up:
-					// TODO: здесь обращаемся к WPFConsole
+					string prevCommandToDisplay = wpfConsole.ProcessUpArrow();
+					// TODO
 					break;
 				case Key.Down:
-					// TODO: здесь обращаемся к WPFConsole (была ли до этого нажата 🔼 пусть она проверяет)
+					string nextCommandToDisplay = wpfConsole.ProcessDownArrow();
+					if (nextCommandToDisplay == "")
+					{
+						// TODO: вниз листать нечего. Ничего не делаем (нужно убедиться, что всё осталось как было)
+					}
+					else
+					{
+						// TODO
+					}
 					break;
 				case Key.Left:
 					// TODO: здесь двигаем Caret
@@ -210,7 +222,7 @@ namespace SpecialTask
 					// MoveCaretToStartOfString()
 					break;
 				default:
-					// Это не стрелочка
+					logger.Warning(string.Format("{0} is not an arrow, but invoked ProcessArrows", key.ToString()));
 					break;
 			}
 		}
@@ -224,7 +236,22 @@ namespace SpecialTask
         {
 			// TODO: здесь мы должны закрывать все остальные окна (потому что консоль -- основное окно)
 
-			Logger.Instance.Dispose();
+			logger.Dispose();
         }
+
+		private void ParseCommandLineArguments()
+		{
+			string[] args = Environment.GetCommandLineArgs();
+			if (args.Length == 1) return;
+			try
+			{
+				if ((args[1] == "-d" || args[1] == "--undo_stack_depth") && args.Length > 2) wpfConsole.ChangeUndoStackDepth(int.Parse(args[2]));
+			}
+			catch (FormatException)
+			{
+				logger.Error(string.Format("{0} is not valid undo stack depth", args[2]));
+				Display(string.Format("{0} is not valid undo stack depth. Setting default (15)\n", args[2]), Colors.Red);
+			}
+		}
     }
 }

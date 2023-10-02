@@ -36,9 +36,15 @@ namespace SpecialTask
 			}
 		}
 
-		public void CreateWindow()
+		/// <summary>
+		/// Создаёт новое окно для рисования. Создавать окна можно ТОЛЬКО так.
+		/// </summary>
+		/// <returns>Номер созданного окна</returns>
+		public int CreateWindow()
 		{
-			existingWindows.Add(new WindowToDraw(existingWindows.Count));
+			int numberOfNewWindow = existingWindows.Count;
+			existingWindows.Add(new(numberOfNewWindow);
+			return numberOfNewWindow;
 		}
 
 		public void DestroyWindow(int numberOfWindow)						// Это надо потестить
@@ -61,6 +67,16 @@ namespace SpecialTask
 		public List<Shape> ShapesOnCurrentWindow()
 		{
 			return currentWindow.ShapesOnThisWindow();
+		}
+
+		public WindowToDraw? GetWindowByNumber(int number)
+		{
+			if (0 <= number && number < existingWindows.Count) return existingWindows[number];
+			else
+			{
+				Logger.Instance.Error(string.Format("Window number {0} doesn`t exist!", number));
+				return null;
+			}
 		}
 
 		private void ValidateWindowNumber(int numberOfWindow)

@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace SpecialTask
 {
-	enum EConsoleCommandArgumentTypes { Int, Color, PseudoBool, String, Path, Texture }
+	enum EConsoleCommandArgumentTypes { Int, Color, PseudoBool, String, Texture }
 
 	/// <summary>
 	/// Бизнес-класс консоли. Выступает посредником между классом-обёрткой WPFConsole и остальной бизнес-логикой приложения
@@ -65,7 +65,6 @@ namespace SpecialTask
 					аргумент целиком => зависит от типа аргумента
 					{
 						PseudoBool => возвращаем пустую строку
-						Path => зависит от (7) и (7.0)
 						Остальное (есть значение по-умолчанию) => возвращаем значение по-умолчанию
 						Остальное (нет значения по-умолчанию) => возвращаем пустую строку
 					}

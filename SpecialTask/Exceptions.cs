@@ -74,4 +74,8 @@ namespace SpecialTask
     /// Возникает, если при передаче запроса по цепочке обязанностей кто-то передал запрос не туда
     /// </summary>
     class  ChainOfResponsibilityException: Exception {  }
+    /// <summary>
+    /// Возникает при попытке снять элемент с пустого PseudoDeque
+    /// </summary>
+    public class UnderflowException: Exception { }
 }
