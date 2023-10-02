@@ -4,19 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.ComponentModel;
 
 namespace SpecialTask
 {
 	enum ELogLevels { Info, Warning, Error }
 
-	static class Logger
+	class Logger: IDisposable
 	{
-		private static string logFilename;
-		private static StreamWriter writer;
-		private static ELogLevels logLevel;
+		private static Logger? singleton;
 
-		static Logger()
+		private string logFilename;
+		private StreamWriter writer;
+		private ELogLevels logLevel;
+
+		Logger()
 		{
+			if (singleton != null) throw new SingletonError();
+
 #if DEBUG
 			logLevel = ELogLevels.Info;
 #else
@@ -28,25 +33,38 @@ namespace SpecialTask
 			LogGreetings();
 		}
 
-		public static void Info(string message)
+		public static Logger Instance
+		{
+			get
+			{
+				singleton ??= new();
+				return singleton;
+			}
+        }
+
+        public void Dispose()
+        {
+            writer.Close();
+            singleton = null;
+        }
+
+        public void Info(string message)
 		{
 			Log(message, ELogLevels.Info);
 		}
 
-		public static void Warning(string message)
+		public void Warning(string message)
 		{
 			Log(message, ELogLevels.Warning);
 		}
 
-		public static void Error(string message)
+		public void Error(string message)
 		{
 			Log(message, ELogLevels.Error);
 		}
 
-		private static void Log(string message, ELogLevels level) 
+		private void Log(string message, ELogLevels level) 
 		{
-			Console.WriteLine(writer);
-
 			if (level < logLevel) { return; }
 
 			string logLevelString = logLevel switch
@@ -60,7 +78,7 @@ namespace SpecialTask
 			writer.WriteLine(string.Format("{0}[{1}]: {2}", logLevelString, DateTime.Now.ToString(), message));
         }
 
-		private static void LogGreetings()
+		private void LogGreetings()
 		{
 			bool debug = false;
 #if DEBUG
@@ -71,15 +89,15 @@ namespace SpecialTask
 			string userName = Environment.UserName;
 			string workingDir = Environment.CurrentDirectory;
 
-			string greetingsText = string.Format("------------ LOG ------------" + 
-				"[{0}]: Program started" + 
-				"DEBUG: {1}" + 
-				"Platform: {2}" + 
-				".NET version: {3}" + 
-				"Username: {4}" + 
-				"Working directory: {5}" +
-                "-----------------------------", DateTime.Now.ToString(), debug.ToString(), platform, dotnetVersion, userName, workingDir);
-			writer.WriteLine(greetingsText);
+			string greetingsText = string.Format("------------ LOG ------------\n" + 
+				"[{0}]: Program started\n" + 
+				"DEBUG: {1}\n" + 
+				"Platform: {2}\n" + 
+				".NET version: {3}\n" + 
+				"Username: {4}\n" + 
+				"Working directory: {5}\n" +
+                "-----------------------------\n\n", DateTime.Now.ToString(), debug.ToString(), platform, dotnetVersion, userName, workingDir);
+			writer.Write(greetingsText);
         }
 	}
 }

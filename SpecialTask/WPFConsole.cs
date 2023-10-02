@@ -16,16 +16,20 @@ namespace SpecialTask
 	{
 		private static WPFConsole? singleton;
 		private readonly RichTextBox consoleRTB;
+		private readonly STConsole stConsole;
 
 		private WPFConsole()
 		{
 			if (singleton != null) throw new SingletonError();
+
 			try { consoleRTB = (RichTextBox)Application.Current.FindResource("ConsoleRTB"); }
 			catch (ResourceReferenceKeyNotFoundException ex)
 			{
-				Logger.Error(string.Format("{0} exception while trying to get ConsoleRichTextBox!", ex.GetType().ToString()));
+				Logger.Instance.Error(string.Format("{0} exception while trying to get ConsoleRichTextBox!", ex.GetType().ToString()));
 				throw;
 			}
+
+			stConsole = STConsole.Instance;
 		}
 
 		public static WPFConsole Instance 
@@ -75,12 +79,17 @@ namespace SpecialTask
 			}
 		}
 
+		public string Autocomplete(string currentInput)
+		{
+			return stConsole.Autocomplete(currentInput);
+		}
+
 		/// <summary>
 		/// Блокирует ввод в косоль. ДОЛЖЕН вызываться каждый раз перед выводом текста, состоящего из нескольких частей
 		/// </summary>
 		public void LockInput()
 		{
-			consoleRTB.IsReadOnly = true;
+			// TODO: поскольку пока что не всё ясно с "низкоуровневой" консолью, неизвестно что тут будет. Но точно не больше одной строчки
 		}
 
 		/// <summary>
@@ -88,7 +97,7 @@ namespace SpecialTask
 		/// </summary>
 		private void UnlockInput()
 		{
-			consoleRTB.IsReadOnly = false;
-		}
-	}
+            // TODO: поскольку пока что не всё ясно с "низкоуровневой" консолью, неизвестно что тут будет. Но точно не больше одной строчки
+        }
+    }
 }

@@ -70,4 +70,8 @@ namespace SpecialTask
     /// Возникает, когда по какой-то причине невозможно отобразить сообщение в консоли
     /// </summary>
     class  MessageDisplayingError: Exception { }
+    /// <summary>
+    /// Возникает, если при передаче запроса по цепочке обязанностей кто-то передал запрос не туда
+    /// </summary>
+    class  ChainOfResponsibilityException: Exception {  }
 }

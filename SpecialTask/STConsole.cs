@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Linq;
 
 namespace SpecialTask
@@ -54,7 +51,33 @@ namespace SpecialTask
 			CommandsParser.ParseCommand(inputString);
 		}
 
-		public static MyMap<string, EColor> SplitMessageByColors(string message)		// This must be private, but I wanna test it
+		public string Autocomplete(string inputString)
+		{
+			/* TODO: сначала обращаемся к CommandsParser, чтобы понять, что введено
+			{
+				ничего => зависит от (9)
+				часть команды => обращаемся к CommandsParser за остатком команды
+				команда первого уровня => зависит от (9)
+				команда целиком => CommandsParser передаёт запрос дальше в ConsoleCommand
+				{
+					ничего => зависит от (9)
+					часть аргумента => ConsoleCommand возвращает остаток аргумента
+					аргумент целиком => зависит от типа аргумента
+					{
+						PseudoBool => возвращаем пустую строку
+						Path => зависит от (7) и (7.0)
+						Остальное (есть значение по-умолчанию) => возвращаем значение по-умолчанию
+						Остальное (нет значения по-умолчанию) => возвращаем пустую строку
+					}
+				}
+			}
+
+			Это всё не здесь. Это всё передаётся по цепочке обязанностей. Здесь только передаём запрос в CommandsParser */
+			
+			return CommandsParser.Autocomplete(inputString);
+		}
+
+		public static MyMap<string, EColor> SplitMessageByColors(string message)        // This must be private, but I wanna test it
 		{
 			MyMap<string, EColor> messageSplittedByColors = new();
 
@@ -78,7 +101,7 @@ namespace SpecialTask
 						try { lastColor = ColorsController.GetColorFromString(colorName); }
 						catch (ColorExcepttion)
 						{
-							Logger.Error(string.Format("Invalid color name in escape sequence: {0}", colorName));
+							Logger.Instance.Error(string.Format("Invalid color name in escape sequence: {0}", colorName));
 							throw new EscapeSequenceParsingError();
 						}
 					}
@@ -103,7 +126,60 @@ namespace SpecialTask
 		public Type? commandType;
 		public List<ConsoleCommandArgument> argumetns;
 		public bool supportsUndo;
-		public bool fictional;									// Только для help. При вызове печатает что-то типа "недопустимая команда"
+		public bool fictional;                                  // Только для help. При вызове печатает что-то типа "недопустимая команда"
+
+		public string AutocompleteArguments(string input)
+		{
+			if (input.StartsWith(neededUserInput + " "))
+			{
+				string lastArgument = SelectLastArgument(input);
+				if (lastArgument.Length == 0)
+				{
+					// зависит от (9)
+				}
+				else
+				{
+					List<ConsoleCommandArgument> possibleArgs = TryToAutocompleteArgs(lastArgument);
+					if (possibleArgs.Count == 0) return "";
+					if (possibleArgs.Count == 1)
+					{
+						if (lastArgument.StartsWith("--")) return possibleArgs.Single().longArgument;
+						return possibleArgs.Single().shortArgument;
+					}
+					// зависит от (9)
+				}
+
+			}
+			else
+			{
+				Logger.Instance.Error("Query passed to ConsoleCommand, but input doesn`t contain this command");
+				throw new ChainOfResponsibilityException();
+			}
+
+			throw new NotImplementedException();
+		}
+
+		private string SelectLastArgument(string input)
+		{
+			int indexOfLastSingleMinus = input.LastIndexOf("-");
+			int indexOfLastDoubleMinus = input.LastIndexOf("--");
+			if (indexOfLastSingleMinus < 0 && indexOfLastDoubleMinus < 0)
+			{
+				// нет аргументов
+				return "";
+			}
+			if (indexOfLastSingleMinus + 1 > indexOfLastDoubleMinus)
+			{
+				// последний аргумент -- короткий
+				return input[indexOfLastSingleMinus..];
+			}
+			return input[indexOfLastDoubleMinus..];
+		}
+
+		private List<ConsoleCommandArgument> TryToAutocompleteArgs(string argument)
+		{
+			return (from arg in argumetns where (arg.shortArgument.StartsWith(argument) || arg.longArgument.StartsWith(argument)) select arg).ToList();
+		}
 	}
 
 	struct ConsoleCommandArgument
@@ -152,7 +228,7 @@ namespace SpecialTask
 			}
 
 			int commandNumber = SelectCommand(commandName);
-			if (commandNumber == -1)						// Если команда не найдена, выводим глобальную помощь
+			if (commandNumber == -1)                        // Если команда не найдена, выводим глобальную помощь
 			{
 				STConsole.Instance.DisplayGlobalHelp();
 				return;
@@ -161,6 +237,49 @@ namespace SpecialTask
 			ICommand command = ParseArguments(commandNumber, arguments);
 			if (supportsUndo) CommandsFacade.RegisterAndExecute(command);
 			else CommandsFacade.ExecuteButDontRegister(command);
+		}
+
+		public static string Autocomplete(string input)
+		{
+			if (input.Length == 0)
+			{
+				// TODO: зависит от (9)
+			}
+			else if (!input.Contains(' '))
+			{
+				if (IsThereACompeteCommand(input))
+				{
+					ConsoleCommand command = consoleCommands[SelectCommand(input)];
+					return command.AutocompleteArguments(input);
+				}
+				else
+				{
+					List<ConsoleCommand> possibleCommands = GetListOfCommandsToComplete(input);
+					if (possibleCommands.Count == 0) return "";
+					else if (possibleCommands.Count == 1)
+					{
+						string shouldBe = possibleCommands.Single().neededUserInput;
+						return shouldBe.Replace(input, "");
+					}
+					else
+					{
+						// Зависит от (9)
+					}
+				}
+			}
+
+			throw new NotImplementedException();
+		}
+
+		private static bool IsThereACompeteCommand(string input)
+		{
+			if (SelectCommand(input) > 0) return true;
+			return false;
+		}
+
+		private static List<ConsoleCommand> GetListOfCommandsToComplete(string input)
+		{
+			return (from command in consoleCommands where command.neededUserInput.StartsWith(input) select command).ToList();
 		}
 
 		private static (List<ConsoleCommand>, string) ParseCommandsXML()
@@ -180,7 +299,7 @@ namespace SpecialTask
 					string helpCandidate = elem.Value;
 					if (helpCandidate != "") globalHelp = helpCandidate;
 				}
-				else Logger.Warning(string.Format("Unexpected XML tag in root element: {0}", elem.Name));
+				else Logger.Instance.Warning(string.Format("Unexpected XML tag in root element: {0}", elem.Name));
 			}
 
 			return (commands, globalHelp);
@@ -199,7 +318,7 @@ namespace SpecialTask
 			neededUserInput = (from attr in attrs where attr.Name == XName.Get("userInput") select attr.Value).Single();
 			help = elem.Value;
 			if (help == "") help = null;
-			commandType = Type.GetType((from attr in attrs where attr.Name == XName.Get("commandClass") select attr.Value).Single()) ?? 
+			commandType = Type.GetType((from attr in attrs where attr.Name == XName.Get("commandClass") select attr.Value).Single()) ??
 				throw new InvalidResourceFileException();
 			supportsUndo = (from attr in attrs where attr.Name == XName.Get("supportsUndo") select (attr.Value == "true")).SingleOrDefault(false);
 			fictional = (from attr in attrs where attr.Name == XName.Get("fictional") select (attr.Value == "true")).SingleOrDefault(false);
@@ -207,7 +326,7 @@ namespace SpecialTask
 			foreach (XElement child in elem.Elements())
 			{
 				if (child.Name == "argument") arguments.Add(ParseArgumentElement(child));
-				else Logger.Warning(string.Format("Unexpected XML tag inside {0} command: {1}", neededUserInput, child.Name));
+				else Logger.Instance.Warning(string.Format("Unexpected XML tag inside {0} command: {1}", neededUserInput, child.Name));
 			}
 
 			return new ConsoleCommand
@@ -267,7 +386,7 @@ namespace SpecialTask
 		/// </summary>
 		/// <param name="commandName">Часть введённой строки до аргументов</param>
 		/// <returns>Индекс в списке команд или -1, если команда не найдена</returns>
-		private static int SelectCommand(string commandName)	// возвращает индекс в списке
+		private static int SelectCommand(string commandName)    // возвращает индекс в списке
 		{
 			for (int i = 0; i < consoleCommands.Count; i++)
 			{
@@ -275,7 +394,7 @@ namespace SpecialTask
 			}
 			return -1;
 		}
-		
+
 		private static ICommand ParseArguments(int commandNumber, string arguments)
 		{
 			if (arguments == "") return ParseArguments(commandNumber);
@@ -300,7 +419,7 @@ namespace SpecialTask
 	/// <summary>
 	/// Представляет упорядоченную коллекцию пар "ключ-значение", не требующую уникальность ключей
 	/// </summary>
-	public class MyMap<K, V>: List<KeyValuePair<K, V>>
+	public class MyMap<K, V> : List<KeyValuePair<K, V>>
 	{
 		private List<KeyValuePair<K, V>> map;
 
@@ -309,7 +428,7 @@ namespace SpecialTask
 			map = new();
 		}
 
-		public MyMap(IEnumerable<KeyValuePair<K, V>> oldMap): this()
+		public MyMap(IEnumerable<KeyValuePair<K, V>> oldMap) : this()
 		{
 			foreach (KeyValuePair<K, V> pair in oldMap) Add(pair.Key, pair.Value);
 		}
@@ -340,7 +459,7 @@ namespace SpecialTask
 			get => (from kvp in map select kvp.Key).ToList();
 		}
 
-		public List <V> Values
+		public List<V> Values
 		{
 			get => (from kvp in map select kvp.Value).ToList();
 		}
@@ -354,12 +473,12 @@ namespace SpecialTask
 			return false;
 		}
 
-        public override int GetHashCode()
-        {
-            return map.GetHashCode();
-        }
+		public override int GetHashCode()
+		{
+			return map.GetHashCode();
+		}
 
-        public static bool operator ==(MyMap<K, V> a, object? b)
+		public static bool operator ==(MyMap<K, V> a, object? b)
 		{
 			return a.Equals(b);
 		}

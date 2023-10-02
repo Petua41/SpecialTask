@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
@@ -47,8 +48,12 @@ namespace SpecialTask
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			Logger logger = Logger.Instance;			// Получаем Logger здесь, чтобы он инициализировался с правильным временем создания
+
 			//wpfConsole = WPFConsole.Instance;
 			Display("\n>> ", Colors.Green);
+			ConsoleTB.Focus();
 		}
 
 		public void Display(string message, System.Windows.Media.Color color)
@@ -63,7 +68,7 @@ namespace SpecialTask
 
 		public void Display(string message, Brush brush)
 		{
-            TextRange range = new(ConsoleRTB.Document.ContentEnd, ConsoleRTB.Document.ContentEnd)
+            TextRange range = new(ConsoleTB.ContentEnd, ConsoleTB.ContentEnd)
             {
                 Text = message
             };
@@ -94,10 +99,12 @@ namespace SpecialTask
 
 			Key key = e.Key;
 
-			if (key == Key.Back) throw new Exception("Backspace pressed");
-
 			char? inputChar = ProcessInputChar(e);
-			if (inputChar != null) Display(inputChar.ToString());
+			if (inputChar != null)
+			{
+				Display(inputChar.ToString());
+				currentInput += inputChar;
+			}
 		}
 
 		private char? ProcessInputChar(KeyEventArgs e)      // это прям лютый костыль, но по-другому никак. Спасибо WPF
@@ -143,7 +150,10 @@ namespace SpecialTask
 				case Key.Tab:
 					ProcessTab();
 					return null;
-				default:			// WPF не передаёт нам нажатия backspace и стрелочек. Может быть придётся использовать что-то, что не разрешает пользователю ввод
+				case Key.Back:
+					ProcessBackspace();
+					return null;
+				default:
 					return null;
 			}
         }
@@ -166,9 +176,55 @@ namespace SpecialTask
 			// Вот здесь и пригодится цепочка обязанностей: в зависимости от того, что надо дополнять (команда, аргумент, путь...) этот запрос обрабатывают разные классы
 		}
 
+		private void ProcessBackspace()
+		{
+			if (currentInput.Length > 0)
+			{
+				ConsoleTB.Text = ConsoleTB.Text[..^1];
+				currentInput = currentInput[..^1];
+				MoveCaretToEnd();
+				// TODO: мы теряем цвета
+			}
+		}
+
+		private void ProcessArrows(Key key)
+		{
+			switch (key)
+			{
+				case Key.Up:
+					// TODO: здесь обращаемся к WPFConsole
+					break;
+				case Key.Down:
+					// TODO: здесь обращаемся к WPFConsole (была ли до этого нажата 🔼 пусть она проверяет)
+					break;
+				case Key.Left:
+					// TODO: здесь двигаем Caret
+					break;
+				case Key.Right:
+					// TODO здесь двигаем Caret
+					break;
+				case Key.End:
+					MoveCaretToEnd();
+					break;
+				case Key.Home:
+					// MoveCaretToStartOfString()
+					break;
+				default:
+					// Это не стрелочка
+					break;
+			}
+		}
+
         private void MoveCaretToEnd()
         {
-            ConsoleRTB.CaretPosition = ConsoleRTB.Document.ContentEnd;
+			// TODO: у TextBlock нет явной Caret и Background не поддерживается
+        }
+
+        private void ConsoleClosed(object sender, EventArgs e)
+        {
+			// TODO: здесь мы должны закрывать все остальные окна (потому что консоль -- основное окно)
+
+			Logger.Instance.Dispose();
         }
     }
 }

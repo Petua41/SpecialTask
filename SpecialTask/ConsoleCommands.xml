@@ -139,6 +139,10 @@
 		Load file
 		<!-- TODO: сначала надо ответить на (7)-->
 	</command>
+  <!-- exit -->
+  <command userInput="exit" commandClass="ExitCommand">
+    Close application
+  </command>
 
 	<!-- fictional commands -->
 	<command userInput="new" fictional="true">
@@ -162,14 +166,14 @@
 
 		[color:Magenta]Commands:[color]
 			new						Add shape to the screen
-			window					Control windows
+			window				Control windows
 			edit					Edit shapes on the screen
-			select					Select rectangular area
+			select				Select rectangular area
 			undo					Undo last actions
 			redo					Redo last actions
 			save					Save
-			save_as					Save as
-			save_pdf				Export to PDF
+			save_as				Save as
+			save_pdf			Export to PDF
 			load					Load
 			help					Display this help
 

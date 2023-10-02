@@ -145,6 +145,9 @@ namespace SpecialTask
 		}
 	}
 
+	/// <summary>
+	/// Команда для добавления прямоугольника на экран
+	/// </summary>
 	class CreateSquareCommand: ICommand
 	{
 		private Shape? receiver;
@@ -177,7 +180,42 @@ namespace SpecialTask
         }
 	}
 
-	class HelpCommand: ICommand
+	/// <summary>
+	/// Команда для добавления линии на экран
+	/// </summary>
+    class CreateLineCommand : ICommand
+    {
+        private Shape? receiver;
+        int firstX;
+        int firstY;
+        int secondX;
+        int secondY;
+        EColor color;
+        int lineThickness;
+
+        public CreateLineCommand(int firstX, int firstY, int secondX, int secondY, EColor color, int lineThickness)
+        {
+            this.firstX = firstX;
+            this.firstY = firstY;
+            this.secondX = secondX;
+            this.secondY = secondY;
+            this.color = color;
+            this.lineThickness = lineThickness;
+        }
+
+        public void Execute()
+        {
+            receiver = new Square(firstX, firstY, secondX, secondY, color, lineThickness);
+        }
+
+        public void Unexecute()
+        {
+            if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
+            receiver.Destroy();
+        }
+    }
+
+    class HelpCommand: ICommand
 	{
 		private STConsole receiver;
 		private string helpText;
@@ -195,7 +233,7 @@ namespace SpecialTask
 
 		public void Unexecute()
 		{
-			Logger.Warning("Unexecution of help command");
+			Logger.Instance.Warning("Unexecution of help command");
 		}
 	}
 }

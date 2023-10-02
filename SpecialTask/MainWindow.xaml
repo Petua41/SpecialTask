@@ -5,15 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpecialTask"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <RichTextBox x:Name="ConsoleRTB" Background="#FF171717" BorderBrush="{x:Null}" 
-                 CaretBrush="Yellow" Foreground="White" SelectionTextBrush="Black" SelectionBrush="#FF8A8A8A" 
-                 FontFamily="Consolas" FontSize="14" IsUndoEnabled="False" AutoWordSelection="False"
-                 ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" TextChanged="ConsoleRTBInput" KeyDown="ConsoleRTBKeyDown" IsReadOnlyCaretVisible="True" IsReadOnly="True">
-        <FlowDocument>
-            <Paragraph>
-                <Run Text="Have much fun!"/>
-            </Paragraph>
-        </FlowDocument>
-    </RichTextBox>
+        Title="MainWindow" Height="450" Width="800" Closed="ConsoleClosed">
+    <TextBlock x:Name="ConsoleTB" TextWrapping="Wrap" Text="Have much fun!" Background="#FF171717" Foreground="White" FontFamily="Consolas" 
+               FontSize="14" Focusable="True" KeyDown="ConsoleRTBKeyDown"/>
 </Window>

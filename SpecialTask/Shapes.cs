@@ -60,7 +60,7 @@ namespace SpecialTask
 
 		public abstract void Redraw();
 
-		public abstract void Destroy();			// А экземпляр вообще может самоуничтожться?
+		public abstract void Destroy();			// А экземпляр вообще может самоуничтожиться?
 
 		public string UniqueName 
 		{ 
