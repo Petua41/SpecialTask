@@ -35,7 +35,7 @@ namespace SpecialTask
     /// </summary>
     class InvalidNumberOfCommandParametersException: ArgumentException { }
     /// <summary>
-    /// Возникает при попытке отменить фигуру, которая ещё не была вызвана (или не закончила выполнение)
+    /// Возникает при попытке отменить команду, которая ещё не была вызвана (или не закончила выполнение)
     /// </summary>
     class CommandUnexecuteBeforeExecuteException: Exception { }
     /// <summary>
@@ -47,7 +47,7 @@ namespace SpecialTask
     /// </summary>
     class NullComparisonException : NullReferenceException { }
     /// <summary>
-    /// Альтернатива abstract для статическиз методов
+    /// Альтернатива abstract для статических методов
     /// </summary>
     class NotOverridenException : NotImplementedException { }
     /// <summary>
@@ -61,7 +61,7 @@ namespace SpecialTask
     /// <summary>
     /// Возникает, когда файл ресурсов не найден или содержит недопсутимые значения
     /// </summary>
-    class  InvalidResourceFileException: Exception { }
+    class InvalidResourceFileException: Exception { }
     /// <summary>
     /// Возникает, если название цвета в escape-последовательности не распознано
     /// </summary>
@@ -86,4 +86,12 @@ namespace SpecialTask
     /// Возникает при ошибке распознавания аргумента, введённого в консоль
     /// </summary>
     class ArgumentParsingError: Exception { }
+    /// <summary>
+    /// Возникает, если класс ConcreteCommand не реализует ICommand, в том числе его необъявленную часть (не содержит нужного конструктора)
+    /// </summary>
+    class InvalidCommandClassException: Exception { }
+    /// <summary>
+    /// Возникает при вызове "fictional" команды (они используются только с --help)
+    /// </summary>
+    class CallOfFictionalCommandException: Exception { }
 }

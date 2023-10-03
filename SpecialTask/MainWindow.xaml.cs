@@ -38,7 +38,7 @@ namespace SpecialTask
 		private readonly Dictionary<Key, char> otherKeys = new()
 		{
 			{ Key.Oem3, '`' }, { Key.OemMinus, '-' }, { Key.OemPlus, '=' }, { Key.OemOpenBrackets, '[' }, { Key.Oem6, ']' }, { Key.Oem1, ';' },
-			{ Key.OemQuotes, '\'' }, { Key.OemComma, ',' }, { Key.OemPeriod, '.' }, {Key.OemQuestion, '/'}, {Key.Oem5, '\\'}
+			{ Key.OemQuotes, '\'' }, { Key.OemComma, ',' }, { Key.OemPeriod, '.' }, {Key.OemQuestion, '/'}, {Key.Oem5, '\\'}, {Key.Space, ' '}
 		};
 
 		private readonly Dictionary<Key, char> shiftedOtherKeys = new()

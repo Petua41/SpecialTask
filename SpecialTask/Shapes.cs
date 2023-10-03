@@ -11,7 +11,9 @@ namespace SpecialTask
 		None,
 		Green,
 		Magenta,
-		Red
+		Red,
+		White,
+		Yellow
 	} // TODO
 
 	static class ColorsController
@@ -24,6 +26,8 @@ namespace SpecialTask
 				EColor.Green => System.Windows.Media.Colors.Green,
 				EColor.Magenta => System.Windows.Media.Colors.Magenta,
 				EColor.Red => System.Windows.Media.Colors.Red,
+				EColor.White => System.Windows.Media.Colors.White,
+				EColor.Yellow => System.Windows.Media.Colors.Yellow,
 				_ => throw new ColorExcepttion(),
 			};
 		}
@@ -36,6 +40,8 @@ namespace SpecialTask
 				"green" => EColor.Green,
 				"magenta" => EColor.Magenta,
 				"red" => EColor.Red,
+				"white" => EColor.White,
+				"yellow" => EColor.Yellow,
 				_ => EColor.None,
 			};
 		}

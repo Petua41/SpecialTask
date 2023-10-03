@@ -10,7 +10,7 @@ namespace SpecialTask
     {
         private static PseudoDeque<ICommand> stack = new();
         private static Stack<ICommand> undoneStack = new();
-        private static int undoStackDepth;
+        private static int undoStackDepth = 15;
 
         public static void RegisterAndExecute(ICommand command)
         {
@@ -200,16 +200,6 @@ namespace SpecialTask
         readonly EColor streakColor;
         readonly EStreakTexture streakTexture;
 
-        private CreateSquareCommand(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, EColor color, int lineThickness)
-        {
-            this.leftTopX = leftTopX;
-            this.leftTopY = leftTopY;
-            this.rightBottomX = rightBottomX;
-            this.rightBottomY = rightBottomY;
-            this.color = color;
-            this.lineThickness = lineThickness;
-        }
-
         public CreateSquareCommand(Dictionary<string, object> arguments)
         {
             try
@@ -244,6 +234,7 @@ namespace SpecialTask
         public void Execute()
         {
             receiver = new Square(leftTopX, leftTopY, rightBottomX, rightBottomY, color, lineThickness);
+            if (streak) receiver = new StreakDecorator(receiver, streakColor, streakTexture);
         }
 
         public void Unexecute()
@@ -259,12 +250,12 @@ namespace SpecialTask
     class CreateLineCommand : ICommand
     {
         private Shape? receiver;
-        int firstX;
-        int firstY;
-        int secondX;
-        int secondY;
-        EColor color;
-        int lineThickness;
+        readonly int firstX;
+        readonly int firstY;
+        readonly int secondX;
+        readonly int secondY;
+        readonly EColor color;
+        readonly int lineThickness;
         readonly bool streak;
         readonly EColor streakColor;
         readonly EStreakTexture streakTexture;
@@ -303,50 +294,13 @@ namespace SpecialTask
         public void Execute()
         {
             receiver = new Square(firstX, firstY, secondX, secondY, color, lineThickness);
+            if (streak) receiver = new StreakDecorator(receiver, streakColor, streakTexture);
         }
 
         public void Unexecute()
         {
             if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
             receiver.Destroy();
-        }
-    }
-
-    /// <summary>
-    /// Команда для вывода глобальной справки
-    /// </summary>
-    class HelpCommand : ICommand
-    {
-        private readonly STConsole receiver;
-        private readonly string helpText;
-
-        public HelpCommand(Dictionary<string, object> arguments)
-        {
-            receiver = STConsole.Instance;
-            try
-            {
-                helpText = (string)arguments["helpText"];
-            }
-            catch (KeyNotFoundException)
-            {
-                Logger.Instance.Error("Cannot find a parameter while creating an instance of HelpCommand");
-                throw;
-            }
-            catch (InvalidCastException)
-            {
-                Logger.Instance.Error("Cannot cast a parameter while creating an instance of HelpCommand");
-                throw;
-            }
-        }
-
-        public void Execute()
-        {
-            receiver.Display(helpText);
-        }
-
-        public void Unexecute()
-        {
-            Logger.Instance.Warning("Unexecution of help command");
         }
     }
 
@@ -380,12 +334,6 @@ namespace SpecialTask
     {
         private readonly WindowManager receiver;
         private readonly int numberOfWindow;
-
-        public SwitchWindowCommand(int number)
-        {
-            receiver = WindowManager.Instance;
-            numberOfWindow = number;
-        }
 
         public SwitchWindowCommand(Dictionary<string, object> arguments)
         {
@@ -429,12 +377,6 @@ namespace SpecialTask
     {
         private readonly WindowManager receiver;
         private readonly int numberOfWindow;
-
-        public DeleteWindowCommand(int number)
-        {
-            receiver = WindowManager.Instance;
-            numberOfWindow = number;
-        }
 
         public DeleteWindowCommand(Dictionary<string, object> arguments)
         {
