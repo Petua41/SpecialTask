@@ -79,6 +79,11 @@ namespace SpecialTask
 			}
 		}
 
+		public void DisplayOnCurrentWindow(Shape shape)
+		{
+			// TODO
+		}
+
 		private void ValidateWindowNumber(int numberOfWindow)
 		{
 			if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
@@ -88,22 +93,25 @@ namespace SpecialTask
 	class WindowToDraw
 	{
 		private System.Windows.Controls.Canvas canvas;
-		private System.Windows.Window window;
 		private List<Shape> allShapesOnThisWindow = new();					// Хранятся в порядке создания
-		private List<int> zOrder = new List<int>();							// Индексы в предыдущем списке в Z-порядке
+		private List<int> zOrder = new List<int>();                         // Индексы в предыдущем списке в Z-порядке
+		private DrawingWindow assotiatedWindow;
 
 		public WindowToDraw(int number)
 		{
 			// TODO: здесь надо создавать окно WPF, Canvas WPF (скорее всего из темплейта), и присваивать это всё куда надо
-			ChangeTitle(number);
-		}
+			assotiatedWindow = new DrawingWindow();
+			assotiatedWindow.Show();
+			canvas = assotiatedWindow.DrawingCanvas;
+            ChangeTitle(number);
+        }
 		
 		public System.Windows.Controls.Canvas Canvas
 		{ get { return canvas; } }
 
 		public void ChangeTitle(int newNumber)
 		{
-			// TODO: это совсем потом
+			assotiatedWindow.ChangeTitle(string.Format("Drawing window {0}", newNumber));
 		}
 
 		public List<Shape> ShapesOnThisWindow()
@@ -118,7 +126,7 @@ namespace SpecialTask
 
 		public void Destroy()
 		{
-			// TODO: здесь кроме прочего желательно проверять, что это не единственное окно
+			assotiatedWindow.Close();
 		}
 	}
 }

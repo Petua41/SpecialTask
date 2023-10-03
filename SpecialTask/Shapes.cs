@@ -98,6 +98,8 @@ namespace SpecialTask
 			this.radius = radius;
 			this.lineThickness = lineThickness;
 			uniqueName = GetNextUniqueName();
+
+			WindowManager.Instance.DisplayOnCurrentWindow(this);
 		}
 
 		public static new string GetNextUniqueName()

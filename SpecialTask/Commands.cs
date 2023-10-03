@@ -340,7 +340,7 @@ namespace SpecialTask
             receiver = WindowManager.Instance;
             try
             {
-                numberOfWindow = (int)arguments["numberOfWindow"];
+                numberOfWindow = (int)arguments["number"];
             }
             catch (KeyNotFoundException)
             {
@@ -360,7 +360,7 @@ namespace SpecialTask
             catch (WindowDoesntExistException)
             {
                 Logger.Instance.Error(string.Format("Trying to switch to window {0}, but window {0} doesn`t exist", numberOfWindow));
-                STConsole.Instance.Display(string.Format("[color:red]Window {0} doesn`t exist![color]", numberOfWindow));
+                STConsole.Instance.DisplayCommandParsingError(string.Format("Window {0} doesn`t exist!", numberOfWindow));
             }
         }
 
@@ -383,7 +383,7 @@ namespace SpecialTask
             receiver = WindowManager.Instance;
             try
             {
-                numberOfWindow = (int)arguments["numberOfWindow"];
+                numberOfWindow = (int)arguments["number"];
             }
             catch (KeyNotFoundException)
             {
@@ -403,7 +403,7 @@ namespace SpecialTask
             catch (WindowDoesntExistException)
             {
                 Logger.Instance.Error(string.Format("Trying to delete window {0}, but window {0} doesn`t exist", numberOfWindow));
-                STConsole.Instance.Display(string.Format("[color:red]Window {0} doesn`t exist![color]", numberOfWindow));
+                STConsole.Instance.DisplayCommandParsingError(string.Format("[color:red]Window {0} doesn`t exist![color]", numberOfWindow));
             }
         }
 
