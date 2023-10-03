@@ -4,6 +4,27 @@ namespace SpecialTask
 {
 	enum EStreakTexture { None } // TODO
 
+	static class TextureController
+	{
+		public static EStreakTexture GetTextureFromString(string textureName)
+		{
+			// TODO
+			return textureName switch
+			{
+				_ => EStreakTexture.None
+			};
+		}
+
+		public static System.Windows.Media.Brush GetWPFTexture(EStreakTexture texture)
+		{
+			// TODO
+			return texture switch
+			{
+				_ => System.Windows.Media.Brushes.Transparent
+			};
+		}
+    }
+
 	abstract class ShapeDecorator : Shape
 	{
 		private Shape? decoratedShape;

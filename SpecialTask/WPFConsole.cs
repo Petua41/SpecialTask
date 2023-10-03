@@ -16,7 +16,6 @@ namespace SpecialTask
 	{
 		private static WPFConsole? singleton;
 		private readonly MainWindow mainWindowInstance;
-		private readonly STConsole stConsole;
 
 		private WPFConsole()
 		{
@@ -29,7 +28,6 @@ namespace SpecialTask
 				throw;
 			}
 			*/
-			stConsole = STConsole.Instance;
 		}
 
 		public static WPFConsole Instance 
@@ -80,7 +78,7 @@ namespace SpecialTask
 
 		public string Autocomplete(string currentInput)
 		{
-			return stConsole.Autocomplete(currentInput);
+			return STConsole.Instance.Autocomplete(currentInput);
 		}
 
 		public string ProcessUpArrow()

@@ -78,4 +78,8 @@ namespace SpecialTask
     /// Возникает при попытке снять элемент с пустого PseudoDeque
     /// </summary>
     public class UnderflowException: Exception { }
+    /// <summary>
+    /// Возникает, когда файл ресурсов не найден
+    /// </summary>
+    class CannotFindResourceFileException: InvalidResourceFileException { }
 }

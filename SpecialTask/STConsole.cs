@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
@@ -15,12 +16,9 @@ namespace SpecialTask
 	{
 		private static STConsole? singleton;
 
-		private WPFConsole wpfConsole;
-
 		private STConsole()
 		{
 			if (singleton != null) throw new SingletonError();
-			wpfConsole = WPFConsole.Instance;
 		}
 
 		public static STConsole Instance
@@ -42,7 +40,7 @@ namespace SpecialTask
 			MyMap<string, EColor> messageSplittedByColors = SplitMessageByColors(message);
 			foreach (KeyValuePair<string, EColor> kvp in messageSplittedByColors)
 			{
-				wpfConsole.Display(kvp.Key, kvp.Value);
+                WPFConsole.Instance.Display(kvp.Key, kvp.Value);
 			}
 		}
 
@@ -55,12 +53,11 @@ namespace SpecialTask
 		{
 			/* TODO: сначала обращаемся к CommandsParser, чтобы понять, что введено
 			{
-				ничего => зависит от (9)
+				ничего => ""
 				часть команды => обращаемся к CommandsParser за остатком команды
-				команда первого уровня => зависит от (9)
 				команда целиком => CommandsParser передаёт запрос дальше в ConsoleCommand
 				{
-					ничего => зависит от (9)
+					ничего => ""
 					часть аргумента => ConsoleCommand возвращает остаток аргумента
 					аргумент целиком => зависит от типа аргумента
 					{
@@ -127,25 +124,32 @@ namespace SpecialTask
 		public bool supportsUndo;
 		public bool fictional;                                  // Только для help. При вызове печатает что-то типа "недопустимая команда"
 
-		public string AutocompleteArguments(string input)
+		public readonly string AutocompleteArguments(string input)
 		{
-			if (input.StartsWith(neededUserInput + " "))
+			if (input.StartsWith(neededUserInput))
 			{
 				string lastArgument = SelectLastArgument(input);
 				if (lastArgument.Length == 0)
 				{
-					// зависит от (9)
+					// нет аргументов
+					return "";
+				}
+				else if (IsArgumentFull(lastArgument))
+				{
+					// аргумент введён целиком
+					return ChooseArgument(lastArgument).TryToAutocompleteParameter();
 				}
 				else
 				{
+					// аргумент введён не целиком
 					List<ConsoleCommandArgument> possibleArgs = TryToAutocompleteArgs(lastArgument);
-					if (possibleArgs.Count == 0) return "";
-					if (possibleArgs.Count == 1)
+					if (possibleArgs.Count == 0) return "";		// нет подходящих аргументов
+					if (possibleArgs.Count == 1)				// один подходящий аргумент
 					{
 						if (lastArgument.StartsWith("--")) return possibleArgs.Single().longArgument;
 						return possibleArgs.Single().shortArgument;
 					}
-					// зависит от (9)
+					return "";									// невозможно однозначно определить (больше одного подходящего аргумента)
 				}
 
 			}
@@ -154,11 +158,9 @@ namespace SpecialTask
 				Logger.Instance.Error("Query passed to ConsoleCommand, but input doesn`t contain this command");
 				throw new ChainOfResponsibilityException();
 			}
-
-			throw new NotImplementedException();
 		}
 
-		private string SelectLastArgument(string input)
+		private readonly string SelectLastArgument(string input)
 		{
 			int indexOfLastSingleMinus = input.LastIndexOf("-");
 			int indexOfLastDoubleMinus = input.LastIndexOf("--");
@@ -175,10 +177,25 @@ namespace SpecialTask
 			return input[indexOfLastDoubleMinus..];
 		}
 
-		private List<ConsoleCommandArgument> TryToAutocompleteArgs(string argument)
+		private readonly List<ConsoleCommandArgument> TryToAutocompleteArgs(string argument)
 		{
 			return (from arg in argumetns where (arg.shortArgument.StartsWith(argument) || arg.longArgument.StartsWith(argument)) select arg).ToList();
 		}
+
+		private readonly bool IsArgumentFull(string argument)
+		{
+			return (from arg in argumetns where (arg.shortArgument == argument.Trim() || arg.longArgument == argument.Trim()) select arg).Any();
+		}
+
+		private readonly ConsoleCommandArgument ChooseArgument(string input)
+		{
+			try { return (from arg in argumetns where (arg.shortArgument == input.Trim() || arg.longArgument == input.Trim()) select arg).First(); }
+			catch (InvalidOperationException)
+			{
+				Logger.Instance.Error("IsArgumetFull said that argument is full, but it isn`t");
+				throw new ChainOfResponsibilityException();
+			}
+        }
 	}
 
 	struct ConsoleCommandArgument
@@ -189,6 +206,13 @@ namespace SpecialTask
 		public bool isNecessary;
 		public string commandParameterName;
 		public object? defaultValue;
+
+		public readonly string TryToAutocompleteParameter()
+		{
+			if (type == EConsoleCommandArgumentTypes.PseudoBool) return "";
+			if (defaultValue != null) return defaultValue.ToString();
+			return "";
+		}
 	}
 
 	/// <summary>
@@ -198,12 +222,29 @@ namespace SpecialTask
 	{
 		const string XML_WITH_COMMANDS = @"ConsoleCommands.xml";
 
-		static List<ConsoleCommand> consoleCommands;
-		public static string globalHelp;
+        static List<ConsoleCommand> consoleCommands = new();
+		public static string globalHelp = "[color:yellow]Global help not found![color]";
+		private static string projectDir;
 
 		static CommandsParser()
 		{
-			(consoleCommands, globalHelp) = ParseCommandsXML();
+			DirectoryInfo? workingDir = Directory.GetParent(Environment.CurrentDirectory);      // GetParent на самом деле получает не Parent, а саму директорию
+			if (workingDir == null) LogThatWeAreInRootDir();
+
+			DirectoryInfo? binDir = workingDir.Parent;
+			if (binDir == null) LogThatWeAreInRootDir();
+
+			projectDir = binDir.Parent.FullName;
+
+			try { (consoleCommands, globalHelp) = ParseCommandsXML(); }
+			catch (CannotFindResourceFileException)
+			{
+				Logger.Instance.Fatal("Cannot get XML file with commands! exitting...");
+			}
+			catch (InvalidResourceFileException)
+			{
+				Logger.Instance.Fatal("Invalid XML file with commands! exitting...");
+			}
 		}
 
 		public static void ParseCommand(string userInput)
@@ -242,7 +283,7 @@ namespace SpecialTask
 		{
 			if (input.Length == 0)
 			{
-				// TODO: зависит от (9)
+				return "";
 			}
 			else if (!input.Contains(' '))
 			{
@@ -262,13 +303,20 @@ namespace SpecialTask
 					}
 					else
 					{
-						// Зависит от (9)
+						return "";
 					}
 				}
 			}
 
 			throw new NotImplementedException();
 		}
+
+		private static void LogThatWeAreInRootDir()
+		{
+			Logger.Instance.Warning("Application is running in the root directory!");
+			Logger.Instance.Error("Cannot get current project directory");
+            Logger.Instance.Fatal("Cannot get XML file with commands! exitting...");
+        }
 
 		private static bool IsThereACompeteCommand(string input)
 		{
@@ -283,12 +331,10 @@ namespace SpecialTask
 
 		private static (List<ConsoleCommand>, string) ParseCommandsXML()
 		{
-			XDocument commandsFile = XDocument.Load(XML_WITH_COMMANDS);
-			XElement xmlRoot = commandsFile.Root ?? throw new InvalidResourceFileException();
+			XDocument commandsFile = XDocument.Load(projectDir + "\\" + XML_WITH_COMMANDS);
+			XElement xmlRoot = commandsFile.Root ?? throw new CannotFindResourceFileException();
 
 			List<ConsoleCommand> commands = new();
-
-			string globalHelp = "Global help not found!";
 
 			foreach (XElement elem in xmlRoot.Elements())
 			{
@@ -296,7 +342,7 @@ namespace SpecialTask
 				else if (elem.Name == "help")
 				{
 					string helpCandidate = elem.Value;
-					if (helpCandidate != "") globalHelp = helpCandidate;
+					if (helpCandidate != "") globalHelp = helpCandidate + "\n";
 				}
 				else Logger.Instance.Warning(string.Format("Unexpected XML tag in root element: {0}", elem.Name));
 			}
@@ -306,22 +352,42 @@ namespace SpecialTask
 
 		private static ConsoleCommand ParseCommandElement(XElement elem)
 		{
-			string neededUserInput;
+			string neededUserInput = "";
 			string? help;
-			Type commandType;
+			Type? commandType = typeof(ICommand);
 			List<ConsoleCommandArgument> arguments = new();
-			bool supportsUndo;
-			bool fictional;
+			bool supportsUndo = false;
+			bool fictional = false;
 
 			XAttribute[] attrs = elem.Attributes().ToArray();
-			neededUserInput = (from attr in attrs where attr.Name == XName.Get("userInput") select attr.Value).Single();
+			foreach (XAttribute attr in attrs)
+			{
+				string attrName = attr.Name.LocalName;
+				switch (attrName)
+				{
+					case "userInput":
+						neededUserInput = attr.Value;
+						break;
+					case "commandClass":
+						commandType = Type.GetType("SpecialTask." + attr.Value);
+                        if (commandType == null) throw new InvalidResourceFileException();
+						break;
+					case "supportsUndo":
+                        supportsUndo = attr.Value != "false";		// считаем, что всё true, что не false
+						break;
+					case "fictional":
+						fictional = attr.Value != "false";
+						break;
+					default:
+						Logger.Instance.Warning(string.Format("Unknown attribute {0} in command", attrName));
+						break;
+                }
+			}
+			
 			help = elem.Value;
 			if (help == "") help = null;
-			commandType = Type.GetType((from attr in attrs where attr.Name == XName.Get("commandClass") select attr.Value).Single()) ??
-				throw new InvalidResourceFileException();
-			supportsUndo = (from attr in attrs where attr.Name == XName.Get("supportsUndo") select (attr.Value == "true")).SingleOrDefault(false);
-			fictional = (from attr in attrs where attr.Name == XName.Get("fictional") select (attr.Value == "true")).SingleOrDefault(false);
-
+			else help += "\n";
+			
 			foreach (XElement child in elem.Elements())
 			{
 				if (child.Name == "argument") arguments.Add(ParseArgumentElement(child));
@@ -341,20 +407,43 @@ namespace SpecialTask
 
 		private static ConsoleCommandArgument ParseArgumentElement(XElement elem)
 		{
-			string shortArgument;
-			string longArgument;
-			EConsoleCommandArgumentTypes type;
-			bool isNecessary;
-			string commandParameterName;
-			object? defaultValue;
+			string shortArgument = "";
+			string longArgument = "";
+			EConsoleCommandArgumentTypes type = EConsoleCommandArgumentTypes.PseudoBool;
+			bool isNecessary = false;
+			string commandParameterName = "";
+			object? defaultValue = null;
 
 			XAttribute[] attrs = elem.Attributes().ToArray();
-			shortArgument = (from attr in attrs where attr.Name == XName.Get("shortArgument") select attr.Value).Single();
-			longArgument = (from attr in attrs where attr.Name == XName.Get("longArgument") select attr.Value).SingleOrDefault(shortArgument);
-			type = GetArgumentTypeFromString((from attr in attrs where attr.Name == XName.Get("type") select attr.Value).SingleOrDefault(""));
-			isNecessary = (from attr in attrs where attr.Name == XName.Get("isNecessary") select (attr.Value == "true")).SingleOrDefault(false);
-			commandParameterName = (from attr in attrs where attr.Name == XName.Get("commandParameterName") select attr.Value).Single();
-			defaultValue = (from attr in attrs where attr.Name == XName.Get("defaultValue") select attr.Value == "true").SingleOrDefault(null);
+
+			foreach (XAttribute attr in attrs)
+			{
+				string attrName = attr.Name.LocalName;
+				switch (attrName)
+				{
+					case "shortArgument":
+						shortArgument = attr.Value;
+						break;
+					case "longArgument":
+						longArgument = attr.Value;
+						break;
+					case "type":
+						type = GetArgumentTypeFromString(attr.Value);
+						break;
+					case "isNecessary":
+						isNecessary = attr.Value != "false";
+						break;
+					case "commandParameterName":
+						commandParameterName = attr.Value;
+						break;
+					case "defaultValue":
+						defaultValue = ParseDefaultValue(attr.Value, type);
+						break;
+					default:
+						Logger.Instance.Warning(string.Format("Unknown attribute {0} in arguments", attr.Name));
+						break;
+				}
+			}
 
 			return new ConsoleCommandArgument
 			{
@@ -374,9 +463,20 @@ namespace SpecialTask
 				"Int" => EConsoleCommandArgumentTypes.Int,
 				"Color" => EConsoleCommandArgumentTypes.Color,
 				"String" => EConsoleCommandArgumentTypes.String,
-				"Path" => EConsoleCommandArgumentTypes.Path,
 				"Texture" => EConsoleCommandArgumentTypes.Texture,
 				_ => EConsoleCommandArgumentTypes.PseudoBool
+			};
+		}
+
+		private static object ParseDefaultValue(string value, EConsoleCommandArgumentTypes type)
+		{
+			return type switch
+			{
+				EConsoleCommandArgumentTypes.Int => int.Parse(value),
+				EConsoleCommandArgumentTypes.Color => ColorsController.GetColorFromString(value),
+				EConsoleCommandArgumentTypes.String => value,
+				EConsoleCommandArgumentTypes.Texture => TextureController.GetTextureFromString(value),
+				_ => value != "false"					// здесь тоже всё true, что не false
 			};
 		}
 
@@ -385,7 +485,7 @@ namespace SpecialTask
 		/// </summary>
 		/// <param name="commandName">Часть введённой строки до аргументов</param>
 		/// <returns>Индекс в списке команд или -1, если команда не найдена</returns>
-		private static int SelectCommand(string commandName)    // возвращает индекс в списке
+		private static int SelectCommand(string commandName)
 		{
 			for (int i = 0; i < consoleCommands.Count; i++)
 			{

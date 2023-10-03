@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.ComponentModel;
+using System.Windows;
 
 namespace SpecialTask
 {
@@ -61,6 +62,17 @@ namespace SpecialTask
 		public void Error(string message)
 		{
 			Log(message, ELogLevels.Error);
+		}
+
+		public void Fatal(string message)
+        {
+            Log("FATAL: " + message, ELogLevels.Error);
+
+            MessageBoxImage icon = MessageBoxImage.Error;
+			MessageBoxButton button = MessageBoxButton.OK;
+			MessageBox.Show(message, "Fatal error", button, icon);
+
+			Application.Current.Shutdown();
 		}
 
 		private void Log(string message, ELogLevels level) 

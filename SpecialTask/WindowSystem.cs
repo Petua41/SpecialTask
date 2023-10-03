@@ -43,7 +43,7 @@ namespace SpecialTask
 		public int CreateWindow()
 		{
 			int numberOfNewWindow = existingWindows.Count;
-			existingWindows.Add(new(numberOfNewWindow);
+			existingWindows.Add(new(numberOfNewWindow));
 			return numberOfNewWindow;
 		}
 

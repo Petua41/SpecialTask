@@ -57,7 +57,9 @@ namespace SpecialTask
 
             Display("\n>> ", Colors.Green);
 			ConsoleTB.Focus();
-		}
+
+			Display(CommandsParser.globalHelp);
+        }
 
 		public void Display(string message, System.Windows.Media.Color color)
 		{
