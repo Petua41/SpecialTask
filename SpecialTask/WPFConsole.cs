@@ -20,14 +20,12 @@ namespace SpecialTask
 		private WPFConsole()
 		{
 			if (singleton != null) throw new SingletonError();
-			/*
 			try { mainWindowInstance = (MainWindow)Application.Current.MainWindow; }
 			catch (Exception ex)
 			{
 				Logger.Instance.Error(string.Format("{0} exception while trying to get MainWindow instance!", ex.GetType().ToString()));
 				throw;
 			}
-			*/
 		}
 
 		public static WPFConsole Instance 
@@ -58,22 +56,9 @@ namespace SpecialTask
 			UnlockInput();
 		}
 
-		public int HeightInCharacterCells
+		public void ProcessInputString(string input)
 		{
-			get
-			{
-				// TODO
-				throw new NotImplementedException();
-			}
-		}
-
-		public int WidthInCharacterCells
-		{
-			get
-			{
-				// TODO
-				throw new NotImplementedException();
-			}
+			STConsole.Instance.ProcessInput(input);
 		}
 
 		public string Autocomplete(string currentInput)

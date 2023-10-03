@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Xml.Linq;
 
@@ -51,7 +52,7 @@ namespace SpecialTask
 
 		public string Autocomplete(string inputString)
 		{
-			/* TODO: сначала обращаемся к CommandsParser, чтобы понять, что введено
+			/* сначала обращаемся к CommandsParser, чтобы понять, что введено
 			{
 				ничего => ""
 				часть команды => обращаемся к CommandsParser за остатком команды
@@ -213,7 +214,19 @@ namespace SpecialTask
 			if (defaultValue != null) return defaultValue.ToString();
 			return "";
 		}
-	}
+
+        public readonly object ParseParameter(string value)
+        {
+            return type switch
+            {
+                EConsoleCommandArgumentTypes.Int => int.Parse(value),
+                EConsoleCommandArgumentTypes.Color => ColorsController.GetColorFromString(value),
+                EConsoleCommandArgumentTypes.String => value,
+                EConsoleCommandArgumentTypes.Texture => TextureController.GetTextureFromString(value),
+                _ => value != "false"                   // здесь тоже всё true, что не false
+            };
+        }
+    }
 
 	/// <summary>
 	/// Обрабатывает команды, полученные от STConsole, а также сообщает STConsole всю необходимую информацию
@@ -268,14 +281,18 @@ namespace SpecialTask
 			}
 
 			int commandNumber = SelectCommand(commandName);
-			if (commandNumber == -1)                        // Если команда не найдена, выводим глобальную помощь
+			if (commandNumber < 0)                        // Если команда не найдена, выводим глобальную помощь
 			{
 				STConsole.Instance.DisplayGlobalHelp();
 				return;
 			}
-			bool supportsUndo = consoleCommands[commandNumber].supportsUndo;
-			ICommand command = ParseArguments(commandNumber, arguments);
-			if (supportsUndo) CommandsFacade.RegisterAndExecute(command);
+
+			ConsoleCommand consoleCommand = consoleCommands[commandNumber];
+
+			Dictionary<string, object> argumentValues = ParseArguments(consoleCommand, arguments);
+			ICommand command = CreateCommand(consoleCommand, argumentValues);
+
+			if (consoleCommand.supportsUndo) CommandsFacade.RegisterAndExecute(command);
 			else CommandsFacade.ExecuteButDontRegister(command);
 		}
 
@@ -494,19 +511,53 @@ namespace SpecialTask
 			return -1;
 		}
 
-		private static ICommand ParseArguments(int commandNumber, string arguments)
+		private static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
 		{
-			if (arguments == "") return ParseArguments(commandNumber);
-			// TODO
+			// check that all necessary arguments are present
+			List<bool> arePresent = (from arg in consoleCommand.argumetns select false).ToList();
+			for (int i = 0; i < consoleCommand.argumetns.Count; i++)
+			{
+				ConsoleCommandArgument argument = consoleCommand.argumetns[i];
+				bool isPresent = arguments.ContainsKey(argument.commandParameterName);
+				if (isPresent || !argument.isNecessary) arePresent[i] = true;
+			}
+			if (arePresent.Any(x => !x)) throw new ArgumentParsingError();		// не хватает какого-то обязательного аргумента
 
-			throw new NotImplementedException();
+
 		}
 
-		private static ICommand ParseArguments(int commandNumber)
+		private static Dictionary<string, object> ParseArguments(ConsoleCommand consoleCommand, string arguments)
 		{
-			// TODO: здесь надо создавать ICommand
+			Dictionary<string, object> argumentPairs = new();
 
-			throw new NotImplementedException();
+			while (arguments.Length > 0)
+			{
+				int startOfNextArgument = arguments.IndexOf('-', 2);
+				if (startOfNextArgument > 0)
+				{
+					string arg = arguments[..startOfNextArgument];
+					arguments = arguments[startOfNextArgument..];
+					KeyValuePair<string, object> kvp = CreateArgumentFromString(arg, consoleCommand);
+					argumentPairs.Add(kvp.Key, kvp.Value);
+				}
+			}
+
+			return argumentPairs;
+		}
+
+		private static KeyValuePair<string, object> CreateArgumentFromString(string argument, ConsoleCommand command)
+		{
+			foreach (ConsoleCommandArgument arg in command.argumetns)
+			{
+				if (argument.StartsWith(arg.longArgument))
+				{
+					string rawValue = argument.Replace(arg.longArgument, "").Trim();
+					object value = arg.ParseParameter(rawValue);
+					string paramName = arg.commandParameterName;
+                    return new(paramName, value);
+                }
+			}
+			throw new ArgumentParsingError();
 		}
 
 		private static string GetHelp(int indexInList)

@@ -82,4 +82,8 @@ namespace SpecialTask
     /// Возникает, когда файл ресурсов не найден
     /// </summary>
     class CannotFindResourceFileException: InvalidResourceFileException { }
+    /// <summary>
+    /// Возникает при ошибке распознавания аргумента, введённого в консоль
+    /// </summary>
+    class ArgumentParsingError: Exception { }
 }

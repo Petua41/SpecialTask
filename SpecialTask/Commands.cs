@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SpecialTask
 {
@@ -87,16 +88,29 @@ namespace SpecialTask
     /// </summary>
     class EditShapeAttributesCommand : ICommand
     {
-        private Shape receiver;
-        private string attribute;
-        private object newValue;
+        private readonly Shape receiver;
+        private readonly string attribute;
+        private readonly object newValue;
         private object? oldValue;
 
-        public EditShapeAttributesCommand(string attribute, Shape receiver, object newValue)
+        public EditShapeAttributesCommand(Dictionary<string, object> arguments)
         {
-            this.attribute = attribute;
-            this.receiver = receiver;
-            this.newValue = newValue;
+            try
+            {
+                attribute = (string)arguments["attribute"];
+                receiver = (Shape)arguments["receiver"];
+                newValue = arguments["newValue"];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of EditShapeCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of EditShapeCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -117,30 +131,43 @@ namespace SpecialTask
     class CreateCircleCommand : ICommand
     {
         private Shape? receiver;        // Нужен для отмены
-        int centerX;
-        int centerY;
-        EColor color;
-        int radius;
-        int lineThickness;
-        bool streak;
-        EColor streakColor;
-        EStreakTexture streakTexture;
+        readonly int centerX;
+        readonly int centerY;
+        readonly EColor color;
+        readonly int radius;
+        readonly int lineThickness;
+        readonly bool streak;
+        readonly EColor streakColor;
+        readonly EStreakTexture streakTexture;
 
-        public CreateCircleCommand(int centerX, int centerY, EColor color, int radius, int lineThickness)
+        public CreateCircleCommand(Dictionary<string, object> arguments)
         {
-            this.centerX = centerX;
-            this.centerY = centerY;
-            this.color = color;
-            this.radius = radius;
-            this.lineThickness = lineThickness;
-        }
+            try
+            {
+                centerX = (int)arguments["centerX"];
+                centerY = (int)arguments["centerY"];
+                color = (EColor)arguments["color"];
+                radius = (int)arguments["radius"];
+                lineThickness = (int)arguments["lineThickness"];
 
-        public CreateCircleCommand(int centerX, int centerY, EColor color, int radius, int lineThickness, bool streak, EColor streakColor, EStreakTexture streakTexture)
-            : this(centerX, centerY, color, radius, lineThickness)
-        {
-            this.streak = streak;
-            this.streakColor = streakColor;
-            this.streakTexture = streakTexture;
+                // unnecessary, but if streak is present, other should be too
+                if (arguments.ContainsKey("streak"))
+                {
+                    streak = (bool)arguments["streak"];
+                    streakTexture = (EStreakTexture)arguments["streakTexture"];
+                    streakColor = (EColor)arguments["streakColor"];
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of CreateCircleCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of CreateCircleCommand");
+                throw;
+            }
         }
 
 
@@ -163,14 +190,17 @@ namespace SpecialTask
     class CreateSquareCommand : ICommand
     {
         private Shape? receiver;
-        int leftTopX;
-        int leftTopY;
-        int rightBottomX;
-        int rightBottomY;
-        EColor color;
-        int lineThickness;
+        readonly int leftTopX;
+        readonly int leftTopY;
+        readonly int rightBottomX;
+        readonly int rightBottomY;
+        readonly EColor color;
+        readonly int lineThickness;
+        readonly bool streak;
+        readonly EColor streakColor;
+        readonly EStreakTexture streakTexture;
 
-        public CreateSquareCommand(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, EColor color, int lineThickness)
+        private CreateSquareCommand(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, EColor color, int lineThickness)
         {
             this.leftTopX = leftTopX;
             this.leftTopY = leftTopY;
@@ -178,6 +208,37 @@ namespace SpecialTask
             this.rightBottomY = rightBottomY;
             this.color = color;
             this.lineThickness = lineThickness;
+        }
+
+        public CreateSquareCommand(Dictionary<string, object> arguments)
+        {
+            try
+            {
+                leftTopX = (int)arguments["leftTopX"];
+                leftTopY = (int)arguments["leftTopY"];
+                rightBottomX = (int)arguments["rightBottomX"];
+                rightBottomY = (int)arguments["rightBottomY"];
+                color = (EColor)arguments["color"];
+                lineThickness = (int)arguments["lineThickness"];
+
+                // unnecessary, but if streak is present, other should be too
+                if (arguments.ContainsKey("streak"))
+                {
+                    streak = (bool)arguments["streak"];
+                    streakTexture = (EStreakTexture)arguments["streakTexture"];
+                    streakColor = (EColor)arguments["streakColor"];
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of CreateSquareCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of CreateSquareCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -204,15 +265,39 @@ namespace SpecialTask
         int secondY;
         EColor color;
         int lineThickness;
+        readonly bool streak;
+        readonly EColor streakColor;
+        readonly EStreakTexture streakTexture;
 
-        public CreateLineCommand(int firstX, int firstY, int secondX, int secondY, EColor color, int lineThickness)
+        public CreateLineCommand(Dictionary<string, object> arguments)
         {
-            this.firstX = firstX;
-            this.firstY = firstY;
-            this.secondX = secondX;
-            this.secondY = secondY;
-            this.color = color;
-            this.lineThickness = lineThickness;
+            try
+            {
+                firstX = (int)arguments["firstX"];
+                firstY = (int)arguments["firstY"];
+                secondX = (int)arguments["secondX"];
+                secondY = (int)arguments["secondY"];
+                color = (EColor)arguments["color"];
+                lineThickness = (int)arguments["lineThickness"];
+
+                // unnecessary, but if streak is present, other should be too
+                if (arguments.ContainsKey("streak"))
+                {
+                    streak = (bool)arguments["streak"];
+                    streakTexture = (EStreakTexture)arguments["streakTexture"];
+                    streakColor = (EColor)arguments["streakColor"];
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of CreateLineCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of CreateLineCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -232,13 +317,26 @@ namespace SpecialTask
     /// </summary>
     class HelpCommand : ICommand
     {
-        private STConsole receiver;
-        private string helpText;
+        private readonly STConsole receiver;
+        private readonly string helpText;
 
-        public HelpCommand(string helpText)
+        public HelpCommand(Dictionary<string, object> arguments)
         {
             receiver = STConsole.Instance;
-            this.helpText = helpText;
+            try
+            {
+                helpText = (string)arguments["helpText"];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of HelpCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of HelpCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -257,9 +355,9 @@ namespace SpecialTask
     /// </summary>
     class CreateWindowCommand : ICommand
     {
-        private WindowManager receiver;
+        private readonly WindowManager receiver;
 
-        public CreateWindowCommand()
+        public CreateWindowCommand(Dictionary<string, object> arguments)        // arguments in unused, but it`s a part of interface (not defined in interface)
         {
             receiver = WindowManager.Instance;
         }
@@ -280,13 +378,32 @@ namespace SpecialTask
     /// </summary>
     class SwitchWindowCommand : ICommand
     {
-        private WindowManager receiver;
-        private int numberOfWindow;
+        private readonly WindowManager receiver;
+        private readonly int numberOfWindow;
 
         public SwitchWindowCommand(int number)
         {
             receiver = WindowManager.Instance;
             numberOfWindow = number;
+        }
+
+        public SwitchWindowCommand(Dictionary<string, object> arguments)
+        {
+            receiver = WindowManager.Instance;
+            try
+            {
+                numberOfWindow = (int)arguments["numberOfWindow"];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of SwitchWindowCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of SwitchWindowCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -310,13 +427,32 @@ namespace SpecialTask
     /// </summary>
     class DeleteWindowCommand : ICommand
     {
-        private WindowManager receiver;
-        private int numberOfWindow;
+        private readonly WindowManager receiver;
+        private readonly int numberOfWindow;
 
         public DeleteWindowCommand(int number)
         {
             receiver = WindowManager.Instance;
             numberOfWindow = number;
+        }
+
+        public DeleteWindowCommand(Dictionary<string, object> arguments)
+        {
+            receiver = WindowManager.Instance;
+            try
+            {
+                numberOfWindow = (int)arguments["numberOfWindow"];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of DeleteWindowCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of DeleteWindowCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -340,11 +476,32 @@ namespace SpecialTask
     /// </summary>
     class SelectCommand : ICommand
     {
-        // TODO
+        private readonly int leftTopX;
+        private readonly int leftTopY;
+        private readonly int rightBottomX;
+        private readonly int rightBottomY;
+        // TODO: receiver
 
-        public SelectCommand()
+        public SelectCommand(Dictionary<string, object> arguments)
         {
-            // TODO
+            // TODO: receiver
+            try
+            {
+                int leftTopX = (int)arguments["leftTopX"];
+                int leftTopY = (int)arguments["leftTopY"];
+                int rightBottomX = (int)arguments["rightBottomX"];
+                int rightBottomY = (int)arguments["rightBottomY"];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of SelectCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of SelectCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -364,11 +521,23 @@ namespace SpecialTask
     class UndoCommand : ICommand
     {
         // У неё нет receiver, потому что CommandsFacade статический
-        int number;
+        private readonly int number;
 
-        public UndoCommand(int number = 1)
+        public UndoCommand(Dictionary<string, object> arguments)
         {
-            this.number = number;
+            try
+            {
+                number = (int)arguments["number"];
+            }
+            catch (KeyNotFoundException)
+            {
+                number = 1;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of UndoCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -392,11 +561,20 @@ namespace SpecialTask
     class RedoCommand : ICommand
     {
         // У неё нет receiver, потому что CommandsFacade статический
-        private int number;
+        private readonly int number;
 
-        public RedoCommand(int number = 1)
+        public RedoCommand(Dictionary<string, object> arguments)
         {
-            this.number = number;
+            try
+            {
+                if (arguments.ContainsKey("number")) number = (int)arguments["number"];
+                else number = 1;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of RedoCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -421,6 +599,11 @@ namespace SpecialTask
     {
         // TODO: я не знаю, кто здесь будет receiver
 
+        public SaveCommand(Dictionary<string, object> arguments)
+        {
+            // TODO: receiver
+        }
+
         public void Execute()
         {
             // TODO
@@ -438,12 +621,25 @@ namespace SpecialTask
     class SaveAsCommand : ICommand
     {
         // TODO: я не знаю, кто здесь будет receiver
-        string filename;
+        readonly string filename;
 
-        public SaveAsCommand(string filename)
+        public SaveAsCommand(Dictionary<string, object> arguments)
         {
             // TODO: receiver
-            this.filename = filename;
+            try
+            {
+                filename = (string)arguments["filename"];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of SaveAsCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of SaveAsCommand");
+                throw;
+            }
         }
 
         public void Execute()
@@ -463,7 +659,26 @@ namespace SpecialTask
     class LoadCommand : ICommand
     {
         // TODO: я не знаю, кто здесь будет receiver
-        string filename;
+        readonly string filename;
+
+        public LoadCommand(Dictionary<string, object> arguments)
+        {
+            // TODO: receiver
+            try
+            {
+                filename = (string)arguments["filename"];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of LoadCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of LoadCommand");
+                throw;
+            }
+        }
 
         public LoadCommand(string filename)
         {
@@ -489,7 +704,7 @@ namespace SpecialTask
     {
         private readonly System.Windows.Application receiver;
 
-        public ExitCommand()
+        public ExitCommand(Dictionary<string, object> arguments)
         {
             receiver = System.Windows.Application.Current;
         }

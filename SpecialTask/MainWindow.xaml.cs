@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -56,9 +57,6 @@ namespace SpecialTask
 			ParseCommandLineArguments();
 
             Display("\n>> ", Colors.Green);
-			ConsoleTB.Focus();
-
-			Display(CommandsParser.globalHelp);
         }
 
 		public void Display(string message, System.Windows.Media.Color color)
@@ -91,14 +89,7 @@ namespace SpecialTask
 			inputBlocked = false;
 		}
 
-		private void ConsoleRTBInput(object sender, TextChangedEventArgs args)
-		{
-			// Видимо это событие слишком высокого уровня для консоли
-			/*List<TextChange> changes = args.Changes.ToList();
-			object source = args.OriginalSource;*/
-		}
-
-		private void ConsoleRTBKeyDown(object sender, KeyEventArgs e)
+		private void ConsoleTBKeyDown(object sender, KeyEventArgs e)
 		{
 			//if (inputBlocked) return;
 
@@ -150,6 +141,7 @@ namespace SpecialTask
 			{
 				case Key.Return:
 					Display("\n");
+					ConsoleScrollViewer.ScrollToEnd();
 					ProcessInputString();
 					return null;
 				case Key.Tab:
@@ -168,7 +160,7 @@ namespace SpecialTask
 		/// </summary>
         private void ProcessInputString()
         {
-            // TODO
+			wpfConsole.ProcessInputString(currentInput);
             currentInput = "";
         }
 
@@ -255,5 +247,10 @@ namespace SpecialTask
 				Display(string.Format("{0} is not valid undo stack depth. Setting default (15)\n", args[2]), Colors.Red);
 			}
 		}
+
+        private void ConsoleWindowGotFocus(object sender, RoutedEventArgs e)
+        {
+			ConsoleTB.Focus();
+        }
     }
 }
