@@ -42,7 +42,7 @@
 		<argument shortArgument="-X" longArgument="--right_bottom_x" type="Int" isNecessary="true" commandParameterName="rightBottomX"/>
 		<argument shortArgument="-Y" longArgument="--right_bottom_y" type="Int" isNecessary="true" commandParameterName="rightBottomY"/>
 		<argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
-		<srgument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" comandParameterName="lineThickness"/>
+		<argument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" commandParameterName="lineThickness"/>
     <argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
     <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
     <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>

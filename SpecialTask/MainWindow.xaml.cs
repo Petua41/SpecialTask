@@ -114,7 +114,7 @@ namespace SpecialTask
 
 			if (ctrlPressed)
 			{
-				if (ProcessCrtlKeys(key)) return null;
+				if (ProcessCrtlKeys(key, shiftPressed)) return null;
 			}
 
 			// [34, 43] -- цифры
@@ -148,9 +148,7 @@ namespace SpecialTask
 			switch (key)
 			{
 				case Key.Return:
-					Display("\n");
-					ConsoleScrollViewer.ScrollToEnd();
-					ProcessInputString();
+					EmulateEnter();
 					return null;
 				case Key.Tab:
 					ProcessTab();
@@ -198,7 +196,7 @@ namespace SpecialTask
 		/// Processes special keys, when Ctrl is pressed
 		/// </summary>
 		/// <returns>Whether the key was intercepted</returns>
-		private bool ProcessCrtlKeys(Key key)
+		private bool ProcessCrtlKeys(Key key, bool shiftPressed)
 		{
 			// If we`re here, Ctrl is already pressed
 			switch (key)
@@ -211,6 +209,11 @@ namespace SpecialTask
 					// TODO: here we send SIGTERM to working edit (idk how to do it)
 					// Return false, because now we don`t intercept
 					return false;
+				case Key.Z:
+					if (shiftPressed) EmulateInput("redo");
+					else EmulateInput("undo");
+					EmulateEnter();
+					return true;
 				default:
 					return false;
 			}
@@ -289,6 +292,13 @@ namespace SpecialTask
 		{
             Display(str);
             currentInput += str;
+        }
+
+		private void EmulateEnter()
+		{
+            Display("\n");
+            ConsoleScrollViewer.ScrollToEnd();
+            ProcessInputString();
         }
 
 		private void ApplyAndSaveRange(TextRange range, Brush brush)

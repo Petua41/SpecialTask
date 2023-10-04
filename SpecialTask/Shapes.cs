@@ -61,6 +61,7 @@ namespace SpecialTask
 	{
 		private static int firstAvailibleUniqueNumber = 0;
 		public string uniqueName;
+		private System.Windows.Shapes.Shape? wpfShape;
 
 		public Shape()
 		{
@@ -74,12 +75,8 @@ namespace SpecialTask
 
 		public abstract object Edit(string attribute, object value);
 
-		public abstract void Redraw();
-
-		public abstract void Destroy();			// А экземпляр вообще может самоуничтожиться?
-
 		public string UniqueName 
-		{ 
+		{
 			get => uniqueName; 
 		}
 
@@ -89,7 +86,23 @@ namespace SpecialTask
 		public abstract System.Windows.Shapes.Shape WPFShape { get; }
 
 		public abstract (int, int) Center { get; }
-	}
+
+        public virtual void Redraw()		// It`s template method
+        {
+            Destroy();
+            NullifyWPFShape();
+            WindowManager.Instance.DisplayOnCurrentWindow(this);
+        }
+        public virtual void Destroy()
+        {
+            WindowManager.Instance.RemoveFromCurrentWindow(this);
+        }
+
+		public virtual void NullifyWPFShape()
+		{
+			wpfShape = null;
+		}
+    }
 
 	class Circle: Shape
 	{
@@ -187,7 +200,7 @@ namespace SpecialTask
 				Canvas.SetTop(wpfShape, Top);
 				Canvas.SetLeft(wpfShape, Left);
 
-				this.wpfShape = wpfShape;				// memoize it, so that WindowToDraw and find it on Canvas
+				this.wpfShape = wpfShape;				// memoize it, so that WindowToDraw can find it on Canvas
 				return wpfShape;
             }
         }
@@ -211,16 +224,6 @@ namespace SpecialTask
 		private int Left
 		{
 			get => CenterX - Radius;
-		}
-
-		public override void Redraw()
-		{
-			// TODO
-		}
-
-		public override void Destroy()
-		{
-			WindowManager.Instance.RemoveFromCurrentWindow(this);
 		}
 
 		private int CenterX
@@ -298,16 +301,6 @@ namespace SpecialTask
 			get => ((leftTopX + rightBottomX) / 2, (leftTopY + rightBottomY) / 2);
 		}
 
-        public override void Redraw()
-        {
-            // TODO
-        }
-
-        public override void Destroy()
-        {
-            WindowManager.Instance.RemoveFromCurrentWindow(this);
-        }
-
         public override object Edit(string attribute, object value)
         {
             attribute = attribute.ToLower();
@@ -373,12 +366,12 @@ namespace SpecialTask
 
 		private int Width
 		{
-			get => RightBottomX - LeftTopX;
+			get => Math.Abs(RightBottomX - LeftTopX);
 		}
 
 		private int Height
 		{
-			get => RightBottomY - LeftTopY;
+			get => Math.Abs(RightBottomY - LeftTopY);
 		}
 
         private int LeftTopX
@@ -476,16 +469,6 @@ namespace SpecialTask
         public override (int, int) Center
         {
             get => ((firstX + secondX) / 2, (firstY + secondY) / 2);
-        }
-
-        public override void Redraw()
-        {
-            // TODO
-        }
-
-        public override void Destroy()
-        {
-            WindowManager.Instance.RemoveFromCurrentWindow(this);
         }
 
         public override object Edit(string attribute, object value)

@@ -30,7 +30,7 @@ namespace SpecialTask
 
         public static void RedoCommands(int numberOfCommands = 1)
         {
-            if (numberOfCommands < undoneStack.Count) throw new InvalidRedoNumber();
+            if (numberOfCommands > undoneStack.Count) throw new InvalidRedoNumber();
             for (int i = 0; i < numberOfCommands; i++) Redo();
         }
 
@@ -72,7 +72,7 @@ namespace SpecialTask
                 ICommand command = undoneStack.Pop();
                 RegisterAndExecute(command);
             }
-            else STConsole.Instance.DisplayWarning("Nothing to redo!");
+            else throw new InvalidRedoNumber();
         }
 
         private static void Push(ICommand command)
@@ -530,6 +530,7 @@ namespace SpecialTask
             catch (InvalidRedoNumber)
             {
                 Logger.Instance.Error("Nothing to redo");
+                STConsole.Instance.DisplayWarning("Nothing to redo!");
             }
         }
 
