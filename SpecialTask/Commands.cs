@@ -60,14 +60,19 @@ namespace SpecialTask
             catch (UnderflowException)
             {
                 Logger.Instance.Error("Noting to undo!");
+                STConsole.Instance.DisplayWarning("Nothung to undo!");
                 throw;
             }
         }
 
         private static void Redo()
         {
-            ICommand command = undoneStack.Pop();
-            RegisterAndExecute(command);
+            if (undoneStack.Count > 0)
+            {
+                ICommand command = undoneStack.Pop();
+                RegisterAndExecute(command);
+            }
+            else STConsole.Instance.DisplayWarning("Nothing to redo!");
         }
 
         private static void Push(ICommand command)

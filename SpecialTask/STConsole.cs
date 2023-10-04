@@ -115,6 +115,11 @@ namespace SpecialTask
         {
             Display("[color:red]" + message + "\n");
         }
+
+        public void DisplayWarning(string message)
+        {
+            Display("[color:Yellow]" + message + "\n");
+        }
     }
 
     /// <summary>

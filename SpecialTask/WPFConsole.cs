@@ -59,6 +59,7 @@ namespace SpecialTask
 		public void ProcessInputString(string input)
 		{
 			STConsole.Instance.ProcessInput(input);
+			DisplayPrompt();
 		}
 
 		public string Autocomplete(string currentInput)

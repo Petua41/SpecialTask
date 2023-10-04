@@ -99,6 +99,7 @@ namespace SpecialTask
 		private EColor color;
 		private int lineThickness;
 		public new string uniqueName;
+		private System.Windows.Shapes.Shape? wpfShape = null;
 
 		private static int firstAvailibleUniqueNumber = 0;
 
@@ -174,6 +175,8 @@ namespace SpecialTask
 		{
 			get
 			{
+				if (this.wpfShape != null) return this.wpfShape;
+
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Ellipse
                 {
                     Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
@@ -183,6 +186,8 @@ namespace SpecialTask
                 };
 				Canvas.SetTop(wpfShape, Top);
 				Canvas.SetLeft(wpfShape, Left);
+
+				this.wpfShape = wpfShape;				// memoize it, so that WindowToDraw and find it on Canvas
 				return wpfShape;
             }
         }
@@ -215,7 +220,7 @@ namespace SpecialTask
 
 		public override void Destroy()
 		{
-			// TODO
+			WindowManager.Instance.RemoveFromCurrentWindow(this);
 		}
 
 		private int CenterX
@@ -266,6 +271,7 @@ namespace SpecialTask
 		private EColor color;
 		private int lineThickness;
 		public new string uniqueName;
+		private System.Windows.Shapes.Shape? wpfShape = null;
 
 		private static int firstAvailibleUniqueNumber = 0;
 
@@ -299,7 +305,7 @@ namespace SpecialTask
 
         public override void Destroy()
         {
-            // TODO
+            WindowManager.Instance.RemoveFromCurrentWindow(this);
         }
 
         public override object Edit(string attribute, object value)
@@ -348,6 +354,8 @@ namespace SpecialTask
         {
             get
             {
+				if (this.wpfShape != null) return this.wpfShape;
+
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Rectangle
                 {
                     Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
@@ -357,6 +365,8 @@ namespace SpecialTask
                 };
                 Canvas.SetTop(wpfShape, LeftTopY);
                 Canvas.SetLeft(wpfShape, LeftTopX);
+
+				this.wpfShape = wpfShape;
                 return wpfShape;
             }
         }
@@ -441,6 +451,7 @@ namespace SpecialTask
 		private EColor color;
 		private int lineThickness;
 		public new string uniqueName;
+		private System.Windows.Shapes.Shape? wpfShape = null;
 
         private static int firstAvailibleUniqueNumber = 0;
 
@@ -474,7 +485,7 @@ namespace SpecialTask
 
         public override void Destroy()
         {
-            // TODO
+            WindowManager.Instance.RemoveFromCurrentWindow(this);
         }
 
         public override object Edit(string attribute, object value)
@@ -523,6 +534,8 @@ namespace SpecialTask
         {
             get
             {
+				if (this.wpfShape != null) return this.wpfShape;
+
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Line
                 {
                     Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
@@ -534,6 +547,8 @@ namespace SpecialTask
                 };
                 Canvas.SetTop(wpfShape, Top);
                 Canvas.SetLeft(wpfShape, Left);
+
+				this.wpfShape = wpfShape;
                 return wpfShape;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
@@ -19,6 +20,7 @@ namespace SpecialTask
 		private readonly Brush defaultForegroundBrush = new SolidColorBrush(Colors.White);
 		private readonly Logger logger;
 		private readonly WindowManager windowManager;
+		List<(TextPointer, TextPointer, Brush)> appliedRanges = new();
 
 		private readonly Dictionary<Key, char> numberKeys = new()
 		{
@@ -48,17 +50,18 @@ namespace SpecialTask
 		{
 			InitializeComponent();
 
-			logger = Logger.Instance;       // Можно было бы везде использовать Logger.Instance, но, если мы получаем его здесь, то у него будет правильное время создания
+			logger = Logger.Instance;       // so that Logger gets right creation time
 			wpfConsole = WPFConsole.Instance;
 
 			ParseCommandLineArguments();
 
 			windowManager = WindowManager.Instance; // Same as Logger
 
-			Display("\n>> ", Colors.Green);
+			Display("\n");
+			wpfConsole.DisplayPrompt();
 		}
 
-		public void Display(string message, System.Windows.Media.Color color)
+		public void Display(string message, Color color)
 		{
 			Display(message, new SolidColorBrush(color));
 		}
@@ -74,7 +77,7 @@ namespace SpecialTask
 			{
 				Text = message
 			};
-			range.ApplyPropertyValue(ForegroundProperty, brush);
+			ApplyAndSaveRange(range, brush);
 			MoveCaretToEnd();
 		}
 
@@ -186,6 +189,8 @@ namespace SpecialTask
 				currentInput = currentInput[..^1];
 				MoveCaretToEnd();
 				// TODO: мы теряем цвета
+
+				LoadAndApplyRanges();
 			}
 		}
 
@@ -285,5 +290,23 @@ namespace SpecialTask
             Display(str);
             currentInput += str;
         }
+
+		private void ApplyAndSaveRange(TextRange range, Brush brush)
+		{
+            range.ApplyPropertyValue(ForegroundProperty, brush);
+			appliedRanges.Add((range.Start, range.End, brush));
+        }
+
+		private void LoadAndApplyRanges()
+		{
+			foreach ((TextPointer, TextPointer, Brush) tp in appliedRanges)
+			{
+				TextPointer start = tp.Item1;
+				TextPointer end = tp.Item2;
+				TextRange range = new(start, end);
+				string text = range.Text;
+				range.ApplyPropertyValue(ForegroundProperty, tp.Item3);
+			}
+		}
 	}
 }
