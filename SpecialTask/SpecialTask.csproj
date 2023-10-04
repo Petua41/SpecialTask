@@ -7,4 +7,12 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Resources\water_texture.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\water_texture.jpg" />
+  </ItemGroup>
+
 </Project>

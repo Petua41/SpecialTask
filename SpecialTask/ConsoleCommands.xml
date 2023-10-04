@@ -20,9 +20,9 @@
 		<argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
 		<argument shortArgument="-r" longArgument="--radius" type="Int" isNecessary="true" commandParameterName="radius"/>
 		<argument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" commandParameterName="lineThickness"/>
-		<argument shortArgument="-s" longArgument="--streak" comandParameterName="streak" defaultValue="false"/>
-		<argument shortArgument="-c" longArgument="--streak_color" type="Color" comandParameterName="streakColor" defaultValue="None"/>
-		<argument shortArgument="-T" longArgument="--texture" type="Texture" comandParameterName="streakTexture" defaultValue="None"/>
+		<argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
+		<argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
+		<argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
 	</command>
 	<command userInput="new rectangle" commandClass="CreateSquareCommand" supportsUndo="true">Adds rectangle to the screen
 
@@ -43,9 +43,9 @@
 		<argument shortArgument="-Y" longArgument="--right_bottom_y" type="Int" isNecessary="true" commandParameterName="rightBottomY"/>
 		<argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
 		<srgument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" comandParameterName="lineThickness"/>
-		<argument shortArgument="-s" longArgument="--streak" tcomandParameterName="streak" defaultValue="false"/>
-		<argument shortArgument="-c" longArgument="--streak_color" type="Color" comandParameterName="streakColor" defaultValue="None"/>
-		<argument shortArgument="-T" longArgument="--texture" type="Texture" comandParameterName="streakTexture" defautValue="None"/>
+    <argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
+    <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
+    <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
 	</command>
 	<command userInput="new line" commandClass="CreateLineCommand" supportsUndo="true">Adds line to the screen
 
@@ -66,9 +66,9 @@
 		<argument shortArgument="-Y" longArgument="--second_y" type="Int" isNecessary="true" commandParameterName="secondY"/>
 		<argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
 		<argument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" commandParameterName="lineThickness"/>
-		<argument shortArgument="-s" longArgument="--streak" comandParameterName="streak" defaultValue="false"/>
-		<argument shortArgument="-c" longArgument="--streak_color" type="Color" comandParameterName="streakColor" defaultValue="None"/>
-		<argument shortArgument="-T" longArgument="--texture" type="Texture" comandParameterName="streakTexture" defaultValue="None"/>
+    <argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
+    <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
+    <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
 	</command>
 	<!-- window -->
 	<command userInput="window create" commandClass="CreateWindowCommand">Creates new window for drawing</command>

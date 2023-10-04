@@ -27,7 +27,9 @@ namespace SpecialTask
 			this.decoratedShape = decoratedShape;
 			this.streakColor = streakColor;
 			this.streakTexture = streakTexture;
-		}
+
+            WindowManager.Instance.DisplayOnCurrentWindow(this);
+        }
 
 		public override object Edit(string attribute, object value)
 		{
@@ -79,8 +81,9 @@ namespace SpecialTask
 				if (decoratedShape == null) throw new HangingDecoratorException();
 
 				System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
-				// TODO
-				throw new NotImplementedException();
+				shape.Fill = TextureController.GetWPFTexture(streakTexture, streakColor);
+				decoratedShape.Destroy();               // Shape displays itself in constructor, so we should destroy it
+				return shape;
             }
 		}
 

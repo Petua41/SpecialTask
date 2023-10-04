@@ -27,6 +27,7 @@ namespace SpecialTask
         public void ChangeTitle(string value)
         {
             Title = value;
+            // TODO: we should save associated WindowToDraw so that we can handle closing of this window
         }
     }
 }

@@ -8,8 +8,8 @@ namespace SpecialTask
     /// </summary>
     static class CommandsFacade
     {
-        private static PseudoDeque<ICommand> stack = new();
-        private static Stack<ICommand> undoneStack = new();
+        private static readonly PseudoDeque<ICommand> stack = new();
+        private static readonly Stack<ICommand> undoneStack = new();
         private static int undoStackDepth = 15;
 
         public static void RegisterAndExecute(ICommand command)
@@ -702,7 +702,7 @@ namespace SpecialTask
             string output = "";
             foreach (KeyValuePair<string, string> texture in textures)
             {
-                output += texture.Key + "\t\t" + texture.Value + "\n";
+                output += texture.Key + "  --  " + texture.Value + "\n";
             }
             receiver.Display(output);
         }
