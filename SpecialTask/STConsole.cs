@@ -102,7 +102,7 @@ namespace SpecialTask
                 }
                 else
                 {
-                    string currentPartOfMessage = message[..(indexOfNextColorChange - 1)];
+                    string currentPartOfMessage = message[..indexOfNextColorChange];
                     message = message[indexOfNextColorChange..];
                     messageSplittedByColors.Add(currentPartOfMessage, lastColor);
                 }

@@ -227,7 +227,7 @@ namespace SpecialTask
 
         private void ConsoleClosed(object sender, EventArgs e)
         {
-            // TODO: здесь мы должны закрывать все остальные окна (потому что консоль -- основное окно)
+            WindowManager.Instance.CloseAll();
 
             logger.Dispose();
         }

@@ -293,7 +293,7 @@ namespace SpecialTask
 
         public void Execute()
         {
-            receiver = new Square(firstX, firstY, secondX, secondY, color, lineThickness);
+            receiver = new Line(firstX, firstY, secondX, secondY, color, lineThickness);
             if (streak) receiver = new StreakDecorator(receiver, streakColor, streakTexture);
         }
 
@@ -660,6 +660,56 @@ namespace SpecialTask
         {
             Logger.Instance.Warning("Unexecution of exit command.");
             Logger.Instance.Error("Exit command hasn`t closed application");
+        }
+    }
+
+    class ColorsCommand: ICommand
+    {
+        private STConsole receiver;
+
+        public ColorsCommand(Dictionary<string, object> arguments)
+        {
+            receiver = STConsole.Instance;
+        }
+
+        public void Execute()
+        {
+            List<string> colors = ColorsController.GetColorsList();
+            string output = "";
+            foreach (string color in colors) output += string.Format("[color:{0}]{0}[color] ", color);
+            output += "\n";
+            receiver.Display(output);
+        }
+
+        public void Unexecute()
+        {
+            Logger.Instance.Warning("Unexecution of colors command");
+        }
+    }
+
+    class TexturesCommand : ICommand
+    {
+        private STConsole receiver;
+
+        public TexturesCommand(Dictionary<string, object> arguments)
+        {
+            receiver = STConsole.Instance;
+        }
+
+        public void Execute()
+        {
+            Dictionary<string, string> textures = TextureController.GetTexturesWithDescriptions();
+            string output = "";
+            foreach (KeyValuePair<string, string> texture in textures)
+            {
+                output += texture.Key + "\t\t" + texture.Value + "\n";
+            }
+            receiver.Display(output);
+        }
+
+        public void Unexecute()
+        {
+            Logger.Instance.Warning("Unexecution of textures command");
         }
     }
 }

@@ -81,7 +81,20 @@ namespace SpecialTask
 
 		public void DisplayOnCurrentWindow(Shape shape)
 		{
-			// TODO
+			currentWindow.AddShape(shape);
+		}
+
+		public void RemoveFromCurrentWindow(Shape shape)
+		{
+			currentWindow.RemoveShape(shape);
+		}
+
+		/// <summary>
+		/// Closes all windows
+		/// </summary>
+		public void CloseAll()
+		{
+			for (int i = 0; i < existingWindows.Count; i++) DestroyWindow(i);
 		}
 
 		private void ValidateWindowNumber(int numberOfWindow)
@@ -119,14 +132,43 @@ namespace SpecialTask
 			return allShapesOnThisWindow;
 		}
 
-		public void RemoveShapeFromLists(Shape shapeToDelete)
-		{
-			// TODO: если мы считаем, что фигура в состоянии сама себя удалить с экрана (а это вряд ли), то здесь надо просто находить её (по уникальному имени или по ссылке), удалять из списка и следить за индексами
-		}
-
 		public void Destroy()
 		{
 			assotiatedWindow.Close();
 		}
-	}
+
+		public void AddShape(Shape shape)
+		{
+			allShapesOnThisWindow.Add(shape);
+			zOrder.Add(allShapesOnThisWindow.Count - 1);
+			Canvas.Children.Add(shape.WPFShape);
+        }
+
+		public void RemoveShape(Shape shape)
+		{
+			if (Canvas.Children.Contains(shape.WPFShape))     // If we cannot find shape on canvas, it won`t be removed from lists
+            {
+                Canvas.Children.Remove(shape.WPFShape);
+                RemoveShapeFromLists(shape.uniqueName);
+            }
+		}
+
+        private void RemoveShapeFromLists(string uniqueName)
+        {
+			int index = -1;
+			for (int i = 0; i < allShapesOnThisWindow.Count; i++)
+			{
+				if (allShapesOnThisWindow[i].uniqueName == uniqueName)
+				{
+					index = i;
+					break;
+				}
+			}
+			if (index > 0)				// if cannot find, no problem
+			{
+				allShapesOnThisWindow.RemoveAt(index);
+				zOrder.Remove(index);
+			}
+        }
+    }
 }

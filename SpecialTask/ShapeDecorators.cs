@@ -2,29 +2,6 @@
 
 namespace SpecialTask
 {
-	enum EStreakTexture { None } // TODO
-
-	static class TextureController
-	{
-		public static EStreakTexture GetTextureFromString(string textureName)
-		{
-			// TODO
-			return textureName switch
-			{
-				_ => EStreakTexture.None
-			};
-		}
-
-		public static System.Windows.Media.Brush GetWPFTexture(EStreakTexture texture)
-		{
-			// TODO
-			return texture switch
-			{
-				_ => System.Windows.Media.Brushes.Transparent
-			};
-		}
-    }
-
 	abstract class ShapeDecorator : Shape
 	{
 		private Shape? decoratedShape;
@@ -93,6 +70,18 @@ namespace SpecialTask
 				if (decoratedShape == null) throw new HangingDecoratorException();
 				return decoratedShape.Center;
 			}
+		}
+
+        public override System.Windows.Shapes.Shape WPFShape
+		{
+			get
+			{
+				if (decoratedShape == null) throw new HangingDecoratorException();
+
+				System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
+				// TODO
+				throw new NotImplementedException();
+            }
 		}
 
         public override void Destroy()

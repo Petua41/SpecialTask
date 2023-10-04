@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace SpecialTask
 {
@@ -18,16 +20,16 @@ namespace SpecialTask
 
 	static class ColorsController
 	{
-		public static System.Windows.Media.Color GetWPFColor(EColor color)
+		public static Color GetWPFColor(EColor color)
 		{
 			return color switch
 			{
-				EColor.None => System.Windows.Media.Colors.Transparent,
-				EColor.Green => System.Windows.Media.Colors.Green,
-				EColor.Magenta => System.Windows.Media.Colors.Magenta,
-				EColor.Red => System.Windows.Media.Colors.Red,
-				EColor.White => System.Windows.Media.Colors.White,
-				EColor.Yellow => System.Windows.Media.Colors.Yellow,
+				EColor.None => Colors.Transparent,
+				EColor.Green => Colors.Green,
+				EColor.Magenta => Colors.Magenta,
+				EColor.Red => Colors.Red,
+				EColor.White => Colors.White,
+				EColor.Yellow => Colors.Yellow,
 				_ => throw new ColorExcepttion(),
 			};
 		}
@@ -44,6 +46,11 @@ namespace SpecialTask
 				"yellow" => EColor.Yellow,
 				_ => EColor.None,
 			};
+		}
+
+		public static List<string> GetColorsList()
+		{
+			return new() { "green", "magenta", "red", "white", "yellow" };
 		}
 	}
 
@@ -75,6 +82,11 @@ namespace SpecialTask
 		{ 
 			get => uniqueName; 
 		}
+
+		/// <summary>
+		/// Windows.Shapes.Shape instance that can be added to Canvas
+		/// </summary>
+		public abstract System.Windows.Shapes.Shape WPFShape { get; }
 
 		public abstract (int, int) Center { get; }
 	}
@@ -158,6 +170,23 @@ namespace SpecialTask
 			get => (CenterX, CenterY);
 		}
 
+        public override System.Windows.Shapes.Shape WPFShape
+		{
+			get
+			{
+                System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Ellipse
+                {
+                    Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
+                    StrokeThickness = LineThickness,
+                    Width = Radius * 2,
+                    Height = Radius * 2
+                };
+				Canvas.SetTop(wpfShape, Top);
+				Canvas.SetLeft(wpfShape, Left);
+				return wpfShape;
+            }
+        }
+
         private int Radius
 		{
 			get => radius;
@@ -167,6 +196,16 @@ namespace SpecialTask
 				radius = value;
 				Redraw();
 			}
+		}
+
+		private int Top
+		{
+			get => CenterY - Radius;
+		}
+
+		private int Left
+		{
+			get => CenterX - Radius;
 		}
 
 		public override void Redraw()
@@ -239,7 +278,9 @@ namespace SpecialTask
 			this.color = color;
 			this.lineThickness = lineThickness;
 			uniqueName = GetNextUniqueName();
-		}
+
+            WindowManager.Instance.DisplayOnCurrentWindow(this);
+        }
 
 		public static new string GetNextUniqueName()
 		{
@@ -303,7 +344,34 @@ namespace SpecialTask
             return oldValue;
         }
 
-		private int LeftTopX
+        public override System.Windows.Shapes.Shape WPFShape
+        {
+            get
+            {
+                System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Rectangle
+                {
+                    Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
+                    StrokeThickness = LineThickness,
+                    Width = Width,
+					Height = Height
+                };
+                Canvas.SetTop(wpfShape, LeftTopY);
+                Canvas.SetLeft(wpfShape, LeftTopX);
+                return wpfShape;
+            }
+        }
+
+		private int Width
+		{
+			get => RightBottomX - LeftTopX;
+		}
+
+		private int Height
+		{
+			get => RightBottomY - LeftTopY;
+		}
+
+        private int LeftTopX
 		{
 			get => leftTopX;
 			set
@@ -385,6 +453,8 @@ namespace SpecialTask
             this.color = color;
             this.lineThickness = lineThickness;
             uniqueName = GetNextUniqueName();
+
+            WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
         public static new string GetNextUniqueName()
@@ -448,6 +518,35 @@ namespace SpecialTask
 
             return oldValue;
         }
+
+        public override System.Windows.Shapes.Shape WPFShape
+        {
+            get
+            {
+                System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Line
+                {
+                    Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
+                    StrokeThickness = LineThickness,
+                    X1 = FirstX,
+					Y1 = FirstY,
+					X2 = SecondX,
+					Y2 = SecondY
+                };
+                Canvas.SetTop(wpfShape, Top);
+                Canvas.SetLeft(wpfShape, Left);
+                return wpfShape;
+            }
+        }
+
+		private int Top
+		{
+			get => Math.Min(FirstY, SecondY);
+		}
+
+		private int Left
+		{
+			get => Math.Min(FirstX, SecondX);
+		}
 
         private int FirstX
         {
