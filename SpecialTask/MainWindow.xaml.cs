@@ -9,6 +9,8 @@ using System.Windows.Media;
 
 namespace SpecialTask
 {
+	public enum ESpecialKeyCombinations { None, Enter, Backspace, CtrlC }
+
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
@@ -17,6 +19,7 @@ namespace SpecialTask
 		private readonly WPFConsole wpfConsole;
 		private string currentInput = "";
 		private bool inputBlocked = false;
+		private bool transferringInput = false;
 		private readonly Brush defaultForegroundBrush = new SolidColorBrush(Colors.White);
 		private readonly Logger logger;
 		private readonly WindowManager windowManager;
@@ -81,25 +84,32 @@ namespace SpecialTask
 			MoveCaretToEnd();
 		}
 
-		public void LockInput()
+		/// <summary>
+		/// Input blocked: user cannot type any character
+		/// </summary>
+		public bool InputBlocked
 		{
-			inputBlocked = true;
+			get => inputBlocked;
+			set => inputBlocked = value;
 		}
 
-		public void UnlockIntput()
+		/// <summary>
+		/// Transferring input: every char or special key combination is sended to STConsole
+		/// </summary>
+		public bool TransferringInput
 		{
-			inputBlocked = false;
+			get => transferringInput;
+			set => transferringInput = value;
 		}
 
 		private void ConsoleTBKeyDown(object sender, KeyEventArgs e)
 		{
-			//if (inputBlocked) return;
-
-			Key key = e.Key;
+			if (InputBlocked) return;
 
 			char? inputChar = ProcessInputChar(e);
 			if (inputChar != null)
 			{
+				if (TransferringInput) TransferInput(inputChar, ESpecialKeyCombinations.None);			// if we got character, transfer it
 				Display(inputChar.ToString());
 				currentInput += inputChar;
 			}
@@ -148,13 +158,16 @@ namespace SpecialTask
 			switch (key)
 			{
 				case Key.Return:
-					EmulateEnter();
+					if (TransferringInput) TransferInput(null, ESpecialKeyCombinations.Enter);
+					else EmulateEnter();
 					return null;
 				case Key.Tab:
-					ProcessTab();
+					if (TransferringInput) return null;				// same as Ctrl+Z
+					else ProcessTab();
 					return null;
 				case Key.Back:
-					ProcessBackspace();
+                    if (TransferringInput) TransferInput(null, ESpecialKeyCombinations.Backspace);
+                    else ProcessBackspace();
 					return null;
 				default:
 					return null;
@@ -206,10 +219,14 @@ namespace SpecialTask
 					EmulateInput(clip);
 					return true;
 				case Key.C:
-					// TODO: here we send SIGTERM to working edit (idk how to do it)
-					// Return false, because now we don`t intercept
+					if (TransferringInput)		// we don`t kill command. we just tell it that Ctrl+C pressed
+					{
+						TransferInput(null, ESpecialKeyCombinations.CtrlC);
+						return true;
+					}
 					return false;
 				case Key.Z:
+					if (TransferringInput) return false;		// there`s no point in whether sending Ctrl+Z to command or processing it
 					if (shiftPressed) EmulateInput("redo");
 					else EmulateInput("undo");
 					EmulateEnter();
@@ -224,11 +241,13 @@ namespace SpecialTask
 			switch (key)
 			{
 				case Key.Up:
+					if (TransferringInput) return;					// same as Ctrl+Z
 					string prevCommandToDisplay = wpfConsole.ProcessUpArrow();
 					// TODO
 					break;
 				case Key.Down:
-					string nextCommandToDisplay = wpfConsole.ProcessDownArrow();
+					if (TransferringInput) return;                  // same as Ctrl+Z
+                    string nextCommandToDisplay = wpfConsole.ProcessDownArrow();
 					if (nextCommandToDisplay == "")
 					{
 						// TODO: вниз листать нечего. Ничего не делаем (нужно убедиться, что всё осталось как было)
@@ -317,6 +336,11 @@ namespace SpecialTask
 				string text = range.Text;
 				range.ApplyPropertyValue(ForegroundProperty, tp.Item3);
 			}
+		}
+
+		private void TransferInput(char? character, ESpecialKeyCombinations combination)
+		{
+			wpfConsole.TransferInput(character, combination);
 		}
 	}
 }

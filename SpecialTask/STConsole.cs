@@ -116,9 +116,45 @@ namespace SpecialTask
             Display("[color:red]" + message + "\n");
         }
 
+        /// <summary>
+        /// Displays message in yellow and new line symbol
+        /// </summary>
+        /// <param name="message"></param>
         public void DisplayWarning(string message)
         {
             Display("[color:Yellow]" + message + "\n");
+        }
+
+        /// <summary>
+        /// Displays message in yellow and space
+        /// </summary>
+        /// <param name="message"></param>
+        public void DisplayWarningWithoutSlashN(string message)
+        {
+            Display("[color:Yellow]" + message + " ");
+        }
+
+        public string TransferredString => WPFConsole.Instance.GetTransferredString();
+
+        public char? TransferredChar => WPFConsole.Instance.GetTransferredChar();
+
+        public ESpecialKeyCombinations TransferredCombination => WPFConsole.Instance.GetTransferredCombination();
+
+        public bool TransferringInput
+        {
+            get => WPFConsole.Instance.TransferringInput;
+            set => WPFConsole.Instance.TransferringInput = value;
+        }
+
+        public bool InputBlocked
+        {
+            get => WPFConsole.Instance.InputBlocked;
+            set => WPFConsole.Instance.InputBlocked = value;
+        }
+
+        public void DisplayPrompt()
+        {
+            WPFConsole.Instance.DisplayPrompt();
         }
     }
 

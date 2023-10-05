@@ -16,6 +16,10 @@ namespace SpecialTask
 	{
 		private static WPFConsole? singleton;
 		private readonly MainWindow mainWindowInstance;
+		private string interceptedString = "";
+		private char? lastInterceptedChar = null;
+		private ESpecialKeyCombinations lastInterceptedCombination = ESpecialKeyCombinations.None;
+		private string lastInterceptedString = "";
 
 		private WPFConsole()
 		{
@@ -53,7 +57,7 @@ namespace SpecialTask
 		public void DisplayPrompt()
 		{
 			Display(">> ", EColor.Green);
-			UnlockInput();
+			InputBlocked = false;
 		}
 
 		public void ProcessInputString(string input)
@@ -84,20 +88,58 @@ namespace SpecialTask
 			CommandsFacade.ChangeUndoStackDepth(depth);
 		}
 
-        /// <summary>
-        /// Блокирует ввод в косоль. ДОЛЖЕН вызываться каждый раз перед выводом текста, состоящего из нескольких частей
-        /// </summary>
-        public void LockInput()
+        public bool InputBlocked
 		{
-			// TODO: поскольку пока что не всё ясно с "низкоуровневой" консолью, неизвестно что тут будет. Но точно не больше одной строчки
+			get => mainWindowInstance.InputBlocked;
+			set => mainWindowInstance.InputBlocked = value;
+        }
+
+		public bool TransferringInput
+		{
+			get => mainWindowInstance.TransferringInput;
+			set => mainWindowInstance.TransferringInput = value;
 		}
 
-		/// <summary>
-		/// Разрешает ввод в консоль. Не должен вызываться извне
-		/// </summary>
-		private void UnlockInput()
+		public void TransferInput(char? character, ESpecialKeyCombinations combination)
 		{
-            // TODO: поскольку пока что не всё ясно с "низкоуровневой" консолью, неизвестно что тут будет. Но точно не больше одной строчки
-        }
+			if (combination != ESpecialKeyCombinations.None) lastInterceptedCombination = combination;
+
+			switch (combination)
+			{
+				case ESpecialKeyCombinations.Enter:
+					lastInterceptedString = interceptedString;
+					interceptedString = "";
+					break;
+				case ESpecialKeyCombinations.Backspace:
+					if (interceptedString.Length > 0) interceptedString = interceptedString[..^1];
+					break;
+				default:
+					if (character != null)
+					{
+						interceptedString += character;
+						lastInterceptedChar = character;
+					}
+					break;
+			}
+
+			SomethingTranferred(this, new());
+		}
+
+		public string GetTransferredString()
+		{
+			return lastInterceptedString;
+		}
+
+		public char? GetTransferredChar()
+		{
+			return lastInterceptedChar;
+		}
+
+		public ESpecialKeyCombinations GetTransferredCombination()
+		{
+			return lastInterceptedCombination;
+		}
+
+		public event EventHandler SomethingTranferred;
     }
 }
