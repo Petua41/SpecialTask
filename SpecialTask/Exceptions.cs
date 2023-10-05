@@ -102,4 +102,12 @@ namespace SpecialTask
     /// Raised, when save or save_as invoked, but there`s no point in saving
     /// </summary>
     class NothingToSaveException: Exception { }
+    /// <summary>
+    /// Raised, when while loading met element with unknown tag
+    /// </summary>
+    class UnknownShapeWhileLoadingException: Exception { }
+    /// <summary>
+    /// Raised, when cannot parse XML (while loading)
+    /// </summary>
+    class LoadXMLError : Exception { }
 }

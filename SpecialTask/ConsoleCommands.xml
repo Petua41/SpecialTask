@@ -121,6 +121,7 @@
 	</command>
 	<!-- load -->
 	<command userInput="load" commandClass="LoadCommand">Load file<argument shortArgument="-f" longArgument="--filename" type="String" isNecessary="true" commandParameterName="filename"/>
+    <argument shortArgument="-c" longArgument="--clear" defaultValue="false" commandParameterName="clearScreen"/>
 	</command>
   <!-- exit -->
   <command userInput="exit" commandClass="ExitCommand">Close application</command>

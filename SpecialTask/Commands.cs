@@ -659,12 +659,14 @@ namespace SpecialTask
 	{
         // no receiver, because SaveLoadFacade is static
         readonly string filename;
+		bool clearScreen = false;
 
 		public LoadCommand(Dictionary<string, object> arguments)
 		{
 			try
 			{
 				filename = (string)arguments["filename"];
+				if (arguments.ContainsKey("clearScreen")) clearScreen = (bool)arguments["clearScreen"];
 			}
 			catch (KeyNotFoundException)
 			{
@@ -680,12 +682,52 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			SaveLoadFacade.Instance.Load(filename);
+			if (clearScreen)
+			{
+
+			}
+
+			try { SaveLoadFacade.Instance.Load(filename); }
+			catch (LoadXMLError)
+			{
+				Logger.Instance.Error(string.Format("Cannot load {0}: invalid file format", filename));
+				STConsole.Instance.DisplayError("Invalid file format");
+			}
+			catch (FileNotFoundException)
+			{
+				Logger.Instance.Error(string.Format("Cannot load {0}: file not found", filename));
+				STConsole.Instance.DisplayError("File not found");
+			}
 		}
 
 		public void Unexecute()
 		{
 			Logger.Instance.Warning("Unexecution of load command");
+		}
+	}
+
+	class ClearCommand: ICommand
+	{
+		private WindowManager receiver;
+		private List<Shape> destroyedShapes = new();
+
+		public ClearCommand(Dictionary<string, object> arguments)
+		{
+			receiver = WindowManager.Instance;
+		}
+
+		public void Execute()
+		{
+			destroyedShapes = receiver.ShapesOnCurrentWindow();
+			foreach (Shape shape in destroyedShapes) shape.Destroy();
+		}
+
+		public void Unexecute()
+		{
+			foreach (Shape shape in destroyedShapes)
+			{
+				// TODO: we should somehow restore `em
+			}
 		}
 	}
 
