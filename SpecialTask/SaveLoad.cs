@@ -8,17 +8,35 @@ namespace SpecialTask
 {
     static class SaveLoadFacade
     {
-        private static bool isSaved;
+        private static bool isSaved = true;
 
         public static bool NeedsSave
         {
-            get => true;//!isSaved && SomethingDrawn();                                 // FOR TESTS
+            get => !isSaved && SomethingDrawn();
         }
 
         private static bool SomethingDrawn()
         {
             // TODO
-            return true;
+            return true;        // temporary
+        }
+
+        public static void Save()
+        {
+            // TODO
+            isSaved = true;
+        }
+
+        public static void SaveAs(string filename)
+        {
+            // TODO
+            isSaved = true;
+        }
+
+        public static void Load(string filename)
+        {
+            // TODO
+            isSaved = true;
         }
     }
 }

@@ -117,10 +117,10 @@
 	<!-- save -->
 	<command userInput="save" commandClass="SaveCommand">Save file</command>
 	<!-- save_as -->
-	<command userInput="save_as" commandClass="SaveAsCommand">Save file as<argument shortArgument="-f" longArgument="--filename" type="String" commandParameterName="filename"/>
+	<command userInput="save_as" commandClass="SaveAsCommand">Save file as<argument shortArgument="-f" longArgument="--filename" isNecessary="true" type="String" commandParameterName="filename"/>
 	</command>
 	<!-- load -->
-	<command userInput="load" commandClass="LoadCommand">Load file<argument shortArgument="-f" longArgument="--filename" type="String" commandParameterName="filename"/>
+	<command userInput="load" commandClass="LoadCommand">Load file<argument shortArgument="-f" longArgument="--filename" type="String" isNecessary="true" commandParameterName="filename"/>
 	</command>
   <!-- exit -->
   <command userInput="exit" commandClass="ExitCommand">Close application</command>

@@ -571,16 +571,16 @@ namespace SpecialTask
 	/// </summary>
 	class SaveCommand : ICommand
 	{
-		// TODO: я не знаю, кто здесь будет receiver
+        // no receiver, because SaveLoadFacade is static
 
-		public SaveCommand(Dictionary<string, object> arguments)
+        public SaveCommand(Dictionary<string, object> arguments)
 		{
-			// TODO: receiver
+			// nothing to do
 		}
 
 		public void Execute()
 		{
-			// TODO
+			SaveLoadFacade.Save();
 		}
 
 		public void Unexecute()
@@ -594,12 +594,11 @@ namespace SpecialTask
 	/// </summary>
 	class SaveAsCommand : ICommand
 	{
-		// TODO: я не знаю, кто здесь будет receiver
+		// no receiver, because SaveLoadFacade is static
 		readonly string filename;
 
 		public SaveAsCommand(Dictionary<string, object> arguments)
 		{
-			// TODO: receiver
 			try
 			{
 				filename = (string)arguments["filename"];
@@ -618,7 +617,7 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			// TODO
+			SaveLoadFacade.SaveAs(filename);
 		}
 
 		public void Unexecute()
@@ -632,12 +631,11 @@ namespace SpecialTask
 	/// </summary>
 	class LoadCommand : ICommand
 	{
-		// TODO: я не знаю, кто здесь будет receiver
-		readonly string filename;
+        // no receiver, because SaveLoadFacade is static
+        readonly string filename;
 
 		public LoadCommand(Dictionary<string, object> arguments)
 		{
-			// TODO: receiver
 			try
 			{
 				filename = (string)arguments["filename"];
@@ -654,15 +652,9 @@ namespace SpecialTask
 			}
 		}
 
-		public LoadCommand(string filename)
-		{
-			// TODO: receiver
-			this.filename = filename;
-		}
-
 		public void Execute()
 		{
-			// TODO
+			SaveLoadFacade.Load(filename);
 		}
 
 		public void Unexecute()
@@ -730,7 +722,7 @@ namespace SpecialTask
                     break;
                 case EYesNoSaveAnswer.Save:
                     STConsole.Instance.Display("saving...");
-                    Save();
+					SaveLoadFacade.Save();						// We don`t need to check anything here. SaveLoadFacade will do
                     receiver.Shutdown();
                     break;
                 default:
@@ -738,11 +730,6 @@ namespace SpecialTask
                     return;
             }
         }
-
-		private void Save()
-		{
-			STConsole.Instance.Display("saving...");		// pretend we are saving
-		}
 
 		private void OnSomethingTransferred(object? sender, EventArgs e)
 		{
