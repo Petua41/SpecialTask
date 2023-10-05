@@ -75,12 +75,12 @@
 	<command userInput="window delete" commandClass="DeleteWindowCommand">Closes specified window
 
 [color:Magenta]Necessary arguments:[color]
-	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" type="Int" commandParameterName="number"/>
+	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" isNecessary="true" type="Int" commandParameterName="number"/>
 	</command>
 	<command userInput="window switch" commandClass="SwitchWindowCommand">Switches to specified window
 
 [color:Magenta]Necessary arguments:[color]
-	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" type="Int" commandParameterName="number"/>
+	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" isNecessary="true" type="Int" commandParameterName="number"/>
 	</command>
 	<!-- edit -->
 	<command userInput="edit" commandClass="EditShapeAttributesCommand" supportsUndo="true">Select figure on the screen and edit it

@@ -61,8 +61,10 @@ namespace SpecialTask
 		public void SwitchToWindow(int numberOfWindow)
 		{
 			ValidateWindowNumber(numberOfWindow);
-			// TODO
-		}
+			currentWindow = existingWindows[numberOfWindow];
+            WindowSwitchedEvent.Invoke(this, new WindowSwitchedEventArgs(numberOfWindow));
+
+        }
 
 		public List<Shape> ShapesOnCurrentWindow()
 		{
@@ -94,10 +96,13 @@ namespace SpecialTask
 		/// </summary>
 		public void CloseAll()
 		{
-			for (int i = 0; i < existingWindows.Count; i++) DestroyWindow(i);
+			for (int i = existingWindows.Count - 1; i >= 0; i--) DestroyWindow(i);
 		}
 
-		private void ValidateWindowNumber(int numberOfWindow)
+		public event WindowSwitchedEventHandler WindowSwitchedEvent;
+
+
+        private void ValidateWindowNumber(int numberOfWindow)
 		{
 			if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
 		}
@@ -171,4 +176,15 @@ namespace SpecialTask
 			}
         }
     }
+    public class WindowSwitchedEventArgs : EventArgs
+    {
+        public WindowSwitchedEventArgs(int newNumber)
+        {
+            NewNumber = newNumber;
+        }
+
+        public int NewNumber { get; set; }
+    }
+
+    public delegate void WindowSwitchedEventHandler(object sender, WindowSwitchedEventArgs args);
 }

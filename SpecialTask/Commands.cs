@@ -8,9 +8,15 @@ namespace SpecialTask
     /// </summary>
     static class CommandsFacade
     {
-        private static readonly PseudoDeque<ICommand> stack = new();
-        private static readonly Stack<ICommand> undoneStack = new();
         private static int undoStackDepth = 15;
+        private static int currentWindowNumber = 0;
+        private static readonly Dictionary<int, PseudoDeque<ICommand>> stacks = new();
+        private static readonly Dictionary<int, Stack<ICommand>> undoneStacks = new();
+
+        static CommandsFacade()
+        {
+            WindowManager.Instance.WindowSwitchedEvent += OnWindowSwitched;
+        }
 
         public static void RegisterAndExecute(ICommand command)
         {
@@ -30,18 +36,8 @@ namespace SpecialTask
 
         public static void RedoCommands(int numberOfCommands = 1)
         {
-            if (numberOfCommands > undoneStack.Count) throw new InvalidRedoNumber();
+            if (numberOfCommands > UndoneStack.Count) throw new InvalidRedoNumber();
             for (int i = 0; i < numberOfCommands; i++) Redo();
-        }
-
-        public static Stack<ICommand> Stack
-        {
-            get => new(stack);
-        }
-
-        public static Stack<ICommand> UndoneStack
-        {
-            get => new(undoneStack);
         }
 
         public static void ChangeUndoStackDepth(int depth)
@@ -53,9 +49,9 @@ namespace SpecialTask
         {
             try
             {
-                ICommand command = stack.Pop();
+                ICommand command = Stack.Pop();
                 command.Unexecute();
-                undoneStack.Push(command);
+                UndoneStack.Push(command);
             }
             catch (UnderflowException)
             {
@@ -67,9 +63,9 @@ namespace SpecialTask
 
         private static void Redo()
         {
-            if (undoneStack.Count > 0)
+            if (UndoneStack.Count > 0)
             {
-                ICommand command = undoneStack.Pop();
+                ICommand command = UndoneStack.Pop();
                 RegisterAndExecute(command);
             }
             else throw new InvalidRedoNumber();
@@ -77,8 +73,35 @@ namespace SpecialTask
 
         private static void Push(ICommand command)
         {
-            if (stack.Count >= undoStackDepth) stack.PopBottom();
-            stack.Push(command);
+            if (Stack.Count >= undoStackDepth) Stack.PopBottom();
+            Stack.Push(command);
+        }
+
+        private static PseudoDeque<ICommand> Stack
+        {
+            get
+            {
+                if (stacks.ContainsKey(currentWindowNumber)) return stacks[currentWindowNumber];
+                PseudoDeque<ICommand> newStack = new();
+                stacks.Add(currentWindowNumber, newStack);
+                return newStack;
+            }
+        }
+
+        private static Stack<ICommand> UndoneStack
+        {
+            get
+            {
+                if (undoneStacks.ContainsKey(currentWindowNumber)) return undoneStacks[currentWindowNumber];
+                Stack<ICommand> newStack = new();
+                undoneStacks.Add(currentWindowNumber, newStack);
+                return newStack;
+            }
+        }
+
+        private static void OnWindowSwitched(object sender, WindowSwitchedEventArgs e)
+        {
+            currentWindowNumber = e.NewNumber;
         }
     }
 
