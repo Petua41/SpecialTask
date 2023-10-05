@@ -3,7 +3,34 @@ using System.Linq;
 
 namespace SpecialTask
 {
-    enum EConsoleCommandArgumentTypes { Int, Color, PseudoBool, String, Texture }
+    enum EArgumentType { Int, Color, PseudoBool, String, Texture }
+
+    static class ArgumentTypesConstroller
+    {
+        public static EArgumentType GetArgumentTypeFromString(string str)
+        {
+            return str.ToLower() switch
+            {
+                "int" => EArgumentType.Int,
+                "color" => EArgumentType.Color,
+                "string" => EArgumentType.String,
+                "texture" => EArgumentType.Texture,
+                _ => EArgumentType.PseudoBool
+            };
+        }
+
+        public static object ParseValue(this EArgumentType type, string value)
+        {
+            return type switch
+            {
+                EArgumentType.Int => int.Parse(value),
+                EArgumentType.Color => ColorsController.GetColorFromString(value),
+                EArgumentType.String => value,
+                EArgumentType.Texture => TextureController.GetTextureFromString(value),
+                _ => value != "false"                   // all true, that not false
+            };
+        }
+    }
 
     /// <summary>
     /// Бизнес-класс консоли. Выступает посредником между классом-обёрткой WPFConsole и остальной бизнес-логикой приложения
@@ -111,7 +138,7 @@ namespace SpecialTask
             return messageSplittedByColors;
         }
 
-        public void DisplayCommandParsingError(string message)
+        public void DisplayError(string message)
         {
             Display("[color:red]" + message + "\n");
         }

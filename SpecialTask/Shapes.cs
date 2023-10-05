@@ -20,7 +20,7 @@ namespace SpecialTask
 
 	static class ColorsController
 	{
-		public static Color GetWPFColor(EColor color)
+		public static Color GetWPFColor(this EColor color)
 		{
 			return color switch
 			{
@@ -102,6 +102,8 @@ namespace SpecialTask
 		{
 			wpfShape = null;
 		}
+
+		public abstract Dictionary<string, object> Accept();
     }
 
 	class Circle: Shape
@@ -192,7 +194,7 @@ namespace SpecialTask
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Ellipse
                 {
-                    Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
+                    Stroke = new SolidColorBrush(color.GetWPFColor()),      // we call it outline. They call it stroke
                     StrokeThickness = LineThickness,
                     Width = Radius * 2,
                     Height = Radius * 2
@@ -203,6 +205,14 @@ namespace SpecialTask
 				this.wpfShape = wpfShape;				// memoize it, so that WindowToDraw can find it on Canvas
 				return wpfShape;
             }
+        }
+
+        public override Dictionary<string, object> Accept()
+        {
+			return new()
+			{
+				{ "radius", radius }, { "centerX", centerX }, { "centerY", centerY }, { "color", color }, { "lineThickness", lineThickness }
+			};
         }
 
         private int Radius
@@ -351,7 +361,7 @@ namespace SpecialTask
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Rectangle
                 {
-                    Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
+                    Stroke = new SolidColorBrush(color.GetWPFColor()),      // we call it outline. They call it stroke
                     StrokeThickness = LineThickness,
                     Width = Width,
 					Height = Height
@@ -364,7 +374,16 @@ namespace SpecialTask
             }
         }
 
-		private int Width
+        public override Dictionary<string, object> Accept()
+        {
+            return new()
+            {
+                { "leftTopX", leftTopX }, { "leftTopY", leftTopY }, { "rightBottomX", rightBottomX }, 
+				{ "rightBottomY", rightBottomY }, { "color", color }, { "lineThickness", lineThickness }
+            };
+        }
+
+        private int Width
 		{
 			get => Math.Abs(RightBottomX - LeftTopX);
 		}
@@ -521,7 +540,7 @@ namespace SpecialTask
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Line
                 {
-                    Stroke = new SolidColorBrush(ColorsController.GetWPFColor(Color)),      // we call it outline. They call it stroke
+                    Stroke = new SolidColorBrush(color.GetWPFColor()),      // we call it outline. They call it stroke
                     StrokeThickness = LineThickness,
                     X1 = FirstX,
 					Y1 = FirstY,
@@ -536,7 +555,16 @@ namespace SpecialTask
             }
         }
 
-		private int Top
+        public override Dictionary<string, object> Accept()
+        {
+            return new()
+            {
+                { "firstX", firstX }, { "firstY", firstY }, { "secondX", secondX },
+                { "secondY", secondY }, { "color", color }, { "lineThickness", lineThickness }
+            };
+        }
+
+        private int Top
 		{
 			get => Math.Min(FirstY, SecondY);
 		}

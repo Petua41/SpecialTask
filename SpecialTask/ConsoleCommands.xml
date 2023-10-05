@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <commands>
-  <!-- We should add some easter egg -->
+  <!-- We should add some kind of easter egg. Like moo, fortune or draw_logo -->
   
 	<!-- new -->
 	<command userInput="new circle" commandClass="CreateCircleCommand" supportsUndo="true">Adds circle to the screen

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 namespace SpecialTask
 {
 	/// <summary>
-	/// Контролирует вызов всех команд, их отмену и повтор
+	/// Controlls execution, undo and redo of all Commands
 	/// </summary>
-	static class CommandsFacade
+	static class CommandsFacade			// Facade and Mediator at the same time.
 	{
 		private static int undoStackDepth = 15;
 		private static int currentWindowNumber = 0;
@@ -391,7 +392,7 @@ namespace SpecialTask
 			catch (WindowDoesntExistException)
 			{
 				Logger.Instance.Error(string.Format("Trying to switch to window {0}, but window {0} doesn`t exist", numberOfWindow));
-				STConsole.Instance.DisplayCommandParsingError(string.Format("Window {0} doesn`t exist!", numberOfWindow));
+				STConsole.Instance.DisplayError(string.Format("Window {0} doesn`t exist!", numberOfWindow));
 			}
 		}
 
@@ -434,7 +435,7 @@ namespace SpecialTask
 			catch (WindowDoesntExistException)
 			{
 				Logger.Instance.Error(string.Format("Trying to delete window {0}, but window {0} doesn`t exist", numberOfWindow));
-				STConsole.Instance.DisplayCommandParsingError(string.Format("[color:red]Window {0} doesn`t exist![color]", numberOfWindow));
+				STConsole.Instance.DisplayError(string.Format("[color:red]Window {0} doesn`t exist![color]", numberOfWindow));
 			}
 		}
 
@@ -580,8 +581,13 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			SaveLoadFacade.Save();
-		}
+			try { SaveLoadFacade.Instance.Save(); }
+			catch (NothingToSaveException)
+			{
+				Logger.Instance.Warning("Nothing to save");
+				STConsole.Instance.DisplayWarning("File is already saved");
+			}
+        }
 
 		public void Unexecute()
 		{
@@ -617,7 +623,27 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			SaveLoadFacade.SaveAs(filename);
+			try { SaveLoadFacade.Instance.SaveAs(filename); }
+			catch (IOException)
+			{
+				int idx = filename.LastIndexOf('\\');
+				string dir = filename[..idx];
+				if (Directory.Exists(dir))
+				{
+					Logger.Instance.Error(string.Format("Cannot save to {0}: invalid characters", filename));
+					STConsole.Instance.DisplayError("Filename cannot contain theese characters: /\\:*?\"<>|");
+				}
+				else
+				{
+					Logger.Instance.Error(string.Format("Cannot save to {0}: directory {1} doesn`t exists", filename, dir));
+					STConsole.Instance.DisplayError(string.Format("Directory {0} doesn`t exist", dir));
+				}
+			}
+			catch (UnauthorizedAccessException)
+			{
+				Logger.Instance.Error(string.Format("Cannot save to: {0}: no permissions", filename));
+				STConsole.Instance.DisplayError(string.Format("you have no permission to write to {0}. This incident will be reported", filename));
+			}
 		}
 
 		public void Unexecute()
@@ -654,7 +680,7 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			SaveLoadFacade.Load(filename);
+			SaveLoadFacade.Instance.Load(filename);
 		}
 
 		public void Unexecute()
@@ -685,7 +711,7 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-            if (SaveLoadFacade.NeedsSave)
+            if (SaveLoadFacade.Instance.NeedsSave)
             {
                 STConsole.Instance.TransferringInput = true;
                 STConsole.Instance.InputBlocked = false;
@@ -722,7 +748,7 @@ namespace SpecialTask
                     break;
                 case EYesNoSaveAnswer.Save:
                     STConsole.Instance.Display("saving...");
-					SaveLoadFacade.Save();						// We don`t need to check anything here. SaveLoadFacade will do
+					CommandsFacade.ExecuteButDontRegister(new SaveCommand(new()));		// We don`t need to check anything here. SaveLoadFacade will do
                     receiver.Shutdown();
                     break;
                 default:

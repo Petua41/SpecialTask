@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SpecialTask
 {
@@ -106,6 +107,12 @@ namespace SpecialTask
             }
             wpfShape = null;
             decoratedShape.NullifyWPFShape();
+        }
+
+        public override Dictionary<string, object> Accept()
+        {
+			// TODO
+            throw new NotImplementedException();
         }
     }
 }

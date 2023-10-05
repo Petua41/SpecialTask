@@ -14,35 +14,25 @@ namespace SpecialTask
 		public Type? commandType;
 		public List<ConsoleCommandArgument> argumetns;
 		public bool supportsUndo;
-		public bool fictional;                                  // Только для help. При вызове печатает что-то типа "недопустимая команда"
+		public bool fictional;                                  // Только для help. При вызове печатает что-то типа "invalid command"
 
 		public readonly string AutocompleteArguments(string input)
 		{
 			if (input.StartsWith(neededUserInput))
 			{
 				string lastArgument = SelectLastArgument(input);
-				if (lastArgument.Length == 0)
-				{
-					// нет аргументов
-					return "";
-				}
-				else if (IsArgumentFull(lastArgument))
-				{
-					// аргумент введён целиком
-					return ChooseArgument(lastArgument).TryToAutocompleteParameter();
-				}
-				else
+				if (!IsArgumentFull(lastArgument))
 				{
 					// аргумент введён не целиком
 					List<ConsoleCommandArgument> possibleArgs = TryToAutocompleteArgs(lastArgument);
-					if (possibleArgs.Count == 0) return "";     // нет подходящих аргументов
 					if (possibleArgs.Count == 1)                // один подходящий аргумент
 					{
 						if (lastArgument.StartsWith("--")) return possibleArgs.Single().longArgument;
 						return possibleArgs.Single().shortArgument;
 					}
-					return "";                                  // невозможно однозначно определить (больше одного подходящего аргумента)
+					else return "";                                  // невозможно однозначно определить (больше одного подходящего аргумента or no corresponding arguments)
 				}
+				else return "";
 
 			}
 			else
@@ -94,26 +84,19 @@ namespace SpecialTask
 	{
 		public string shortArgument;
 		public string longArgument;
-		public EConsoleCommandArgumentTypes type;
+		public EArgumentType type;
 		public bool isNecessary;
 		public string commandParameterName;
 		public object? defaultValue;
-
-		public readonly string TryToAutocompleteParameter()
-		{
-			if (type == EConsoleCommandArgumentTypes.PseudoBool) return "";
-			if (defaultValue != null) return defaultValue.ToString();
-			return "";
-		}
 
 		public readonly object ParseParameter(string value)
 		{
 			return type switch
 			{
-				EConsoleCommandArgumentTypes.Int => int.Parse(value),
-				EConsoleCommandArgumentTypes.Color => ColorsController.GetColorFromString(value),
-				EConsoleCommandArgumentTypes.String => value,
-				EConsoleCommandArgumentTypes.Texture => TextureController.GetTextureFromString(value),
+				EArgumentType.Int => int.Parse(value),
+				EArgumentType.Color => ColorsController.GetColorFromString(value),
+				EArgumentType.String => value,
+				EArgumentType.Texture => TextureController.GetTextureFromString(value),
 				_ => value != "false"                   // здесь тоже всё true, что не false
 			};
 		}
@@ -174,7 +157,7 @@ namespace SpecialTask
 			int commandNumber = SelectCommand(commandName);
 			if (commandNumber < 0)                        // Если команда не найдена, выводим глобальную помощь (help и ? тоже не будут найдены)
 			{
-				STConsole.Instance.DisplayGlobalHelp();
+				if (userInput.Length > 0) STConsole.Instance.DisplayGlobalHelp();	// if user just pressed enter, don`t help him
 				return;
 			}
 
@@ -329,7 +312,7 @@ namespace SpecialTask
 		{
 			string shortArgument = "";
 			string longArgument = "";
-			EConsoleCommandArgumentTypes type = EConsoleCommandArgumentTypes.PseudoBool;
+			EArgumentType type = EArgumentType.PseudoBool;
 			bool isNecessary = false;
 			string commandParameterName = "";
 			object? defaultValue = null;
@@ -348,7 +331,7 @@ namespace SpecialTask
 						longArgument = attr.Value;
 						break;
 					case "type":
-						type = GetArgumentTypeFromString(attr.Value);
+						type = ArgumentTypesConstroller.GetArgumentTypeFromString(attr.Value);
 						break;
 					case "isNecessary":
 						isNecessary = attr.Value != "false";
@@ -357,7 +340,7 @@ namespace SpecialTask
 						commandParameterName = attr.Value;
 						break;
 					case "defaultValue":
-						defaultValue = ParseDefaultValue(attr.Value, type);
+						defaultValue = type.ParseValue(attr.Value);
 						break;
 					default:
 						Logger.Instance.Warning(string.Format("Unknown attribute {0} in arguments", attr.Name));
@@ -373,30 +356,6 @@ namespace SpecialTask
 				isNecessary = isNecessary,
 				commandParameterName = commandParameterName,
 				defaultValue = defaultValue
-			};
-		}
-
-		private static EConsoleCommandArgumentTypes GetArgumentTypeFromString(string str)
-		{
-			return str switch
-			{
-				"Int" => EConsoleCommandArgumentTypes.Int,
-				"Color" => EConsoleCommandArgumentTypes.Color,
-				"String" => EConsoleCommandArgumentTypes.String,
-				"Texture" => EConsoleCommandArgumentTypes.Texture,
-				_ => EConsoleCommandArgumentTypes.PseudoBool
-			};
-		}
-
-		private static object ParseDefaultValue(string value, EConsoleCommandArgumentTypes type)
-		{
-			return type switch
-			{
-				EConsoleCommandArgumentTypes.Int => int.Parse(value),
-				EConsoleCommandArgumentTypes.Color => ColorsController.GetColorFromString(value),
-				EConsoleCommandArgumentTypes.String => value,
-				EConsoleCommandArgumentTypes.Texture => TextureController.GetTextureFromString(value),
-				_ => value != "false"                   // здесь тоже всё true, что не false
 			};
 		}
 
@@ -421,7 +380,7 @@ namespace SpecialTask
 			if (consoleCommand.fictional)
 			{
 				Logger.Instance.Warning(string.Format("Call of the fictional command {0}", consoleCommand.neededUserInput));
-				STConsole.Instance.DisplayCommandParsingError(string.Format("You cannot call {0} without \"second-level command\". Try {0} --help",
+				STConsole.Instance.DisplayError(string.Format("You cannot call {0} without \"second-level command\". Try {0} --help",
 					consoleCommand.neededUserInput));
 				throw new CallOfFictionalCommandException();
 			}
@@ -432,7 +391,7 @@ namespace SpecialTask
 				bool isPresent = arguments.ContainsKey(argument.commandParameterName);
 				if (!isPresent && argument.isNecessary)
 				{
-					STConsole.Instance.DisplayCommandParsingError(string.Format("Missing required argument {0}. Try {1} --help",
+					STConsole.Instance.DisplayError(string.Format("Missing required argument {0}. Try {1} --help",
 						argument.longArgument, consoleCommand.neededUserInput));
 					throw new ArgumentParsingError();
 				}
@@ -500,13 +459,13 @@ namespace SpecialTask
 					}
 					catch (FormatException)		// Error casting string to int. Other types of parameters have default values (EColor.None, etc.)
 					{
-						STConsole.Instance.DisplayCommandParsingError(string.Format("{0} should be integer. {1} is not integer. Try {2} --help",
+						STConsole.Instance.DisplayError(string.Format("{0} should be integer. {1} is not integer. Try {2} --help",
 							arg.longArgument, rawValue, command.neededUserInput));
 						throw new ArgumentParsingError();
 					}
 				}
 			}
-			STConsole.Instance.DisplayCommandParsingError(string.Format("Unknown argument: {0}. Try {1} -- help", argument, command.neededUserInput));
+			STConsole.Instance.DisplayError(string.Format("Unknown argument: {0}. Try {1} -- help", argument, command.neededUserInput));
 			throw new ArgumentParsingError();
 		}
 

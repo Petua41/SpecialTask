@@ -94,4 +94,12 @@ namespace SpecialTask
     /// Возникает при вызове "fictional" команды (они используются только с --help)
     /// </summary>
     class CallOfFictionalCommandException: Exception { }
+    /// <summary>
+    /// Raised, when Accept() returns wrong data
+    /// </summary>
+    class VisitorInvalidAcceptError : Exception { }
+    /// <summary>
+    /// Raised, when save or save_as invoked, but there`s no point in saving
+    /// </summary>
+    class NothingToSaveException: Exception { }
 }

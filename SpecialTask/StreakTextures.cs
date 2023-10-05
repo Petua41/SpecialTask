@@ -33,7 +33,6 @@ namespace SpecialTask
 
         public static EStreakTexture GetTextureFromString(string textureName)
         {
-            // TODO
             return textureName.ToLower() switch
             {
                 "solid" or "solidcolor" or "color" or "sc" => EStreakTexture.SolidColor,
@@ -50,8 +49,7 @@ namespace SpecialTask
 
         public static Brush GetWPFTexture(EStreakTexture texture, EColor color)
         {
-            Color wpfColor = ColorsController.GetWPFColor(color);
-            // TODO
+            Color wpfColor = color.GetWPFColor();
             return texture switch
             {
                 EStreakTexture.SolidColor => new SolidColorBrush(wpfColor),

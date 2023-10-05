@@ -62,7 +62,7 @@ namespace SpecialTask
 		{
 			ValidateWindowNumber(numberOfWindow);
 			currentWindow = existingWindows[numberOfWindow];
-            WindowSwitchedEvent.Invoke(this, new WindowSwitchedEventArgs(numberOfWindow));
+            WindowSwitchedEvent?.Invoke(this, new WindowSwitchedEventArgs(numberOfWindow));
 
         }
 
@@ -84,7 +84,10 @@ namespace SpecialTask
 		public void DisplayOnCurrentWindow(Shape shape)
 		{
 			currentWindow.AddShape(shape);
-		}
+
+			SaveLoadFacade slf = SaveLoadFacade.Instance;		// so that it will be initialized
+            SomethingDisplayed?.Invoke(this, new());
+        }
 
 		public void RemoveFromCurrentWindow(Shape shape)
 		{
@@ -97,15 +100,16 @@ namespace SpecialTask
 		public void CloseAll()
 		{
 			for (int i = existingWindows.Count - 1; i >= 0; i--) DestroyWindow(i);
-		}
-
-		public event WindowSwitchedEventHandler WindowSwitchedEvent;
-
+        }
 
         private void ValidateWindowNumber(int numberOfWindow)
-		{
-			if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
-		}
+        {
+            if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
+        }
+
+        public event WindowSwitchedEventHandler WindowSwitchedEvent;
+
+		public event EventHandler SomethingDisplayed;
 	}
 
 	class WindowToDraw
