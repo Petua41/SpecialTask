@@ -109,5 +109,5 @@ namespace SpecialTask
     /// <summary>
     /// Raised, when cannot parse XML (while loading)
     /// </summary>
-    class LoadXMLError : Exception { }
+    class LoadXMLError: Exception { }
 }

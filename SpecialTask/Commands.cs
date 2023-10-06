@@ -26,12 +26,12 @@ namespace SpecialTask
 		{
 			Push(command);
 			command.Execute();
-		}
+        }
 
 		public static void ExecuteButDontRegister(ICommand command)
 		{
 			command.Execute();
-		}
+        }
 
 		public static void UndoCommands(int numberOfCommands = 1)
 		{
@@ -60,7 +60,7 @@ namespace SpecialTask
 			catch (UnderflowException)
 			{
 				Logger.Instance.Error("Noting to undo!");
-				STConsole.Instance.DisplayWarning("Nothung to undo!");
+				MiddleConsole.HighConsole.DisplayWarning("Nothung to undo!");
 				throw;
 			}
 		}
@@ -392,7 +392,7 @@ namespace SpecialTask
 			catch (WindowDoesntExistException)
 			{
 				Logger.Instance.Error(string.Format("Trying to switch to window {0}, but window {0} doesn`t exist", numberOfWindow));
-				STConsole.Instance.DisplayError(string.Format("Window {0} doesn`t exist!", numberOfWindow));
+				MiddleConsole.HighConsole.DisplayError(string.Format("Window {0} doesn`t exist!", numberOfWindow));
 			}
 		}
 
@@ -435,7 +435,7 @@ namespace SpecialTask
 			catch (WindowDoesntExistException)
 			{
 				Logger.Instance.Error(string.Format("Trying to delete window {0}, but window {0} doesn`t exist", numberOfWindow));
-				STConsole.Instance.DisplayError(string.Format("[color:red]Window {0} doesn`t exist![color]", numberOfWindow));
+				MiddleConsole.HighConsole.DisplayError(string.Format("[color:red]Window {0} doesn`t exist![color]", numberOfWindow));
 			}
 		}
 
@@ -557,7 +557,7 @@ namespace SpecialTask
 			catch (InvalidRedoNumber)
 			{
 				Logger.Instance.Error("Nothing to redo");
-				STConsole.Instance.DisplayWarning("Nothing to redo!");
+				MiddleConsole.HighConsole.DisplayWarning("Nothing to redo!");
 			}
 		}
 
@@ -585,7 +585,7 @@ namespace SpecialTask
 			catch (NothingToSaveException)
 			{
 				Logger.Instance.Warning("Nothing to save");
-				STConsole.Instance.DisplayWarning("File is already saved");
+				MiddleConsole.HighConsole.DisplayWarning("File is already saved");
 			}
         }
 
@@ -631,18 +631,18 @@ namespace SpecialTask
 				if (Directory.Exists(dir))
 				{
 					Logger.Instance.Error(string.Format("Cannot save to {0}: invalid characters", filename));
-					STConsole.Instance.DisplayError("Filename cannot contain theese characters: /\\:*?\"<>|");
+					MiddleConsole.HighConsole.DisplayError("Filename cannot contain theese characters: /\\:*?\"<>|");
 				}
 				else
 				{
 					Logger.Instance.Error(string.Format("Cannot save to {0}: directory {1} doesn`t exists", filename, dir));
-					STConsole.Instance.DisplayError(string.Format("Directory {0} doesn`t exist", dir));
+					MiddleConsole.HighConsole.DisplayError(string.Format("Directory {0} doesn`t exist", dir));
 				}
 			}
 			catch (UnauthorizedAccessException)
 			{
 				Logger.Instance.Error(string.Format("Cannot save to: {0}: no permissions", filename));
-				STConsole.Instance.DisplayError(string.Format("you have no permission to write to {0}. This incident will be reported", filename));
+				MiddleConsole.HighConsole.DisplayError(string.Format("you have no permission to write to {0}. This incident will be reported", filename));
 			}
 		}
 
@@ -691,12 +691,12 @@ namespace SpecialTask
 			catch (LoadXMLError)
 			{
 				Logger.Instance.Error(string.Format("Cannot load {0}: invalid file format", filename));
-				STConsole.Instance.DisplayError("Invalid file format");
+				MiddleConsole.HighConsole.DisplayError("Invalid file format");
 			}
 			catch (FileNotFoundException)
 			{
 				Logger.Instance.Error(string.Format("Cannot load {0}: file not found", filename));
-				STConsole.Instance.DisplayError("File not found");
+				MiddleConsole.HighConsole.DisplayError("File not found");
 			}
 		}
 
@@ -750,7 +750,7 @@ namespace SpecialTask
         public ExitCommand(Dictionary<string, object> arguments)
 		{
 			receiver = System.Windows.Application.Current;
-			WPFConsole.Instance.SomethingTranferred += OnSomethingTransferred;
+			MiddleConsole.HighConsole.SomethingTranferred += OnSomethingTransferred;
             tokenSource = new();
             task = new Task(EmptyTask, tokenSource.Token);
         }
@@ -759,9 +759,9 @@ namespace SpecialTask
 		{
             if (SaveLoadFacade.Instance.NeedsSave)
             {
-                STConsole.Instance.TransferringInput = true;
-                STConsole.Instance.InputBlocked = false;
-                STConsole.Instance.DisplayWarningWithoutSlashN("File is not saved. Exit? [y, s, n] (default=n)");
+                MiddleConsole.HighConsole.TransferringInput = true;
+                MiddleConsole.HighConsole.InputBlocked = false;
+                MiddleConsole.HighConsole.DisplayQuestion("File is not saved. Exit? [y, s, n] (default=n)");
 
 				GetInputIfNotSaved();
             }
@@ -781,7 +781,7 @@ namespace SpecialTask
 				// continue
 			}
 
-            STConsole.Instance.TransferringInput = false;
+            MiddleConsole.HighConsole.TransferringInput = false;
 
             switch (answer)
             {
@@ -789,11 +789,11 @@ namespace SpecialTask
                     receiver.Shutdown();
                     break;
                 case EYesNoSaveAnswer.No:
-					STConsole.Instance.Display("\n");
-					STConsole.Instance.DisplayPrompt();
+					MiddleConsole.HighConsole.NewLine();
+					MiddleConsole.HighConsole.DisplayPrompt();
                     break;
                 case EYesNoSaveAnswer.Save:
-                    STConsole.Instance.Display("saving...");
+                    MiddleConsole.HighConsole.Display("saving...");
 					CommandsFacade.ExecuteButDontRegister(new SaveCommand(new()));		// We don`t need to check anything here. SaveLoadFacade will do
                     receiver.Shutdown();
                     break;
@@ -805,11 +805,11 @@ namespace SpecialTask
 
 		private void OnSomethingTransferred(object? sender, EventArgs e)
 		{
-			if (STConsole.Instance.TransferredChar == 'y' || STConsole.Instance.TransferredChar == 'Y' || 
-				STConsole.Instance.TransferredString.ToLower() == "yes") answer = EYesNoSaveAnswer.Yes;
+			if (MiddleConsole.HighConsole.TransferredChar == 'y' || MiddleConsole.HighConsole.TransferredChar == 'Y' || 
+				MiddleConsole.HighConsole.TransferredString.ToLower() == "yes") answer = EYesNoSaveAnswer.Yes;
 
-			else if (STConsole.Instance.TransferredChar == 's' || STConsole.Instance.TransferredChar == 'S' ||
-				STConsole.Instance.TransferredString.ToLower() == "save") answer = EYesNoSaveAnswer.Save;
+			else if (MiddleConsole.HighConsole.TransferredChar == 's' || MiddleConsole.HighConsole.TransferredChar == 'S' ||
+				MiddleConsole.HighConsole.TransferredString.ToLower() == "save") answer = EYesNoSaveAnswer.Save;
 
 			else answer = EYesNoSaveAnswer.No;
 
@@ -824,11 +824,11 @@ namespace SpecialTask
 
 	class ColorsCommand: ICommand
 	{
-		private STConsole receiver;
+		private IHighConsole receiver;
 
 		public ColorsCommand(Dictionary<string, object> arguments)
 		{
-			receiver = STConsole.Instance;
+			receiver = MiddleConsole.HighConsole;
 		}
 
 		public void Execute()
@@ -848,11 +848,11 @@ namespace SpecialTask
 
 	class TexturesCommand : ICommand
 	{
-		private STConsole receiver;
+		private readonly IHighConsole receiver;
 
 		public TexturesCommand(Dictionary<string, object> arguments)
 		{
-			receiver = STConsole.Instance;
+			receiver = MiddleConsole.HighConsole;
 		}
 
 		public void Execute()

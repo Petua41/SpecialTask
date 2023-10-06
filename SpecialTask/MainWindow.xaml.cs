@@ -16,7 +16,7 @@ namespace SpecialTask
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private readonly WPFConsole wpfConsole;
+		private readonly ILowConsole lowConsole;
 		private string currentInput = "";
 		private bool inputBlocked = false;
 		private bool transferringInput = false;
@@ -54,14 +54,14 @@ namespace SpecialTask
 			InitializeComponent();
 
 			logger = Logger.Instance;       // so that Logger gets right creation time
-			wpfConsole = WPFConsole.Instance;
+			lowConsole = MiddleConsole.LowConsole;
 
 			ParseCommandLineArguments();
 
 			windowManager = WindowManager.Instance; // Same as Logger
 
 			Display("\n");
-			wpfConsole.DisplayPrompt();
+			lowConsole.DisplayPrompt();
 		}
 
 		public void Display(string message, Color color)
@@ -110,7 +110,7 @@ namespace SpecialTask
 			if (inputChar != null)
 			{
 				if (TransferringInput) TransferInput(inputChar, ESpecialKeyCombinations.None);			// if we got character, transfer it
-				Display(inputChar.ToString());
+				Display(inputChar.ToString() ?? "");
 				currentInput += inputChar;
 			}
 		}
@@ -141,7 +141,7 @@ namespace SpecialTask
 			return numberKeys[key];
 		}
 
-		private char ProcessLetterKeys(Key key, bool shiftPressed)
+		private static char ProcessLetterKeys(Key key, bool shiftPressed)
 		{
 			if (shiftPressed) return key.ToString().Single();
 			return key.ToString().ToLower().Single();
@@ -179,7 +179,7 @@ namespace SpecialTask
 		/// </summary>
 		private void ProcessInputString()
 		{
-			wpfConsole.ProcessInputString(currentInput);
+			lowConsole.ProcessInputString(currentInput);
 			currentInput = "";
 		}
 
@@ -190,7 +190,7 @@ namespace SpecialTask
 		{
 			// TODO: здесь нужно получать, что можно дополнить от WPFConsole и дополнять
 			// Вот здесь и пригодится цепочка обязанностей: в зависимости от того, что надо дополнять (команда, аргумент, путь...) этот запрос обрабатывают разные классы
-			string completion = wpfConsole.Autocomplete(currentInput);
+			string completion = lowConsole.Autocomplete(currentInput);
 			if (completion.Length > 0) EmulateInput(completion);
 		}
 
@@ -244,12 +244,12 @@ namespace SpecialTask
 			{
 				case Key.Up:
 					if (TransferringInput) return;					// same as Ctrl+Z
-					string prevCommandToDisplay = wpfConsole.ProcessUpArrow();
+					string prevCommandToDisplay = lowConsole.ProcessUpArrow();
 					// TODO
 					break;
 				case Key.Down:
 					if (TransferringInput) return;                  // same as Ctrl+Z
-                    string nextCommandToDisplay = wpfConsole.ProcessDownArrow();
+                    string nextCommandToDisplay = lowConsole.ProcessDownArrow();
 					if (nextCommandToDisplay == "")
 					{
 						// TODO: вниз листать нечего. Ничего не делаем (нужно убедиться, что всё осталось как было)
@@ -277,7 +277,7 @@ namespace SpecialTask
 			}
 		}
 
-		private void MoveCaretToEnd()
+		private static void MoveCaretToEnd()
 		{
 			// TODO: у TextBlock нет явной Caret и Background не поддерживается
 		}
@@ -296,7 +296,7 @@ namespace SpecialTask
 			if (args.Length == 1) return;
 			try
 			{
-				if ((args[1] == "-d" || args[1] == "--undo_stack_depth") && args.Length > 2) wpfConsole.ChangeUndoStackDepth(int.Parse(args[2]));
+				if ((args[1] == "-d" || args[1] == "--undo_stack_depth") && args.Length > 2) lowConsole.ChangeUndoStackDepth(int.Parse(args[2]));
 			}
 			catch (FormatException)
 			{
@@ -343,7 +343,7 @@ namespace SpecialTask
 
 		private void TransferInput(char? character, ESpecialKeyCombinations combination)
 		{
-			wpfConsole.TransferInput(character, combination);
+			lowConsole.TransferInput(character, combination);
 		}
 	}
 }

@@ -107,9 +107,9 @@ namespace SpecialTask
             if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
         }
 
-        public event WindowSwitchedEventHandler WindowSwitchedEvent;
+        public event WindowSwitchedEventHandler? WindowSwitchedEvent;
 
-		public event EventHandler SomethingDisplayed;
+		public event EventHandler? SomethingDisplayed;
 	}
 
 	class WindowToDraw

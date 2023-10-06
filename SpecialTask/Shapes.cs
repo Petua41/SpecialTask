@@ -15,7 +15,8 @@ namespace SpecialTask
 		Magenta,
 		Red,
 		White,
-		Yellow
+		Yellow,
+		Purple
 	} // TODO
 
 	static class ColorsController
@@ -30,6 +31,7 @@ namespace SpecialTask
 				EColor.Red => Colors.Red,
 				EColor.White => Colors.White,
 				EColor.Yellow => Colors.Yellow,
+				EColor.Purple => Color.FromRgb(128, 0, 128),
 				_ => throw new ColorExcepttion(),
 			};
 		}
@@ -44,13 +46,14 @@ namespace SpecialTask
 				"red" => EColor.Red,
 				"white" => EColor.White,
 				"yellow" => EColor.Yellow,
+				"purple" => EColor.Purple,
 				_ => EColor.None,
 			};
 		}
 
 		public static List<string> GetColorsList()
 		{
-			return new() { "green", "magenta", "red", "white", "yellow" };
+			return new() { "green", "magenta", "red", "white", "yellow", "purple" };
 		}
 	}
 

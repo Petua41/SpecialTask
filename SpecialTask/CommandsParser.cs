@@ -7,7 +7,35 @@ using System.Xml.Linq;
 
 namespace SpecialTask
 {
-	struct ConsoleCommand
+    enum EArgumentType { Int, Color, PseudoBool, String, Texture }
+
+    static class ArgumentTypesConstroller
+    {
+        public static EArgumentType GetArgumentTypeFromString(string str)
+        {
+            return str.ToLower() switch
+            {
+                "int" => EArgumentType.Int,
+                "color" => EArgumentType.Color,
+                "string" => EArgumentType.String,
+                "texture" => EArgumentType.Texture,
+                _ => EArgumentType.PseudoBool
+            };
+        }
+
+        public static object ParseValue(this EArgumentType type, string value)
+        {
+            return type switch
+            {
+                EArgumentType.Int => int.Parse(value),
+                EArgumentType.Color => ColorsController.Parse(value),
+                EArgumentType.String => value,
+                EArgumentType.Texture => TextureController.Parse(value),
+                _ => value != "false"                   // all true, that not false
+            };
+        }
+    }
+    struct ConsoleCommand
 	{
 		public string neededUserInput;
 		public string? help;
@@ -101,19 +129,32 @@ namespace SpecialTask
 	{
 		const string XML_WITH_COMMANDS = @"ConsoleCommands.xml";
 
-		static List<ConsoleCommand> consoleCommands = new();
+		static readonly List<ConsoleCommand> consoleCommands = new();
 		public static string globalHelp = "[color:yellow]Global help not found![color]";
-		private static string projectDir;
+		private static readonly string projectDir = "";
 
 		static CommandsParser()
 		{
 			DirectoryInfo? workingDir = Directory.GetParent(Environment.CurrentDirectory);      // GetParent на самом деле получает не Parent, а саму директорию
-			if (workingDir == null) LogThatWeAreInRootDir();
+			if (workingDir == null)
+			{
+				LogThatWeAreInRootDir();
+				return;
+			}
 
 			DirectoryInfo? binDir = workingDir.Parent;
-			if (binDir == null) LogThatWeAreInRootDir();
+			if (binDir == null)
+			{
+				LogThatWeAreInRootDir();
+				return;
+			}
 
-			projectDir = binDir.Parent.FullName;
+			projectDir = binDir.Parent?.FullName ?? "";
+			if (projectDir.Length == 0)
+			{
+				LogThatWeAreInRootDir();
+				return;
+			}
 
 			try { (consoleCommands, globalHelp) = ParseCommandsXML(); }
 			catch (CannotFindResourceFileException)
@@ -150,7 +191,7 @@ namespace SpecialTask
 			int commandNumber = SelectCommand(commandName);
 			if (commandNumber < 0)                        // Если команда не найдена, выводим глобальную помощь (help и ? тоже не будут найдены)
 			{
-				if (userInput.Length > 0) STConsole.Instance.DisplayGlobalHelp();	// if user just pressed enter, don`t help him
+				if (userInput.Length > 0) MiddleConsole.HighConsole.DisplayGlobalHelp();	// if user just pressed enter, don`t help him
 				return;
 			}
 
@@ -371,7 +412,7 @@ namespace SpecialTask
 			if (consoleCommand.fictional)
 			{
 				Logger.Instance.Warning(string.Format("Call of the fictional command {0}", consoleCommand.neededUserInput));
-				STConsole.Instance.DisplayError(string.Format("You cannot call {0} without \"second-level command\". Try {0} --help",
+				MiddleConsole.HighConsole.DisplayError(string.Format("You cannot call {0} without \"second-level command\". Try {0} --help",
 					consoleCommand.neededUserInput));
 				throw new CallOfFictionalCommandException();
 			}
@@ -382,13 +423,13 @@ namespace SpecialTask
 				bool isPresent = arguments.ContainsKey(argument.commandParameterName);
 				if (!isPresent && argument.isNecessary)
 				{
-					STConsole.Instance.DisplayError(string.Format("Missing required argument {0}. Try {1} --help",
+					MiddleConsole.HighConsole.DisplayError(string.Format("Missing required argument {0}. Try {1} --help",
 						argument.longArgument, consoleCommand.neededUserInput));
 					throw new ArgumentParsingError();
 				}
 			}
 
-			Type type = consoleCommand.commandType;
+			Type type = consoleCommand.commandType ?? throw new CallOfFictionalCommandException();
 			try
 			{
 				ConstructorInfo constructor = type.GetConstructors().Single();
@@ -450,21 +491,21 @@ namespace SpecialTask
 					}
 					catch (FormatException)		// Error casting string to int. Other types of parameters have default values (EColor.None, etc.)
 					{
-						STConsole.Instance.DisplayError(string.Format("{0} should be integer. {1} is not integer. Try {2} --help",
+						MiddleConsole.HighConsole.DisplayError(string.Format("{0} should be integer. {1} is not integer. Try {2} --help",
 							arg.longArgument, rawValue, command.neededUserInput));
 						throw new ArgumentParsingError();
 					}
 				}
 			}
-			STConsole.Instance.DisplayError(string.Format("Unknown argument: {0}. Try {1} -- help", argument, command.neededUserInput));
+			MiddleConsole.HighConsole.DisplayError(string.Format("Unknown argument: {0}. Try {1} -- help", argument, command.neededUserInput));
 			throw new ArgumentParsingError();
 		}
 
 		private static void DisplayHelp(ConsoleCommand command)
 		{
 			string? help = command.help;
-			if (help == null) STConsole.Instance.DisplayError("Help not found");
-			else STConsole.Instance.Display(help);
+			if (help == null) MiddleConsole.HighConsole.DisplayError("Help not found");
+			else MiddleConsole.HighConsole.Display(help);
 		}
 	}
 

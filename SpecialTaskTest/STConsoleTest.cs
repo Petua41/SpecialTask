@@ -4,12 +4,12 @@ namespace SpecialTaskTest
 {
     public class STConsoleTests
     {
-        STConsole console;
+        ILowConsole console;
 
         [SetUp]
         public void Setup()
         {
-            console = STConsole.Instance;
+            console = MiddleConsole.LowConsole;
         }
 
         [Test]
@@ -23,7 +23,7 @@ namespace SpecialTaskTest
                 { "magenta", EColor.Magenta },
                 { "none", EColor.None }
             };
-            MyMap<string, EColor> actual = STConsole.SplitMessageByColors(message);
+            MyMap<string, EColor> actual = MiddleConsole.SplitMessageByColors(message);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -35,7 +35,7 @@ namespace SpecialTaskTest
             {
                 { "this is a colorless message", EColor.None }
             };
-            MyMap<string, EColor> actual = STConsole.SplitMessageByColors(message);
+            MyMap<string, EColor> actual = MiddleConsole.SplitMessageByColors(message);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
