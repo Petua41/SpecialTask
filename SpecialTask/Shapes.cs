@@ -34,7 +34,7 @@ namespace SpecialTask
 			};
 		}
 
-		public static EColor GetColorFromString(string colorString)
+		public static EColor Parse(string colorString)
 		{
 			colorString = colorString.Trim().ToLower();
 			return colorString switch

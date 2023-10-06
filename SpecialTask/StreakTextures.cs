@@ -31,7 +31,7 @@ namespace SpecialTask
         private static readonly IBrushPrototype radTranspToColorGradientBrush = new RadialGradientTexture() { { Colors.Transparent, 0 } };
         private static readonly IBrushPrototype waterSeamlessTexture = new SeamlessTexture(@"../../../Resources/water_texture.jpg");
 
-        public static EStreakTexture GetTextureFromString(string textureName)
+        public static EStreakTexture Parse(string textureName)
         {
             return textureName.ToLower() switch
             {
@@ -47,7 +47,7 @@ namespace SpecialTask
             };
         }
 
-        public static Brush GetWPFTexture(EStreakTexture texture, EColor color)
+        public static Brush GetWPFTexture(this EStreakTexture texture, EColor color)
         {
             Color wpfColor = color.GetWPFColor();
             return texture switch

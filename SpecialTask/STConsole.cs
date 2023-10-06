@@ -24,9 +24,9 @@ namespace SpecialTask
             return type switch
             {
                 EArgumentType.Int => int.Parse(value),
-                EArgumentType.Color => ColorsController.GetColorFromString(value),
+                EArgumentType.Color => ColorsController.Parse(value),
                 EArgumentType.String => value,
-                EArgumentType.Texture => TextureController.GetTextureFromString(value),
+                EArgumentType.Texture => TextureController.Parse(value),
                 _ => value != "false"                   // all true, that not false
             };
         }
@@ -118,7 +118,7 @@ namespace SpecialTask
                     else
                     {
                         string colorName = colorSequence[7..^1];
-                        try { lastColor = ColorsController.GetColorFromString(colorName); }
+                        try { lastColor = ColorsController.Parse(colorName); }
                         catch (ColorExcepttion)
                         {
                             Logger.Instance.Error(string.Format("Invalid color name in escape sequence: {0}", colorName));

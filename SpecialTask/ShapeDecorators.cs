@@ -79,7 +79,7 @@ namespace SpecialTask
 				if (decoratedShape == null) throw new HangingDecoratorException();
 
 				System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
-				shape.Fill = TextureController.GetWPFTexture(streakTexture, streakColor);
+				shape.Fill = streakTexture.GetWPFTexture(streakColor);
 				decoratedShape.Destroy();               // Shape displays itself in constructor, so we should destroy it
 
 				wpfShape = shape;
@@ -109,10 +109,11 @@ namespace SpecialTask
             decoratedShape.NullifyWPFShape();
         }
 
+		public Shape? DecoratedShape => decoratedShape;
+
         public override Dictionary<string, object> Accept()
         {
-			// TODO
-            throw new NotImplementedException();
+			return new() { { "streakColor", streakColor }, { "streakTexture", streakTexture } };
         }
     }
 }

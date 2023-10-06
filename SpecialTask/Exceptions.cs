@@ -103,9 +103,9 @@ namespace SpecialTask
     /// </summary>
     class NothingToSaveException: Exception { }
     /// <summary>
-    /// Raised, when while loading met element with unknown tag
+    /// Raised, when while loading/saving met element with unknown tag or subclass of Shape
     /// </summary>
-    class UnknownShapeWhileLoadingException: Exception { }
+    class UnknownShapeException: Exception { }
     /// <summary>
     /// Raised, when cannot parse XML (while loading)
     /// </summary>
