@@ -190,6 +190,8 @@ namespace SpecialTask
 		{
 			// TODO: здесь нужно получать, что можно дополнить от WPFConsole и дополнять
 			// Вот здесь и пригодится цепочка обязанностей: в зависимости от того, что надо дополнять (команда, аргумент, путь...) этот запрос обрабатывают разные классы
+			string completion = wpfConsole.Autocomplete(currentInput);
+			if (completion.Length > 0) EmulateInput(completion);
 		}
 
 		private void ProcessBackspace()

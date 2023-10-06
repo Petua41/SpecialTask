@@ -12,27 +12,28 @@ namespace SpecialTask
 		public string neededUserInput;
 		public string? help;
 		public Type? commandType;
-		public List<ConsoleCommandArgument> argumetns;
+		public List<ConsoleCommandArgument> arguments;
 		public bool supportsUndo;
 		public bool fictional;                                  // Только для help. При вызове печатает что-то типа "invalid command"
 
 		public readonly string AutocompleteArguments(string input)
 		{
-			if (input.StartsWith(neededUserInput))
+			if (input.StartsWith(neededUserInput))				// check that it`s right command
 			{
-				string lastArgument = SelectLastArgument(input);
-				if (!IsArgumentFull(lastArgument))
-				{
-					// аргумент введён не целиком
-					List<ConsoleCommandArgument> possibleArgs = TryToAutocompleteArgs(lastArgument);
-					if (possibleArgs.Count == 1)                // один подходящий аргумент
+				string lastArgument = SelectLastLongArgument(input).Trim();
+
+				if (!IsLongArgumentFull(lastArgument))          // the argument is not full
+                {
+					List<ConsoleCommandArgument> possibleArgs = TryToAutocompleteLongArgs(lastArgument);
+
+					if (possibleArgs.Count == 1) return possibleArgs.Single().longArgument.Replace(lastArgument, "");		// one corresponding argument
+					else if (possibleArgs.Count > 1)			// several corresponding arguments
 					{
-						if (lastArgument.StartsWith("--")) return possibleArgs.Single().longArgument;
-						return possibleArgs.Single().shortArgument;
+						return (from arg in possibleArgs select arg.longArgument.Replace(lastArgument, "")).ToList().LongestCommonPrefix();
 					}
-					else return "";                                  // невозможно однозначно определить (больше одного подходящего аргумента or no corresponding arguments)
+					return "";									// no corresponding arguments
 				}
-				else return "";
+				return "";										// the argument is already full
 
 			}
 			else
@@ -42,41 +43,32 @@ namespace SpecialTask
 			}
 		}
 
-		private readonly string SelectLastArgument(string input)
+		private static string SelectLastLongArgument(string input)
 		{
 			int indexOfLastSingleMinus = input.LastIndexOf("-");
 			int indexOfLastDoubleMinus = input.LastIndexOf("--");
-			if (indexOfLastSingleMinus < 0 && indexOfLastDoubleMinus < 0)
-			{
-				// нет аргументов
-				return "";
-			}
-			if (indexOfLastSingleMinus + 1 > indexOfLastDoubleMinus)
-			{
-				// последний аргумент -- короткий
-				return input[indexOfLastSingleMinus..];
-			}
+
+			if (indexOfLastSingleMinus > indexOfLastDoubleMinus + 1 || indexOfLastDoubleMinus < 0) return "";
+
 			return input[indexOfLastDoubleMinus..];
 		}
 
-		private readonly List<ConsoleCommandArgument> TryToAutocompleteArgs(string argument)
+		private readonly List<ConsoleCommandArgument> TryToAutocompleteLongArgs(string argument)
 		{
-			return (from arg in argumetns where arg.shortArgument.StartsWith(argument) || arg.longArgument.StartsWith(argument) select arg).ToList();
-		}
+			//return (from arg in argumetns where arg.longArgument.StartsWith(argument) select arg).ToList();
 
-		private readonly bool IsArgumentFull(string argument)
-		{
-			return (from arg in argumetns where arg.shortArgument == argument.Trim() || arg.longArgument == argument.Trim() select arg).Any();
-		}
+			List<ConsoleCommandArgument> result = new();
 
-		private readonly ConsoleCommandArgument ChooseArgument(string input)
-		{
-			try { return (from arg in argumetns where arg.shortArgument == input.Trim() || arg.longArgument == input.Trim() select arg).First(); }
-			catch (InvalidOperationException)
+			foreach (ConsoleCommandArgument arg in arguments)
 			{
-				Logger.Instance.Error("IsArgumetFull said that argument is full, but it isn`t");
-				throw new ChainOfResponsibilityException();
+				if (arg.longArgument.StartsWith(argument)) result.Add(arg);
 			}
+			return result;
+		}
+
+		private readonly bool IsLongArgumentFull(string argument)
+		{
+			return (from arg in arguments where arg.longArgument == argument.Trim() select arg).Any();
 		}
 	}
 
@@ -134,6 +126,7 @@ namespace SpecialTask
 			}
 		}
 
+		// TODO: this method is TOO long
 		public static void ParseCommand(string userInput)
 		{
 			bool thereAreArguments = true;
@@ -169,8 +162,8 @@ namespace SpecialTask
 
 				if (argumentValues.ContainsKey("help") && (bool)argumentValues["help"])
 				{
-					STConsole.Instance.Display(GetHelp(consoleCommand));
-					return;
+					DisplayHelp(consoleCommand);
+                    return;
 				}
 
 				ICommand command = CreateCommand(consoleCommand, argumentValues);
@@ -184,34 +177,31 @@ namespace SpecialTask
 
 		public static string Autocomplete(string input)
 		{
-			if (input.Length == 0)
+			if (input.Length > 0)
 			{
-				return "";
-			}
-			else if (!input.Contains(' '))
-			{
-				if (IsThereACompeteCommand(input))
-				{
-					ConsoleCommand command = consoleCommands[SelectCommand(input)];
+				int idxOfCommand = TryToSelectCommand(input);
+				if (idxOfCommand >= 0)
+				{														// complete command => pass request on
+					ConsoleCommand command = consoleCommands[idxOfCommand];
 					return command.AutocompleteArguments(input);
 				}
 				else
 				{
 					List<ConsoleCommand> possibleCommands = GetListOfCommandsToComplete(input);
-					if (possibleCommands.Count == 0) return "";
-					else if (possibleCommands.Count == 1)
+					if (possibleCommands.Count == 0) return "";			// no candidates
+					else if (possibleCommands.Count == 1)				// one candidate
 					{
 						string shouldBe = possibleCommands.Single().neededUserInput;
 						return shouldBe.Replace(input, "");
 					}
-					else
-					{
-						return "";
+					else												// several candidates
+                    {
+                        return (from command in possibleCommands select command.neededUserInput.Replace(input, "")).ToList().LongestCommonPrefix();
 					}
 				}
 			}
 
-			throw new NotImplementedException();
+			return "";		// empty input => nothing
 		}
 
 		private static void LogThatWeAreInRootDir()
@@ -221,10 +211,11 @@ namespace SpecialTask
 			Logger.Instance.Fatal("Cannot get XML file with commands! exitting...");
 		}
 
-		private static bool IsThereACompeteCommand(string input)
+		private static int TryToSelectCommand(string input)
 		{
-			if (SelectCommand(input) > 0) return true;
-			return false;
+			int indexOfFirstMinus = input.IndexOf('-');
+			if (indexOfFirstMinus > 0) input = input[..indexOfFirstMinus];
+			return SelectCommand(input);
 		}
 
 		private static List<ConsoleCommand> GetListOfCommandsToComplete(string input)
@@ -304,7 +295,7 @@ namespace SpecialTask
 				commandType = commandType,
 				supportsUndo = supportsUndo,
 				fictional = fictional,
-				argumetns = arguments
+				arguments = arguments
 			};
 		}
 
@@ -385,9 +376,9 @@ namespace SpecialTask
 				throw new CallOfFictionalCommandException();
 			}
 
-			for (int i = 0; i < consoleCommand.argumetns.Count; i++)
+			for (int i = 0; i < consoleCommand.arguments.Count; i++)
 			{
-				ConsoleCommandArgument argument = consoleCommand.argumetns[i];
+				ConsoleCommandArgument argument = consoleCommand.arguments[i];
 				bool isPresent = arguments.ContainsKey(argument.commandParameterName);
 				if (!isPresent && argument.isNecessary)
 				{
@@ -446,7 +437,7 @@ namespace SpecialTask
 
 			if (argument == "-h" || argument == "--help") return new("help", true);
 
-			foreach (ConsoleCommandArgument arg in command.argumetns)
+			foreach (ConsoleCommandArgument arg in command.arguments)
 			{
 				if (argument.StartsWith(arg.longArgument) || argument.StartsWith(arg.shortArgument))
 				{
@@ -469,9 +460,34 @@ namespace SpecialTask
 			throw new ArgumentParsingError();
 		}
 
-		private static string GetHelp(ConsoleCommand command)
+		private static void DisplayHelp(ConsoleCommand command)
 		{
-			return command.help ?? "";
+			string? help = command.help;
+			if (help == null) STConsole.Instance.DisplayError("Help not found");
+			else STConsole.Instance.Display(help);
+		}
+	}
+
+	static class ListOfStringsOperations
+	{
+		public static int ShortestLength(this IList<string> collection)
+		{
+			return (from str in collection select str.Length).Min();
+		}
+
+		public static string LongestCommonPrefix(this IList<string> collection)
+		{
+			string lastPrefix = "";
+			for (int i = 0; i < collection.ShortestLength(); i++)
+			{
+				string commonPrefix = collection[0][..(i + 1)];
+				foreach (string str in collection)
+				{
+					if (!str.StartsWith(commonPrefix)) return lastPrefix;
+				}
+				lastPrefix = commonPrefix;
+			}
+			return lastPrefix;
 		}
 	}
 }
