@@ -129,6 +129,8 @@
   <command userInput="colors" commandClass="ColorsCommand">Display list of colors</command>
   <!-- textures -->
   <command userInput="textures" commandClass="TexturesCommand">Display list of streak textures</command>
+  <!-- clear -->
+  <command userInput="clear" commandClass="ClearCommand" supportsUndo="true">Clear current screen</command>
 
 	<!-- fictional commands -->
 	<command userInput="new" fictional="true">Adds specified shape to the screen. You cannot invoke this command without specifying shape
@@ -140,32 +142,34 @@
 	<command userInput="window" fictional="true">Controls windows. You cannot invoke this command without specifying concrete action</command>
 	
 	<!-- common help -->
-	<help>Special Task 1
+	<help>
+    Special Task 1
 
-Console-managed graphic editor
+    Console-managed graphic editor
 
-Usage: command [arguments]
+    Usage: command [arguments]
 
-[color:Magenta]Commands:[color]
-	new           Add shape to the screen
-	window        Control windows
-	edit          Edit shapes on the screen
-	select        Select rectangular area
-	undo          Undo last actions
-	redo          Redo last actions
-	save          Save
-	save_as       Save as
-	load          Load
-  
-	colors        Get list of colors
-	textures      Get list of streak textures
-	help          Display this help
+    [color:Magenta]Commands:[color]
+    new           Add shape to the screen
+    window        Control windows
+    edit          Edit shapes on the screen
+    select        Select rectangular area
+    undo          Undo last actions
+    redo          Redo last actions
+    save          Save
+    save_as       Save as
+    load          Load
+    clear         Clear current screen
 
-You can type [color:Green]command --help[color] to get context help
+    colors        Get list of colors
+    textures      Get list of streak textures
+    help          Display this help
 
-------- GNU GPL v.3 -------
-No guarantees are provided, including workability and applicability for any purposes.
+    You can type [color:Green]command --help[color] to get context help
 
-(c) Petr Senichenkov, 2023
-Source code: https://github.com/Petua41/SpecialTask.git</help>
+    ------- GNU GPL v.3 -------
+    No guarantees are provided, including workability and applicability for any purposes.
+
+    (c) Petr Senichenkov, 2023
+    Source code: https://github.com/Petua41/SpecialTask.git</help>
 </commands>

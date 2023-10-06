@@ -25,7 +25,7 @@ namespace SpecialTask
 			return color switch
 			{
 				EColor.None => Colors.Transparent,
-				EColor.Green => Colors.Green,
+				EColor.Green => Colors.LimeGreen,
 				EColor.Magenta => Colors.Magenta,
 				EColor.Red => Colors.Red,
 				EColor.White => Colors.White,
@@ -129,6 +129,8 @@ namespace SpecialTask
 
 			WindowManager.Instance.DisplayOnCurrentWindow(this);
 		}
+
+		public Circle(Circle old) : this(old.CenterX, old.CenterY, old.Color, old.Radius, old.LineThickness) { }
 
 		public static new string GetNextUniqueName()
 		{
@@ -300,6 +302,8 @@ namespace SpecialTask
 
             WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
+
+		public Square(Square old) : this(old.LeftTopX, old.LeftTopY, old.RightBottomX, old.RightBottomY, old.Color, old.LineThickness) { }
 
 		public static new string GetNextUniqueName()
 		{
@@ -479,6 +483,8 @@ namespace SpecialTask
 
             WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
+
+		public Line(Line old) : this(old.FirstX, old.FirstY, old.SecondX, old.SecondY, old.Color, old.LineThickness) { }
 
         public static new string GetNextUniqueName()
         {

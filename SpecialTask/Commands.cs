@@ -684,7 +684,7 @@ namespace SpecialTask
 		{
 			if (clearScreen)
 			{
-
+				CommandsFacade.RegisterAndExecute(new ClearCommand(new()));
 			}
 
 			try { SaveLoadFacade.Instance.Load(filename); }
@@ -708,7 +708,7 @@ namespace SpecialTask
 
 	class ClearCommand: ICommand
 	{
-		private WindowManager receiver;
+		private readonly WindowManager receiver;
 		private List<Shape> destroyedShapes = new();
 
 		public ClearCommand(Dictionary<string, object> arguments)
@@ -718,7 +718,7 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			destroyedShapes = receiver.ShapesOnCurrentWindow();
+			destroyedShapes = new(receiver.ShapesOnCurrentWindow());
 			foreach (Shape shape in destroyedShapes) shape.Destroy();
 		}
 
@@ -726,8 +726,12 @@ namespace SpecialTask
 		{
 			foreach (Shape shape in destroyedShapes)
 			{
-				// TODO: we should somehow restore `em
+				Shape _;
+				if (shape is Circle circle) _ = new Circle(circle);
+				else if (shape is Square square) _ = new Square(square);
+				else if (shape is Line line) _ = new Line(line);
 			}
+			destroyedShapes.Clear();
 		}
 	}
 
