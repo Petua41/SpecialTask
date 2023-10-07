@@ -5,14 +5,17 @@ namespace SpecialTask
 {
 	abstract class ShapeDecorator : Shape
 	{
-		private Shape? decoratedShape;
-		private System.Windows.Shapes.Shape? wpfShape;
+		private readonly Shape? decoratedShape;
 
 		public new string UniqueName
 		{
 			get
 			{
-				if (decoratedShape == null) throw new HangingDecoratorException();
+				if (decoratedShape == null)
+				{
+					Logger.Instance.Error("Trying to get unique name of hanging decorator");
+					return "";
+				}
 				return decoratedShape.UniqueName;
 			}
 		}
@@ -23,9 +26,9 @@ namespace SpecialTask
 		private EColor streakColor;
 		private EStreakTexture streakTexture;
         private System.Windows.Shapes.Shape? wpfShape;
-        private Shape? decoratedShape;
+        private readonly Shape? decoratedShape;
 
-        public StreakDecorator(Shape decoratedShape, EColor streakColor, EStreakTexture streakTexture)
+        public StreakDecorator(Shape? decoratedShape, EColor streakColor, EStreakTexture streakTexture)
 		{
 			this.decoratedShape = decoratedShape;
 			this.streakColor = streakColor;
@@ -34,10 +37,17 @@ namespace SpecialTask
             WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
+		public StreakDecorator(StreakDecorator old) : this(old.DecoratedShape, old.streakColor, old.streakTexture) { }
+
 		public override object Edit(string attribute, object value)
 		{
 			object oldValue;
-			if (decoratedShape == null) throw new HangingDecoratorException();
+
+			if (decoratedShape == null)
+			{
+				Logger.Instance.Error("Trying to edit hanging decorator");
+				return new();
+			}
 
 			try
 			{
@@ -65,7 +75,11 @@ namespace SpecialTask
 		{
 			get
 			{
-				if (decoratedShape == null) throw new HangingDecoratorException();
+				if (decoratedShape == null)
+				{
+					Logger.Instance.Error("Trying to get center of hanging decorator");
+					return (0, 0);
+				}
 				return decoratedShape.Center;
 			}
 		}
@@ -76,7 +90,11 @@ namespace SpecialTask
 			{
 				if (wpfShape != null) return wpfShape;
 
-				if (decoratedShape == null) throw new HangingDecoratorException();
+				if (decoratedShape == null)
+				{
+					Logger.Instance.Error("Trying to get WPFShape of hanging decorator");
+					throw new HangingDecoratorException();
+				}
 
 				System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
 				shape.Fill = streakTexture.GetWPFTexture(streakColor);
@@ -89,24 +107,14 @@ namespace SpecialTask
 
         public override void Destroy()
         {
-            if (decoratedShape == null)
-            {
-                Logger.Instance.Error("Attempt to destroy hanging decorator");
-                throw new HangingDecoratorException();
-            }
-            decoratedShape.Destroy();
+            decoratedShape?.Destroy();
             WindowManager.Instance.RemoveFromCurrentWindow(this);
         }
 
         public override void NullifyWPFShape()
         {
-            if (decoratedShape == null)
-            {
-                Logger.Instance.Error("Attempt to nullify hanging decorator`s wpfShape");
-                throw new HangingDecoratorException();
-            }
             wpfShape = null;
-            decoratedShape.NullifyWPFShape();
+            decoratedShape?.NullifyWPFShape();
         }
 
 		public Shape? DecoratedShape => decoratedShape;
@@ -114,6 +122,23 @@ namespace SpecialTask
         public override Dictionary<string, object> Accept()
         {
 			return new() { { "streakColor", streakColor }, { "streakTexture", streakTexture } };
+        }
+
+        public override void MoveXBy(int offset)
+        {
+			decoratedShape?.MoveXBy(offset);
+			Redraw();
+        }
+
+        public override void MoveYBy(int offset)
+        {
+            decoratedShape?.MoveYBy(offset);
+            Redraw();
+        }
+
+        public override Shape Clone()
+        {
+			return new StreakDecorator(this);
         }
     }
 }

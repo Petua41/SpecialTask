@@ -110,4 +110,8 @@ namespace SpecialTask
     /// Raised, when cannot parse XML (while loading)
     /// </summary>
     class LoadXMLError: Exception { }
+    /// <summary>
+    /// Raised, when called SlectionMarker.Edit or Accept
+    /// </summary>
+    class SelectionMarkerException: Exception { }
 }

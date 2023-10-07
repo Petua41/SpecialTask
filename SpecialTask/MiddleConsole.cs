@@ -62,7 +62,7 @@ namespace SpecialTask
             if (singleton != null) throw new SingletonError();
 
             try { mainWindowInstance = (MainWindow)Application.Current.MainWindow; }
-            catch (Exception ex)
+            catch (NullReferenceException ex)
             {
                 Logger.Instance.Error(string.Format("{0} exception while trying to get MainWindow instance!", ex.GetType().ToString()));
                 throw;
@@ -166,16 +166,16 @@ namespace SpecialTask
             NewLine();
         }
 
-        public string ProcessDownArrow()
-        {
-            // TODO
-            throw new NotImplementedException();
-        }
-
         public void ProcessInputString(string input)
         {
             CommandsParser.ParseCommand(input);
             DisplayPrompt();
+        }
+
+        public string ProcessDownArrow()
+        {
+            // TODO
+            throw new NotImplementedException();
         }
 
         public string ProcessUpArrow()

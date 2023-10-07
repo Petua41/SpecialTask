@@ -102,6 +102,10 @@
 		<argument shortArgument="-X" longArgument="--right_bottom_x" type="Int" isNecessary="true" commandParameterName="rightBottomX"/>
 		<argument shortArgument="-Y" longArgument="--right_bottom_y" type="Int" isNecessary="true" commandParameterName="rightBottomY"/>
 	</command>
+  <!-- paste -->
+  <command userInput="paste" commandClass="PasteCommand" supportsUndo="true">Pastes selected area<argument shortArgument="-x" longArgument="--leftTopX" type="Int" isNecessary="true" commandParameterName="leftTopX"/>
+    <argument shortArgument="-y" longArgument="--leftTopY" type="Int" commandParameterName="leftTopY"/>
+  </command>
 	<!-- undo -->
 	<command userInput="undo" commandClass="UndoCommand">Cancels the specified number (default is 1) of last commands
 

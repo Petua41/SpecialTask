@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace SpecialTask
 {
@@ -102,6 +103,8 @@ namespace SpecialTask
 			for (int i = existingWindows.Count - 1; i >= 0; i--) DestroyWindow(i);
         }
 
+		public Canvas Canvas => currentWindow.Canvas;
+
         private void ValidateWindowNumber(int numberOfWindow)
         {
             if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
@@ -173,7 +176,7 @@ namespace SpecialTask
 					break;
 				}
 			}
-			if (index > 0)				// if cannot find, no problem
+			if (index >= 0)				// if cannot find, no problem
 			{
 				allShapesOnThisWindow.RemoveAt(index);
 				zOrder.Remove(index);

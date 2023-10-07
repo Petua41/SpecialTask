@@ -403,7 +403,7 @@ namespace SpecialTask
 	}
 
 	/// <summary>
-	/// Команда для переключения на заданное окно
+	/// Command to delete window
 	/// </summary>
 	class DeleteWindowCommand : ICommand
 	{
@@ -446,7 +446,7 @@ namespace SpecialTask
 	}
 
 	/// <summary>
-	/// Команда для переключения на заданное окно
+	/// Command for selectiong shapes on specified area
 	/// </summary>
 	class SelectCommand : ICommand
 	{
@@ -454,17 +454,15 @@ namespace SpecialTask
 		private readonly int leftTopY;
 		private readonly int rightBottomX;
 		private readonly int rightBottomY;
-		// TODO: receiver
 
 		public SelectCommand(Dictionary<string, object> arguments)
 		{
-			// TODO: receiver
 			try
 			{
-				int leftTopX = (int)arguments["leftTopX"];
-				int leftTopY = (int)arguments["leftTopY"];
-				int rightBottomX = (int)arguments["rightBottomX"];
-				int rightBottomY = (int)arguments["rightBottomY"];
+				leftTopX = (int)arguments["leftTopX"];
+				leftTopY = (int)arguments["leftTopY"];
+				rightBottomX = (int)arguments["rightBottomX"];
+				rightBottomY = (int)arguments["rightBottomY"];
 			}
 			catch (KeyNotFoundException)
 			{
@@ -480,7 +478,9 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			// TODO
+			SelectionMarker marker = new(leftTopX, leftTopY, rightBottomX, rightBottomY);
+
+			SelectPasteHandler.SaveArea(leftTopX, leftTopY, rightBottomX, rightBottomY);
 		}
 
 		public void Unexecute()
@@ -489,10 +489,51 @@ namespace SpecialTask
 		}
 	}
 
-	/// <summary>
-	/// Команда для отмены команд
-	/// </summary>
-	class UndoCommand : ICommand
+    /// <summary>
+    /// Команда для переключения на заданное окно
+    /// </summary>
+    class PasteCommand : ICommand
+    {
+        private readonly int leftTopX;
+        private readonly int leftTopY;
+		// TODO: receiver -- something to save area
+
+		private List<Shape> pastedShapes = new();
+
+        public PasteCommand(Dictionary<string, object> arguments)
+        {
+            try
+            {
+                leftTopX = (int)arguments["leftTopX"];
+                leftTopY = (int)arguments["leftTopY"];
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of PasteCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of PasteCommand");
+                throw;
+            }
+        }
+
+        public void Execute()
+        {
+			pastedShapes = SelectPasteHandler.PasteArea(leftTopX, leftTopY);
+        }
+
+        public void Unexecute()
+        {
+			foreach (Shape shape in pastedShapes) shape.Destroy();
+        }
+    }
+
+    /// <summary>
+    /// Команда для отмены команд
+    /// </summary>
+    class UndoCommand : ICommand
 	{
 		// У неё нет receiver, потому что CommandsFacade статический
 		private readonly int number;
@@ -659,7 +700,7 @@ namespace SpecialTask
 	{
         // no receiver, because SaveLoadFacade is static
         readonly string filename;
-		bool clearScreen = false;
+        readonly bool clearScreen = false;
 
 		public LoadCommand(Dictionary<string, object> arguments)
 		{
@@ -719,18 +760,14 @@ namespace SpecialTask
 		public void Execute()
 		{
 			destroyedShapes = new(receiver.ShapesOnCurrentWindow());
+
 			foreach (Shape shape in destroyedShapes) shape.Destroy();
 		}
 
 		public void Unexecute()
 		{
-			foreach (Shape shape in destroyedShapes)
-			{
-				Shape _;
-				if (shape is Circle circle) _ = new Circle(circle);
-				else if (shape is Square square) _ = new Square(square);
-				else if (shape is Line line) _ = new Line(line);
-			}
+			foreach (Shape shape in destroyedShapes) shape.Redraw();
+
 			destroyedShapes.Clear();
 		}
 	}
