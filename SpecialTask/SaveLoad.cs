@@ -151,6 +151,7 @@ namespace SpecialTask
 			else if (shape is Square square) return VisitSquare(square);
 			else if (shape is Line line) return VisitLine(line);
 			else if (shape is StreakDecorator decor) return VisitStreakDecorator(decor);
+			else if (shape is Text text) return VisitText(text);
 
 			throw new UnknownShapeException();
 		}
@@ -261,6 +262,31 @@ namespace SpecialTask
 			catch (Exception ex) when (ex is InvalidOperationException or InvalidCastException) { throw new VisitorInvalidAcceptError(); }
 		}
 
+		private static XElement VisitText(Text text)
+		{
+            Dictionary<string, object> shapeAttrubutes = text.Accept();
+            try
+            {
+                try
+                {
+                    string leftTopX = shapeAttrubutes["leftTopX"].ToString() ?? "0";
+                    string leftTopY = shapeAttrubutes["leftTopY"].ToString() ?? "0";
+                    string fontSize = shapeAttrubutes["fontSize"].ToString() ?? "0";
+                    string textValue = shapeAttrubutes["textValue"].ToString() ?? "";
+                    string color = shapeAttrubutes["color"].ToString() ?? "none";
+                    if (leftTopX == null || leftTopY == null || fontSize == null || text == null || color == null)
+                        throw new VisitorInvalidAcceptError();
+
+                    return GenerateXML("text", new()
+                    {
+                        { "leftTopX", leftTopX }, { "leftTopY", leftTopY }, { "fontSize", fontSize }, { "textValue", textValue }, { "color", color }
+                    });
+                }
+                catch (Exception ex) when (ex is KeyNotFoundException or InvalidCastException) { throw new VisitorInvalidAcceptError(); }
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or InvalidCastException) { throw new VisitorInvalidAcceptError(); }
+        }
+
 		private static XElement GenerateXML(string tag, Dictionary<string, string> nameValuePairs)
 		{
 			XName name = XName.Get(tag, XMLHandler.xmlns);
@@ -304,6 +330,7 @@ namespace SpecialTask
 					"circle" => ParseCircle(dict),
 					"square" => ParseSquare(dict),
 					"line" => ParseLine(dict),
+					"text" => ParseText(dict),
 					_ => throw new UnknownShapeException()
 				};
 
@@ -346,6 +373,17 @@ namespace SpecialTask
 
 			return new(firstX, firstY, secondX, secondY, color, lineThickness);
 		}
+
+		private static Text ParseText(Dictionary<string, string> dict)
+		{
+            int leftTopX = int.Parse(dict["leftTopX"]);
+            int leftTopY = int.Parse(dict["leftTopY"]);
+            int fontSize = int.Parse(dict["fontSize"]);
+            string textValue = dict["textValue"];
+            EColor color = ColorsController.Parse(dict["color"]);
+
+            return new(leftTopX, leftTopY, fontSize, textValue, color);
+        }
 
 		private static void ParseStreakDecorator(Dictionary<string, string> dict, Shape shape)
 		{

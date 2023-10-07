@@ -25,7 +25,7 @@ namespace SpecialTask
 		public static void RegisterAndExecute(ICommand command)
 		{
 			Push(command);
-			command.Execute();
+            ExecuteButDontRegister(command);
         }
 
 		public static void ExecuteButDontRegister(ICommand command)
@@ -334,12 +334,70 @@ namespace SpecialTask
 			if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
 			receiver.Destroy();
 		}
-	}
+    }
 
-	/// <summary>
-	/// Команда для создания нового окна
-	/// </summary>
-	class CreateWindowCommand : ICommand
+    /// <summary>
+    /// Команда для добавления прямоугольника на экран
+    /// </summary>
+    class CreateTextCommand : ICommand
+    {
+        private Shape? receiver;
+        readonly int leftTopX;
+        readonly int leftTopY;
+        readonly int fontSize;
+        readonly string textValue;
+        readonly EColor color;
+        readonly bool streak;
+        readonly EColor streakColor;
+        readonly EStreakTexture streakTexture;
+
+        public CreateTextCommand(Dictionary<string, object> arguments)
+        {
+            try
+            {
+                leftTopX = (int)arguments["leftTopX"];
+                leftTopY = (int)arguments["leftTopY"];
+                fontSize = (int)arguments["fontSize"];
+                textValue = (string)arguments["textValue"];
+                color = (EColor)arguments["color"];
+
+                // unnecessary, but if streak is present, other should be too
+                if (arguments.ContainsKey("streak"))
+                {
+                    streak = (bool)arguments["streak"];
+                    streakTexture = (EStreakTexture)arguments["streakTexture"];
+                    streakColor = (EColor)arguments["streakColor"];
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of CreateSquareCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of CreateSquareCommand");
+                throw;
+            }
+        }
+
+        public void Execute()
+        {
+            receiver = new Text(leftTopX, leftTopY, fontSize, textValue, color);
+            if (streak) receiver = new StreakDecorator(receiver, streakColor, streakTexture);
+        }
+
+        public void Unexecute()
+        {
+            if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
+            receiver.Destroy();
+        }
+    }
+
+    /// <summary>
+    /// Команда для создания нового окна
+    /// </summary>
+    class CreateWindowCommand : ICommand
 	{
 		private readonly WindowManager receiver;
 

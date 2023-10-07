@@ -114,4 +114,8 @@ namespace SpecialTask
     /// Raised, when called SlectionMarker.Edit or Accept
     /// </summary>
     class SelectionMarkerException: Exception { }
+    /// <summary>
+    /// Raised, when user enters something like "new line -x100 -x50"
+    /// </summary>
+    class DuplicatedConsoleArgument: Exception { }
 }

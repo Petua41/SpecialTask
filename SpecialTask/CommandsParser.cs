@@ -453,19 +453,24 @@ namespace SpecialTask
 
 			while (arguments.Length > 0)
 			{
-				int startOfNextArgument = arguments.IndexOf('-', 2);		// TODO: this way we cannot parse negative numbers. Maybe we don`t need negative numbers?
-				if (startOfNextArgument > 0)
+				int startOfNextArgument = arguments.IndexOf('-', 2);        // TODO: this way we cannot parse negative numbers. Maybe we don`t need negative numbers?
+
+				KeyValuePair<string, object> kvp;
+                if (startOfNextArgument > 0)
 				{
 					string arg = arguments[..startOfNextArgument];
 					arguments = arguments[startOfNextArgument..];
-					KeyValuePair<string, object> kvp = CreateArgumentFromString(arg, consoleCommand);
-					argumentPairs.Add(kvp.Key, kvp.Value);
+					kvp = CreateArgumentFromString(arg, consoleCommand);
 				}
 				else
 				{
-					KeyValuePair<string, object> kvp = CreateArgumentFromString(arguments, consoleCommand);
+					kvp = CreateArgumentFromString(arguments, consoleCommand);
 					arguments = "";
-					argumentPairs.Add(kvp.Key, kvp.Value);
+				}
+				try { argumentPairs.Add(kvp.Key, kvp.Value); }
+				catch (ArgumentException)
+				{
+					MiddleConsole.HighConsole.DisplayError(string.Format("Duplicated argument: {0}", kvp.Key));
 				}
 			}
 
