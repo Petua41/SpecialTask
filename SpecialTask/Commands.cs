@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace SpecialTask
 {
+	enum ELayerDirection { None, Forward, Backward, Front, Back }
+
 	/// <summary>
 	/// Controlls execution, undo and redo of all Commands
 	/// </summary>
@@ -30,7 +32,8 @@ namespace SpecialTask
 
 		public static void ExecuteButDontRegister(ICommand command)
 		{
-			command.Execute();
+			try { command.Execute(); }
+			catch (KeyboardInterruptException) { MiddleConsole.HighConsole.DisplayError("Keyboard interrupt"); }
         }
 
 		public static void UndoCommands(int numberOfCommands = 1)
@@ -130,8 +133,17 @@ namespace SpecialTask
 			try
 			{
 				attribute = (string)arguments["attribute"];
-				receiver = (Shape)arguments["receiver"];
-				newValue = arguments["newValue"];
+				receiver = (Shape)arguments["shape"];
+
+				// YANDERE
+				string stringNewValue = (string)arguments["newValue"];
+				newValue = attribute switch
+				{
+					"text" => stringNewValue,
+					"color" or "streakColor" => ColorsController.Parse(stringNewValue),
+					"streakTexture" => TextureController.Parse(stringNewValue),
+					_ => int.Parse(stringNewValue)
+				};
 			}
 			catch (KeyNotFoundException)
 			{
@@ -147,20 +159,382 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			oldValue = receiver.Edit(attribute, newValue);
+			try { oldValue = receiver.Edit(attribute, newValue); }
+			catch (InvalidShapeAttributeException)
+			{
+				Logger.Instance.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid attribute");
+				MiddleConsole.HighConsole.DisplayError($"{receiver.UniqueName} has no attribute {attribute}");
+			}
+			catch (ShapeAttributeCastException)
+			{
+                Logger.Instance.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid cast");
+                MiddleConsole.HighConsole.DisplayError($"");
+            }
 		}
 
 		public void Unexecute()
 		{
-			if (oldValue == null) throw new CommandUnexecuteBeforeExecuteException();
-			receiver.Edit(attribute, newValue);
+			if (oldValue == null) Logger.Instance.Warning("EditShapeAttributesCommand unexecute before execute. Maybe execute exitted with error.");
+			else receiver.Edit(attribute, newValue);
 		}
 	}
 
 	/// <summary>
-	/// Команда для добавления круга на экран
+	/// Command to move shapes up and down
 	/// </summary>
-	class CreateCircleCommand : ICommand
+	class EditLayerCommand: ICommand
+	{
+		private readonly WindowManager receiver;
+        private readonly string uniqueName;
+		private readonly ELayerDirection direction;
+
+		private int oldLayer = -1;
+		private bool layerChanged = false;
+
+		public EditLayerCommand(string uniqueName,  ELayerDirection direction)
+		{
+			receiver = WindowManager.Instance;
+			this.uniqueName = uniqueName;
+			this.direction = direction;
+		}
+
+        public void Execute()
+        {
+			try
+			{
+				switch (direction)
+				{
+					case ELayerDirection.Forward:
+                        oldLayer = receiver.BringForward(uniqueName);
+                        layerChanged = true;
+                        break;
+                    case ELayerDirection.Backward:
+						oldLayer = receiver.SendBackward(uniqueName);
+						layerChanged = true;
+						break;
+					case ELayerDirection.Front:
+						oldLayer = receiver.BringToFront(uniqueName);
+						layerChanged = true;
+						break;
+					case ELayerDirection.Back:
+                        oldLayer = receiver.SendToBack(uniqueName);
+                        layerChanged = true;
+                        break;
+                }
+            }
+            catch (ShapeNotFoundException)
+            {
+                Logger.Instance.Error($"Shape {uniqueName} not found, while changing layer");
+				throw;
+            }
+        }
+
+        public void Unexecute()
+        {
+			if (!layerChanged) return;
+            try
+            {
+                switch (direction)
+                {
+                    case ELayerDirection.Forward:
+                        try { receiver.SendBackward(uniqueName); }
+                        catch (CannotChangeShapeLayerException)
+						{
+							Logger.Instance.Error($"[undo] Cannot send {uniqueName} backward: already on back");
+							MiddleConsole.HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on back");
+                        }
+                        break;
+                    case ELayerDirection.Backward:
+                        try { receiver.BringForward(uniqueName); }
+                        catch (CannotChangeShapeLayerException)
+						{
+                            Logger.Instance.Error($"[undo] Cannot bring {uniqueName} forward: already on top");
+                            MiddleConsole.HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on top");
+                        }
+                        break;
+                    case ELayerDirection.Front:
+						try { receiver.MoveToLayer(uniqueName, oldLayer); }
+						catch (ArgumentException) { receiver.SendToBack(uniqueName); }
+                        break;
+                    case ELayerDirection.Back:
+                        try { receiver.MoveToLayer(uniqueName, oldLayer); }
+                        catch (ArgumentException) { receiver.BringToFront(uniqueName); }
+                        break;
+                }
+            }
+            catch (ShapeNotFoundException)
+            {
+                Logger.Instance.Error($"Shape {uniqueName} not found, while changing layer");
+				throw;
+            }
+        }
+    }
+
+	/// <summary>
+	/// Wrapper (console-side) to edit shapes
+	/// </summary>
+    class  EditCommand: ICommand
+    {
+        private ICommand? receiver = null;
+		private readonly ESortingOrder sortingOrder;
+
+		private List<Shape> listOfShapes = new();
+
+		private int selectedNumber = -1;
+		private string interString = "";
+		private bool waitingForNumber = false;
+		private bool waitingForString = false;
+
+		private Task task;
+		private CancellationTokenSource tokenSource;
+
+		private Shape? shapeToEdit;
+
+		public EditCommand(Dictionary<string, object> parameters)
+		{
+            sortingOrder = (parameters.ContainsKey("coordinates") && (bool)parameters["coordinates"]) ? 
+				ESortingOrder.Coordinates : ESortingOrder.CreationTime;
+			IteratorsFacade.SetConcreteIterator(sortingOrder);
+
+			tokenSource = new();
+			task = new(EmptyTask, tokenSource.Token);
+
+			MiddleConsole.HighConsole.SomethingTranferred += OnSomethingTransferred;
+		}
+
+		// TODO: this method is TOO long
+        public async void Execute()
+        {
+            MiddleConsole.HighConsole.TransferringInput = true;
+            MiddleConsole.HighConsole.InputBlocked = false;
+
+            try 
+			{
+                listOfShapes = IteratorsFacade.GetCompleteResult();
+
+                if (listOfShapes.Count == 0)
+                {
+                    MiddleConsole.HighConsole.DisplayWarning("Nothing to edit");
+                    return;
+                }
+
+                DisplayShapeSelectionPrompt((from shape in listOfShapes select shape.UniqueName).ToList());
+
+                selectedNumber = -1;
+                waitingForNumber = true;
+
+                while (selectedNumber < 0)
+                {
+                    tokenSource = new();
+                    task = new(EmptyTask, tokenSource.Token);
+
+                    try { await task; }
+                    catch (TaskCanceledException) { /* continue */ }
+                }
+                MiddleConsole.HighConsole.NewLine();
+
+                if (selectedNumber >= listOfShapes.Count) throw new InvalidInputException();
+
+                shapeToEdit = listOfShapes[selectedNumber];
+
+                DisplayWhatToEditSelectionPrompt();
+
+                selectedNumber = -1;
+                waitingForNumber = true;
+
+                while (selectedNumber < 0)
+                {
+                    tokenSource = new();
+                    task = new(EmptyTask, tokenSource.Token);
+
+                    try { await task; }
+                    catch (TaskCanceledException) { /* continue */ }
+                }
+                MiddleConsole.HighConsole.NewLine();
+
+                switch (selectedNumber)
+                {
+                    case 0:
+                        // edit layer:
+                        DisplayLayerOperationSelectionPrompt(shapeToEdit.UniqueName);
+
+                        selectedNumber = -1;
+                        waitingForNumber = true;
+
+                        while (selectedNumber < 0)
+                        {
+                            tokenSource = new();
+                            task = new(EmptyTask, tokenSource.Token);
+
+                            try { await task; }
+                            catch (TaskCanceledException) { /* continue */ }
+                        }
+                        MiddleConsole.HighConsole.NewLine();
+
+                        ELayerDirection dir = selectedNumber switch
+                        {
+                            0 => ELayerDirection.Backward,
+                            1 => ELayerDirection.Forward,
+                            2 => ELayerDirection.Back,
+                            3 => ELayerDirection.Front,
+                            _ => throw new InvalidInputException()
+                        };
+
+                        receiver = new EditLayerCommand(shapeToEdit.UniqueName, dir);
+                        CommandsFacade.ExecuteButDontRegister(receiver);
+
+                        break;
+                    case 1:
+						// TODO: edit attributes
+						MyMap<string, string> attrsWithNames = shapeToEdit.AttributesToEditWithNames;
+						// TODO: add streak, if there`s no
+
+						DisplayAttributeSelectionPrompt(shapeToEdit.UniqueName, attrsWithNames.Keys);
+
+                        selectedNumber = -1;
+                        waitingForNumber = true;
+
+                        while (selectedNumber < 0)
+                        {
+                            tokenSource = new();
+                            task = new(EmptyTask, tokenSource.Token);
+
+                            try { await task; }
+                            catch (TaskCanceledException) { /* continue */ }
+                        }
+                        MiddleConsole.HighConsole.NewLine();
+
+                        if (selectedNumber >= attrsWithNames.Count) throw new InvalidInputException();
+
+						KeyValuePair<string, string> kvp = attrsWithNames[selectedNumber];
+						DisplayNewAttributePrompt(kvp.Value);
+
+						interString = "";
+						waitingForString = true;
+
+                        while (interString.Length == 0)
+                        {
+                            tokenSource = new();
+                            task = new(EmptyTask, tokenSource.Token);
+
+                            try { await task; }
+                            catch (TaskCanceledException) { /* continue */ }
+                        }
+
+						receiver = new EditShapeAttributesCommand(new() { { "shape", shapeToEdit }, { "attribute", kvp.Key }, { "newValue", interString } });
+						CommandsFacade.ExecuteButDontRegister(receiver);
+
+                        break;
+                    default:
+                        throw new InvalidInputException();
+                }
+            }
+			catch (InvalidInputException) { MiddleConsole.HighConsole.DisplayError("Invalid input"); }
+			finally
+			{
+                MiddleConsole.HighConsole.TransferringInput = false;
+                MiddleConsole.HighConsole.InputBlocked = false;
+				MiddleConsole.HighConsole.NewLine();
+				MiddleConsole.HighConsole.DisplayPrompt();
+            }
+        }
+
+		private static void DisplayShapeSelectionPrompt(List<string> lst)
+		{
+			MiddleConsole.HighConsole.Display("Select figure to edit: ");
+			MiddleConsole.HighConsole.NewLine();
+			for (int i = 0; i < lst.Count; i++)
+			{
+                MiddleConsole.HighConsole.Display($"{i}. {lst[i]}");
+                MiddleConsole.HighConsole.NewLine();
+            }
+		}
+
+		private static void DisplayWhatToEditSelectionPrompt()
+		{
+			MiddleConsole.HighConsole.Display("Select what to edit: ");
+			MiddleConsole.HighConsole.NewLine();
+			MiddleConsole.HighConsole.Display("0. Layer\n1. Figure attributes");
+			MiddleConsole.HighConsole.NewLine();
+			MiddleConsole.HighConsole.DisplayPrompt();
+		}
+
+		private static void DisplayLayerOperationSelectionPrompt(string uniqueName)
+		{
+			MiddleConsole.HighConsole.Display($"Select what to do with [color:green]{uniqueName}[color]: ");
+			MiddleConsole.HighConsole.NewLine();
+			MiddleConsole.HighConsole.Display("0. Send backwards\n1. Bring forward\n2. Send to back\n3. Bring to front");
+			MiddleConsole.HighConsole.NewLine();
+            MiddleConsole.HighConsole.DisplayPrompt();
+        }
+
+		private static void DisplayAttributeSelectionPrompt(string uniqueName, List<string> names)
+		{
+            MiddleConsole.HighConsole.Display($"Availible attributes for [color:green]{uniqueName}[color]: ");
+            MiddleConsole.HighConsole.NewLine();
+			for (int i = 0; i < names.Count; i++)
+			{
+				MiddleConsole.HighConsole.Display($"{i}. {names[i]}");
+				MiddleConsole.HighConsole.NewLine();
+			}
+            MiddleConsole.HighConsole.DisplayPrompt();
+        }
+
+		private static void DisplayNewAttributePrompt(string attrName)
+		{
+			MiddleConsole.HighConsole.DisplayQuestion($"Enter new value for {attrName}:");
+        }
+
+        private void OnSomethingTransferred(object? sender, EventArgs e)
+        {
+			// FIXME: Ctrl+C
+			//if (MiddleConsole.HighConsole.TransferredCombination == ESpecialKeyCombinations.CtrlC) { throw new KeyboardInterruptException(); }
+
+			if (waitingForNumber)
+			{
+                char trChar = MiddleConsole.HighConsole.TransferredChar ?? ' ';
+
+                if (char.IsNumber(trChar))
+                {
+                    selectedNumber = int.Parse(trChar.ToString());
+					waitingForNumber = false;
+                    tokenSource.Cancel(true);
+                }
+            }
+			else if (waitingForString)
+			{
+				if (MiddleConsole.HighConsole.TransferredCombination == ESpecialKeyCombinations.Enter)
+				{
+					string trString = MiddleConsole.HighConsole.TransferredString;
+					if (trString.Length > 0)
+					{
+						interString = trString;
+						waitingForString = false;
+						tokenSource.Cancel(true);
+					}
+				}
+			}
+        }
+
+        private void EmptyTask()
+        {
+            while (true) ;
+        }
+
+        public void Unexecute()
+		{
+			if (receiver == null)
+			{
+				Logger.Instance.Warning("Edit command unexecute before execute. Maybe execute was interrupted by keyboard");
+			}
+			else receiver.Unexecute();
+		}
+    }
+
+    /// <summary>
+    /// Команда для добавления круга на экран
+    /// </summary>
+    class CreateCircleCommand : ICommand
 	{
 		private Shape? receiver;        // Нужен для отмены
 		readonly int centerX;
@@ -504,7 +878,7 @@ namespace SpecialTask
 	}
 
 	/// <summary>
-	/// Command for selectiong shapes on specified area
+	/// Command for selecting shapes on specified area
 	/// </summary>
 	class SelectCommand : ICommand
 	{
@@ -548,7 +922,7 @@ namespace SpecialTask
 	}
 
     /// <summary>
-    /// Команда для переключения на заданное окно
+    /// Command to paste selected shapes
     /// </summary>
     class PasteCommand : ICommand
     {
@@ -817,7 +1191,7 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			destroyedShapes = new(receiver.ShapesOnCurrentWindow());
+			destroyedShapes = new(receiver.ShapesOnCurrentWindow);
 
 			foreach (Shape shape in destroyedShapes) shape.Destroy();
 		}
@@ -839,8 +1213,8 @@ namespace SpecialTask
 
 		private readonly System.Windows.Application receiver;
 		private EYesNoSaveAnswer answer = EYesNoSaveAnswer.None;
-		private Task task;
-		private CancellationTokenSource tokenSource;
+		private readonly Task task;
+		private readonly CancellationTokenSource tokenSource;
 
         public ExitCommand(Dictionary<string, object> arguments)
 		{
@@ -871,10 +1245,7 @@ namespace SpecialTask
 		private async void GetInputIfNotSaved()
 		{
 			try { await task; }
-			catch (TaskCanceledException)
-			{
-				// continue
-			}
+			catch (TaskCanceledException) { /* continue */ }
 
             MiddleConsole.HighConsole.TransferringInput = false;
 
@@ -917,9 +1288,12 @@ namespace SpecialTask
 		}
 	}
 
+	/// <summary>
+	/// Displays list of colors (with examples!)
+	/// </summary>
 	class ColorsCommand: ICommand
 	{
-		private IHighConsole receiver;
+		private readonly IHighConsole receiver;
 
 		public ColorsCommand(Dictionary<string, object> arguments)
 		{
@@ -941,6 +1315,9 @@ namespace SpecialTask
 		}
 	}
 
+	/// <summary>
+	/// Display list of textures (with descriptions)
+	/// </summary>
 	class TexturesCommand : ICommand
 	{
 		private readonly IHighConsole receiver;
@@ -952,7 +1329,7 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			Dictionary<string, string> textures = TextureController.GetTexturesWithDescriptions();
+			Dictionary<string, string> textures = TextureController.TexturesWithDescriptions;
 			string output = "";
 			foreach (KeyValuePair<string, string> texture in textures)
 			{

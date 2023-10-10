@@ -1,24 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpecialTask
 {
 	abstract class ShapeDecorator : Shape
 	{
-		private readonly Shape? decoratedShape;
-
-		public new string UniqueName
-		{
-			get
-			{
-				if (decoratedShape == null)
-				{
-					Logger.Instance.Error("Trying to get unique name of hanging decorator");
-					return "";
-				}
-				return decoratedShape.UniqueName;
-			}
-		}
+		
     }
 
 	class StreakDecorator : ShapeDecorator
@@ -27,6 +15,8 @@ namespace SpecialTask
 		private EStreakTexture streakTexture;
         private System.Windows.Shapes.Shape? wpfShape;
         private readonly Shape? decoratedShape;
+
+		private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "streakColor", "Streak color" }, { "streakTexture", "Streak texture" } };
 
         public StreakDecorator(Shape? decoratedShape, EColor streakColor, EStreakTexture streakTexture)
 		{
@@ -37,7 +27,7 @@ namespace SpecialTask
             WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
-		public StreakDecorator(StreakDecorator old) : this(old.DecoratedShape, old.streakColor, old.streakTexture) { }
+		public StreakDecorator(StreakDecorator old) : this(old.DecoratedShape, old.StreakColor, old.StreakTexture) { }
 
 		public override object Edit(string attribute, object value)
 		{
@@ -45,7 +35,7 @@ namespace SpecialTask
 
 			if (decoratedShape == null)
 			{
-				Logger.Instance.Error("Trying to edit hanging decorator");
+				Logger.Instance.Warning("Trying to edit hanging decorator");
 				return new();
 			}
 
@@ -54,12 +44,12 @@ namespace SpecialTask
 				switch (attribute)
 				{
 					case "streakColor":
-						oldValue = streakColor;
-						streakColor = (EColor)value;
+						oldValue = StreakColor;
+						StreakColor = (EColor)value;
 						break;
 					case "streakTexture":
-						oldValue = streakTexture;
-						streakTexture = (EStreakTexture)value;
+						oldValue = StreakTexture;
+						StreakTexture = (EStreakTexture)value;
 						break;
 					default:
 						oldValue = decoratedShape.Edit(attribute, value);
@@ -140,5 +130,44 @@ namespace SpecialTask
         {
 			return new StreakDecorator(this);
         }
+
+		private EStreakTexture StreakTexture
+		{
+			get => streakTexture;
+			set
+			{
+				streakTexture = value;
+				Redraw();
+			}
+		}
+
+        private EColor StreakColor
+        {
+            get => streakColor;
+            set
+            {
+                streakColor = value;
+                Redraw();
+            }
+        }
+
+        public override MyMap<string, string> AttributesToEditWithNames
+		{
+			get
+			{
+				if (decoratedShape == null) return new();
+
+				return decoratedShape.AttributesToEditWithNames + ATTRS_TO_EDIT;
+			}
+		}
+
+        public override string UniqueName
+		{
+			get
+			{
+				if (decoratedShape == null) return "";
+				return $"Filled_{decoratedShape.UniqueName}";
+			}
+		}
     }
 }

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace SpecialTask
@@ -16,7 +12,7 @@ namespace SpecialTask
 		private static WindowManager? singleton;
 
 		private WindowToDraw currentWindow;
-		private List<WindowToDraw> existingWindows;
+		private readonly List<WindowToDraw> existingWindows;
 
 		private WindowManager()
 		{
@@ -48,36 +44,27 @@ namespace SpecialTask
 			return numberOfNewWindow;
 		}
 
-		public void DestroyWindow(int numberOfWindow)						// Это надо потестить
-		{
-			ValidateWindowNumber(numberOfWindow);
-			for (int i = numberOfWindow + 1; i < existingWindows.Count; i++)
-			{
-				existingWindows[i].ChangeTitle(i - 1);
-			}
-			existingWindows[numberOfWindow].Destroy();
-			existingWindows.RemoveAt(numberOfWindow);
+		public void DestroyWindow(int numberOfWindow)
+        {
+            existingWindows[numberOfWindow].Destroy();
+            RemoveWindowFromLists(numberOfWindow);
 		}
 
 		public void SwitchToWindow(int numberOfWindow)
 		{
-			ValidateWindowNumber(numberOfWindow);
+			ValidateWindowNumber(numberOfWindow);					// here we pass exception on
 			currentWindow = existingWindows[numberOfWindow];
             WindowSwitchedEvent?.Invoke(this, new WindowSwitchedEventArgs(numberOfWindow));
-
         }
 
-		public List<Shape> ShapesOnCurrentWindow()
-		{
-			return currentWindow.ShapesOnThisWindow();
-		}
+		public List<Shape> ShapesOnCurrentWindow => currentWindow.ShapesOnThisWindow;
 
 		public WindowToDraw? GetWindowByNumber(int number)
 		{
 			if (0 <= number && number < existingWindows.Count) return existingWindows[number];
 			else
 			{
-				Logger.Instance.Error(string.Format("Window number {0} doesn`t exist!", number));
+				Logger.Instance.Error(string.Format("Window number {0} doesn`t exist!", number));			// why we don`t throw something?
 				return null;
 			}
 		}
@@ -93,14 +80,54 @@ namespace SpecialTask
 		public void RemoveFromCurrentWindow(Shape shape)
 		{
 			currentWindow.RemoveShape(shape);
+        }
+
+        public int SendBackward(string uniqueName)
+        {
+            return currentWindow.SendBackward(uniqueName);
+        }
+
+        public int BringForward(string uniqueName)
+        {
+            return currentWindow.BringForward(uniqueName);
+        }
+
+        public int SendToBack(string uniqueName)
+        {
+            return currentWindow.SendToBack(uniqueName);
+        }
+
+        public int BringToFront(string uniqueName)
+        {
+            return currentWindow.BringToFront(uniqueName);
+        }
+
+		public void MoveToLayer(string uniqueName, int newLayer)
+		{
+			currentWindow.MoveToLayer(uniqueName, newLayer);
 		}
 
-		/// <summary>
-		/// Closes all windows
-		/// </summary>
-		public void CloseAll()
+        public void CloseAll()
 		{
 			for (int i = existingWindows.Count - 1; i >= 0; i--) DestroyWindow(i);
+        }
+
+		public void OnSomeAssotiatedWindowClosed(WindowToDraw winToDraw)
+		{
+			int idx = existingWindows.IndexOf(winToDraw);
+			if (idx >= 0) RemoveWindowFromLists(existingWindows.IndexOf(winToDraw));
+		}
+
+		private void RemoveWindowFromLists(int windowNumber)
+		{
+			try { ValidateWindowNumber(windowNumber); }
+			catch (WindowDoesntExistException) { return; }			// if window doesn`t exist, don`t remove it
+
+            for (int i = windowNumber + 1; i < existingWindows.Count; i++)
+            {
+                existingWindows[i].ChangeTitle(i - 1);
+            }
+            existingWindows.RemoveAt(windowNumber);
         }
 
 		public Canvas Canvas => currentWindow.Canvas;
@@ -117,32 +144,27 @@ namespace SpecialTask
 
 	class WindowToDraw
 	{
-		private System.Windows.Controls.Canvas canvas;
-		private List<Shape> allShapesOnThisWindow = new();					// Хранятся в порядке создания
-		private List<int> zOrder = new List<int>();                         // Индексы в предыдущем списке в Z-порядке
-		private DrawingWindow assotiatedWindow;
+		private readonly DrawingWindow assotiatedWindow;
+
+        private readonly List<Shape> allShapesOnThisWindow = new();		// Stored in creation-time order
+		private readonly List<int> zOrder = new();						// Indices in previous list
 
 		public WindowToDraw(int number)
 		{
-			// TODO: здесь надо создавать окно WPF, Canvas WPF (скорее всего из темплейта), и присваивать это всё куда надо
-			assotiatedWindow = new DrawingWindow();
+			assotiatedWindow = new();
+			assotiatedWindow.DrawingWindowClosedEvent += OnAssotiatedWindowClosed;
 			assotiatedWindow.Show();
-			canvas = assotiatedWindow.DrawingCanvas;
             ChangeTitle(number);
         }
-		
-		public System.Windows.Controls.Canvas Canvas
-		{ get { return canvas; } }
+
+		public Canvas Canvas => assotiatedWindow.DrawingCanvas;
 
 		public void ChangeTitle(int newNumber)
 		{
-			assotiatedWindow.ChangeTitle(string.Format("Drawing window {0}", newNumber));
+			assotiatedWindow.ChangeTitle($"Drawing window {newNumber}");
 		}
 
-		public List<Shape> ShapesOnThisWindow()
-		{
-			return allShapesOnThisWindow;
-		}
+		public List<Shape> ShapesOnThisWindow => allShapesOnThisWindow;
 
 		public void Destroy()
 		{
@@ -151,9 +173,14 @@ namespace SpecialTask
 
 		public void AddShape(Shape shape)
 		{
-			allShapesOnThisWindow.Add(shape);
-			zOrder.Add(allShapesOnThisWindow.Count - 1);
-			Canvas.Children.Add(shape.WPFShape);
+			System.Windows.Shapes.Shape wpfShape = shape.WPFShape;
+            int z = allShapesOnThisWindow.Count;
+
+            allShapesOnThisWindow.Add(shape);
+			Canvas.Children.Add(wpfShape);
+
+            zOrder.Add(z);
+			Panel.SetZIndex(wpfShape, z);
         }
 
 		public void RemoveShape(Shape shape)
@@ -161,16 +188,118 @@ namespace SpecialTask
 			if (Canvas.Children.Contains(shape.WPFShape))     // If we cannot find shape on canvas, it won`t be removed from lists
             {
                 Canvas.Children.Remove(shape.WPFShape);
-                RemoveShapeFromLists(shape.uniqueName);
+                RemoveShapeFromLists(shape.UniqueName);
             }
 		}
+
+		public int SendBackward(string uniqueName)
+		{
+			if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+
+			for (int i = 0; i < allShapesOnThisWindow.Count; i++)
+			{
+				if (uniqueName == allShapesOnThisWindow[i].UniqueName)
+				{
+					if (i == 0) throw new CannotChangeShapeLayerException();
+
+					(zOrder[i], zOrder[i - 1]) = (zOrder[i - 1], zOrder[i]);
+
+					int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i].WPFShape);
+					int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i - 1].WPFShape);
+
+					Panel.SetZIndex(allShapesOnThisWindow[i].WPFShape, secondCanvasZ);
+					Panel.SetZIndex(allShapesOnThisWindow[i - 1].WPFShape, firstCanvasZ);
+
+					return i;
+				}
+			}
+			throw new ShapeNotFoundException();
+		}
+
+		public int BringForward(string uniqueName)
+        {
+            if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+
+            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
+            {
+                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
+                {
+                    if (i == allShapesOnThisWindow.Count - 1) throw new CannotChangeShapeLayerException();
+
+                    (zOrder[i], zOrder[i + 1]) = (zOrder[i + 1], zOrder[i]);
+
+                    int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i].WPFShape);
+                    int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i + 1].WPFShape);
+
+                    Panel.SetZIndex(allShapesOnThisWindow[i].WPFShape, secondCanvasZ);
+                    Panel.SetZIndex(allShapesOnThisWindow[i + 1].WPFShape, firstCanvasZ);
+
+                    return i;
+                }
+            }
+			throw new ShapeNotFoundException();
+        }
+
+        public int SendToBack(string uniqueName)
+        {
+            if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+
+            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
+            {
+                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
+                {
+					for (int j = i; j > 0; j--) SendBackward(allShapesOnThisWindow[j].UniqueName);
+					return i;
+                }
+            }
+			throw new ShapeNotFoundException();
+        }
+
+        public int BringToFront(string uniqueName)
+        {
+            if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+
+            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
+            {
+                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
+                {
+					for (int j = i; j < allShapesOnThisWindow.Count - 1; j++) BringForward(allShapesOnThisWindow[j].UniqueName);
+					return i;
+                }
+            }
+			throw new ShapeNotFoundException();
+        }
+
+		public void MoveToLayer(string uniqueName, int newLayer)
+        {
+            if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+
+            if (newLayer < 0 || newLayer > allShapesOnThisWindow.Count) throw new ArgumentException();
+
+            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
+            {
+                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
+                {
+                    (zOrder[i], zOrder[newLayer]) = (zOrder[newLayer], zOrder[i]);
+
+                    int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i].WPFShape);
+                    int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[newLayer].WPFShape);
+
+                    Panel.SetZIndex(allShapesOnThisWindow[i].WPFShape, secondCanvasZ);
+                    Panel.SetZIndex(allShapesOnThisWindow[newLayer].WPFShape, firstCanvasZ);
+
+                    return;
+                }
+            }
+            throw new ShapeNotFoundException();
+        }
 
         private void RemoveShapeFromLists(string uniqueName)
         {
 			int index = -1;
 			for (int i = 0; i < allShapesOnThisWindow.Count; i++)
 			{
-				if (allShapesOnThisWindow[i].uniqueName == uniqueName)
+				if (allShapesOnThisWindow[i].UniqueName == uniqueName)
 				{
 					index = i;
 					break;
@@ -182,6 +311,11 @@ namespace SpecialTask
 				zOrder.Remove(index);
 			}
         }
+
+		private void OnAssotiatedWindowClosed(object? sender, EventArgs e)
+		{
+			WindowManager.Instance.OnSomeAssotiatedWindowClosed(this);
+		}
     }
     public class WindowSwitchedEventArgs : EventArgs
     {

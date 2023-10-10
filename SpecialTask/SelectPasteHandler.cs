@@ -15,7 +15,7 @@ namespace SpecialTask
                            leftTopX <= shape.Center.Item1 && shape.Center.Item1 <= rightBottomX && 
                            leftTopY <= shape.Center.Item2 && shape.Center.Item2 <= rightBottomY) 
                            select shape).ToList();*/
-            foreach (Shape shape in WindowManager.Instance.ShapesOnCurrentWindow())
+            foreach (Shape shape in WindowManager.Instance.ShapesOnCurrentWindow)
             {
                 if (shape is not SelectionMarker)
                 {

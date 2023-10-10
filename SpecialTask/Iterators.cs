@@ -3,7 +3,9 @@ using System.Linq;
 
 namespace SpecialTask
 {
-	static class IteratorsFacade
+    enum ESortingOrder { Coordinates, CreationTime }
+
+    static class IteratorsFacade
 	{
 		private static Iterator concreteIterator;      // Стратегия
 
@@ -17,12 +19,12 @@ namespace SpecialTask
 			return concreteIterator.GetCompleteResult();
 		}
 
-		public static void SetConcreteIterator(string iteratorType)
+		public static void SetConcreteIterator(ESortingOrder iteratorType)
 		{
 			concreteIterator = iteratorType switch
 			{
-				"CoordinatesIterator" => CoordinatesIterator.Instance,
-				"CreationTimeIterator" => CreationTimeIterator.Instance,
+				ESortingOrder.Coordinates => CoordinatesIterator.Instance,
+				ESortingOrder.CreationTime => CreationTimeIterator.Instance,
 				_ => throw new StringArgumentNameException(),
 			};
 		}
@@ -54,7 +56,7 @@ namespace SpecialTask
 
 		public override List<Shape> GetCompleteResult()
 		{
-			List<Shape> rawList = WindowManager.Instance.ShapesOnCurrentWindow();
+			List<Shape> rawList = WindowManager.Instance.ShapesOnCurrentWindow;
 			return rawList.OrderBy(sh => sh, new CoordinatesComparer()).ToList();	// Наверное, делать это вручную было бы эффективнее
 		}
 
@@ -97,7 +99,7 @@ namespace SpecialTask
 
 		public override List<Shape> GetCompleteResult()
 		{
-			return WindowManager.Instance.ShapesOnCurrentWindow();
+			return WindowManager.Instance.ShapesOnCurrentWindow;
 		}
 	}
 }

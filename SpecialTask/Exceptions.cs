@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpecialTask
 {
@@ -118,4 +114,20 @@ namespace SpecialTask
     /// Raised, when user enters something like "new line -x100 -x50"
     /// </summary>
     class DuplicatedConsoleArgument: Exception { }
+    /// <summary>
+    /// Raised, when shape sent backwards (brought forwards), but it`s already on the back (front)
+    /// </summary>
+    class CannotChangeShapeLayerException : Exception { }
+    /// <summary>
+    /// Raised, when shape with specified unique name doesn`t exist on current window
+    /// </summary>
+    class ShapeNotFoundException: Exception { }
+    /// <summary>
+    /// Keyboard interrupt
+    /// </summary>
+    class KeyboardInterruptException: Exception { }
+    /// <summary>
+    /// Raised, when edit command meets invalid input
+    /// </summary>
+    class InvalidInputException: Exception { }
 }

@@ -101,7 +101,7 @@ namespace SpecialTask
 
 		private void SaveXML(string filename)
 		{
-			XDocument doc = XMLHandler.GenerateXML(WindowManager.Instance.ShapesOnCurrentWindow());
+			XDocument doc = XMLHandler.GenerateXML(WindowManager.Instance.ShapesOnCurrentWindow);
 
 			try { writer ??= new(filename); }
 			catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { throw; }

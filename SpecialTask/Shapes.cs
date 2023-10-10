@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,62 +18,47 @@ namespace SpecialTask
 		White,
 		Yellow,
 		Purple,
-		Black
+		Black,
+		Blue
 	} // TODO
 
 	static class ColorsController
 	{
-		public static System.Windows.Media.Color GetWPFColor(this EColor color)
+		private static readonly Dictionary<string, EColor> colorNames = new()
+		{ 
+			{ "green", EColor.Green }, { "magenta", EColor.Magenta }, { "red", EColor.Red }, { "white", EColor.White }, { "yellow", EColor.Yellow },
+			{ "purple", EColor.Purple }, { "black", EColor.Black }, { "blue", EColor.Blue }
+		};
+
+		private static readonly Dictionary<EColor, Color> wpfColors = new()
 		{
-			return color switch
-			{
-				EColor.None => Colors.Transparent,
-				EColor.Green => Colors.LimeGreen,
-				EColor.Magenta => Colors.Magenta,
-				EColor.Red => Colors.Red,
-				EColor.White => Colors.White,
-				EColor.Yellow => Colors.Yellow,
-				EColor.Purple => System.Windows.Media.Color.FromRgb(128, 0, 128),
-				EColor.Black => Colors.Black,
-				_ => throw new ColorExcepttion(),
-			};
+			{ EColor.Green, Colors.LimeGreen }, { EColor.Magenta, Colors.Magenta }, { EColor.Red, Colors.Red }, { EColor.White, Colors.White },
+			{ EColor.Yellow, Colors.Yellow }, { EColor.Purple, Color.FromRgb(128, 0, 128) }, { EColor.Black, Colors.Black }, { EColor.Blue, Colors.Blue }
+		};
+
+		public static Color GetWPFColor(this EColor color)
+		{
+			try { return wpfColors[color]; }
+			catch (KeyNotFoundException) { return Colors.Transparent; }
 		}
 
 		public static EColor Parse(string colorString)
 		{
 			colorString = colorString.Trim().ToLower();
-			return colorString switch
-			{
-				"green" => EColor.Green,
-				"magenta" => EColor.Magenta,
-				"red" => EColor.Red,
-				"white" => EColor.White,
-				"yellow" => EColor.Yellow,
-				"purple" => EColor.Purple,
-				"black" => EColor.Black,
-				_ => EColor.None,
-			};
+			try { return colorNames[colorString]; }
+			catch (KeyNotFoundException) { return EColor.None; }
 		}
 
 		public static List<string> GetColorsList()
 		{
-			return new() { "green", "magenta", "red", "white", "yellow", "purple", "black" };
+			return colorNames.Keys.ToList();
 		}
 	}
 
-	/// <summary>
-	/// Abstract class for all shapes
-	/// </summary>
 	abstract class Shape
 	{
 		private static int firstAvailibleUniqueNumber = 0;
-		public string uniqueName;
 		private System.Windows.Shapes.Shape? wpfShape;
-
-		public Shape()
-		{
-			uniqueName = GetNextUniqueName();
-		}
 
 		public static string GetNextUniqueName()
 		{
@@ -82,10 +67,7 @@ namespace SpecialTask
 
 		public abstract object Edit(string attribute, object value);
 
-		public string UniqueName
-		{
-			get => uniqueName;
-		}
+		public abstract string UniqueName { get; }
 
 		/// <summary>
 		/// Windows.Shapes.Shape instance that can be added to Canvas
@@ -100,6 +82,7 @@ namespace SpecialTask
 			NullifyWPFShape();
 			WindowManager.Instance.DisplayOnCurrentWindow(this);
 		}
+
 		public virtual void Destroy()
 		{
 			WindowManager.Instance.RemoveFromCurrentWindow(this);
@@ -117,6 +100,8 @@ namespace SpecialTask
 		public abstract void MoveYBy(int offset);
 
 		public abstract Shape Clone();
+
+		public abstract MyMap<string, string> AttributesToEditWithNames { get; }
 	}
 
 	class Circle : Shape
@@ -126,8 +111,11 @@ namespace SpecialTask
 		private int centerY;
 		private EColor color;
 		private int lineThickness;
-		public new string uniqueName;
+		private readonly string uniqueName;
 		private System.Windows.Shapes.Shape? wpfShape = null;
+
+		private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "centerX", "Center X"}, { "centerY", "Center Y" },
+			{ "radius", "Radius" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
 
 		private static int firstAvailibleUniqueNumber = 0;
 
@@ -147,17 +135,9 @@ namespace SpecialTask
 
 		public static new string GetNextUniqueName()
 		{
-			return string.Format("Circle_{0}", firstAvailibleUniqueNumber++);
+			return $"Circle_{firstAvailibleUniqueNumber++}";
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="attribute"></param>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		/// <exception cref="InvalidShapeAttributeException">Редактирование несуществующего атрибута</exception>
-		/// <exception cref="ShapeAttributeCastException">Невозможно привести атрибут к нужному типу</exception>
 		public override object Edit(string attribute, object value)
 		{
 			attribute = attribute.ToLower();
@@ -308,7 +288,11 @@ namespace SpecialTask
 		{
 			return new Circle(this);
 		}
-	}
+
+		public override string UniqueName => uniqueName;
+
+		public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
+    }
 
 	class Square : Shape
 	{
@@ -318,12 +302,16 @@ namespace SpecialTask
 		private int rightBottomY;
 		private EColor color;
 		private int lineThickness;
-		public new string uniqueName;
+		private readonly string uniqueName;
 		private System.Windows.Shapes.Shape? wpfShape = null;
 
 		private static int firstAvailibleUniqueNumber = 0;
 
-		public Square(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, EColor color, int lineThickness)
+        private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" },
+            { "rightBottomX", "Right-bottom X" }, { "rightBottomY", "Right-bottom Y" }, { "lineThickness", "Outline thickness" }, 
+			{ "color", "Outline color" } };
+
+        public Square(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, EColor color, int lineThickness)
 		{
 			this.leftTopX = leftTopX;
 			this.leftTopY = leftTopY;
@@ -340,7 +328,7 @@ namespace SpecialTask
 
 		public static new string GetNextUniqueName()
 		{
-			return string.Format("Square_{0}", firstAvailibleUniqueNumber++);
+			return $"Square_{firstAvailibleUniqueNumber++}";
 		}
 
 		public override (int, int) Center
@@ -510,8 +498,12 @@ namespace SpecialTask
 		public override Shape Clone()
 		{
 			return new Square(this);
-		}
-	}
+        }
+
+        public override string UniqueName => uniqueName;
+
+        public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
+    }
 
 	class Line : Shape
 	{
@@ -521,12 +513,16 @@ namespace SpecialTask
 		private int secondY;
 		private EColor color;
 		private int lineThickness;
-		public new string uniqueName;
+		private readonly string uniqueName;
 		private System.Windows.Shapes.Shape? wpfShape = null;
 
 		private static int firstAvailibleUniqueNumber = 0;
 
-		public Line(int firstX, int firstY, int secondX, int secondY, EColor color, int lineThickness)
+        private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "firstX", "First X"}, { "firstY", "First Y" },
+            { "secondX", "Second X" }, { "secondY", "Second Y" }, { "lineThickness", "Line thickness" },
+            { "color", "Line color" } };
+
+        public Line(int firstX, int firstY, int secondX, int secondY, EColor color, int lineThickness)
 		{
 			this.firstX = firstX;
 			this.firstY = firstY;
@@ -543,7 +539,7 @@ namespace SpecialTask
 
 		public static new string GetNextUniqueName()
 		{
-			return string.Format("Line_{0}", firstAvailibleUniqueNumber++);
+			return $"Line_{firstAvailibleUniqueNumber++}";
 		}
 
 		public override (int, int) Center
@@ -705,41 +701,38 @@ namespace SpecialTask
 		public override Shape Clone()
 		{
 			return new Line(this);
-		}
-	}
+        }
+
+        public override string UniqueName => uniqueName;
+
+        public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
+    }
 
 	class SelectionMarker : Shape
 	{
-		static int firstAvailibleUniqueNumber = 0;
 		private System.Windows.Shapes.Shape? wpfShape;
 		private readonly Brush brush = new GeometryTileTexture(new EllipseGeometry(new(5, 5), 5, 5)).Brush(Colors.Black);
 		private readonly Square square;
+		private readonly string uniqueName;
 
-		public SelectionMarker(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY)
+        private static int firstAvailibleUniqueNumber = 0;
+
+        public SelectionMarker(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY)
 		{
 			square = new(leftTopX, leftTopY, rightBottomX, rightBottomY, EColor.Black, 1);
+			uniqueName = GetNextUniqueName();
 
 			WindowManager.Instance.DisplayOnCurrentWindow(this);
 
 			DestroyAfterDelay(5000);
 		}
 
-		public SelectionMarker(SelectionMarker old)
-		{
-			square = new(old.square);
-
-			WindowManager.Instance.DisplayOnCurrentWindow(this);
-
-			Task task = Task.Delay(5_000);
-			task.Start();
-		}
-
 		public static new string GetNextUniqueName()
 		{
-			return string.Format("SelectionMarker_{0}", firstAvailibleUniqueNumber++);
+			return $"SelectionMarker_{firstAvailibleUniqueNumber++}";
 		}
 
-		public override object Edit(string attribute, object value)
+        public override object Edit(string attribute, object value)
 		{
 			throw new SelectionMarkerException();
 		}
@@ -793,8 +786,12 @@ namespace SpecialTask
 		public override Shape Clone()
 		{
 			throw new SelectionMarkerException();
-		}
-	}
+        }
+
+		public override string UniqueName => uniqueName;
+
+        public override MyMap<string, string> AttributesToEditWithNames => new();
+    }
 
 	class Text: Shape
 	{
@@ -803,10 +800,13 @@ namespace SpecialTask
         private EColor color;
         private int fontSize;
 		private string textValue;
-        public new string uniqueName;
+        private readonly string uniqueName;
         private System.Windows.Shapes.Shape? wpfShape = null;
 
         private static int firstAvailibleUniqueNumber = 0;
+
+        private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" },
+            { "fontSize", "Font size" }, { "text", "Text" }, { "color", "Line color" } };
 
         public Text(int leftTopX, int leftTopY, int fontSize, string textValue, EColor color)
         {
@@ -824,8 +824,8 @@ namespace SpecialTask
 
         public static new string GetNextUniqueName()
         {
-            return string.Format("Text_{0}", firstAvailibleUniqueNumber++);
-        }
+			return $"Text_{firstAvailibleUniqueNumber++}";
+		}
 
         public override (int, int) Center
         {
@@ -974,6 +974,10 @@ namespace SpecialTask
         {
             return new Text(this);
         }
+
+        public override string UniqueName => uniqueName;
+
+        public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
     }
 
 	class WPFText: System.Windows.Shapes.Shape

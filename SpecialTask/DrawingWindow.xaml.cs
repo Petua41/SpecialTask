@@ -27,7 +27,13 @@ namespace SpecialTask
         public void ChangeTitle(string value)
         {
             Title = value;
-            // TODO: we should save associated WindowToDraw so that we can handle closing of this window
         }
+
+        private void DrawingWindowClosed(object sender, EventArgs e)
+        {
+            DrawingWindowClosedEvent?.Invoke(this, e);
+        }
+
+        public event EventHandler? DrawingWindowClosedEvent;
     }
 }

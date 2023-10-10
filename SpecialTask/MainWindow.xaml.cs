@@ -94,12 +94,20 @@ namespace SpecialTask
 		}
 
 		/// <summary>
-		/// Transferring input: every char or special key combination is sended to STConsole
+		/// Transferring input: every char or special key combination is sent to STConsole
 		/// </summary>
 		public bool TransferringInput
 		{
 			get => transferringInput;
 			set => transferringInput = value;
+		}
+
+		/// <summary>
+		/// Clears current input buffer (for example, after displaying prompt)
+		/// </summary>
+		public void ClearInput()
+		{
+			currentInput = "";
 		}
 
 		private void ConsoleTBKeyDown(object sender, KeyEventArgs e)
@@ -109,7 +117,7 @@ namespace SpecialTask
 			char? inputChar = ProcessInputChar(e);
 			if (inputChar != null)
 			{
-				if (TransferringInput) TransferInput(inputChar, ESpecialKeyCombinations.None);			// if we got character, transfer it
+				if (TransferringInput) lowConsole.TransferInput(inputChar, ESpecialKeyCombinations.None);		// if we got character, transfer it
 				Display(inputChar.ToString() ?? "");
 				currentInput += inputChar;
 			}
@@ -158,7 +166,7 @@ namespace SpecialTask
 			switch (key)
 			{
 				case Key.Return:
-					if (TransferringInput) TransferInput(null, ESpecialKeyCombinations.Enter);
+					if (TransferringInput) lowConsole.TransferInput(null, ESpecialKeyCombinations.Enter);
 					else EmulateEnter();
 					return null;
 				case Key.Tab:
@@ -166,7 +174,7 @@ namespace SpecialTask
 					else ProcessTab();
 					return null;
 				case Key.Back:
-                    if (TransferringInput) TransferInput(null, ESpecialKeyCombinations.Backspace);
+                    if (TransferringInput) lowConsole.TransferInput(null, ESpecialKeyCombinations.Backspace);
                     else ProcessBackspace();
 					return null;
 				default:
@@ -223,7 +231,7 @@ namespace SpecialTask
 				case Key.C:
 					if (TransferringInput)		// we don`t kill command. we just tell it that Ctrl+C pressed
 					{
-						TransferInput(null, ESpecialKeyCombinations.CtrlC);
+						lowConsole.TransferInput(null, ESpecialKeyCombinations.CtrlC);
 						return true;
 					}
 					return false;
@@ -339,11 +347,6 @@ namespace SpecialTask
 				string text = range.Text;
 				range.ApplyPropertyValue(ForegroundProperty, tp.Item3);
 			}
-		}
-
-		private void TransferInput(char? character, ESpecialKeyCombinations combination)
-		{
-			lowConsole.TransferInput(character, combination);
 		}
 	}
 }

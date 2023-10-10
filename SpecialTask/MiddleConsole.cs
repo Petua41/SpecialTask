@@ -152,6 +152,7 @@ namespace SpecialTask
         public void DisplayPrompt()
         {
             Display(">> ", EColor.Green);
+            mainWindowInstance.ClearInput();
             InputBlocked = false;
         }
 
@@ -184,9 +185,43 @@ namespace SpecialTask
             throw new NotImplementedException();
         }
 
-        public string TransferredString => lastInterceptedString;
+        public string TransferredString
+        {
+            get
+            {
+                string val = lastInterceptedString;
+                ClearInterception();
+                return val;
+            }
+        }
 
-        public char? TransferredChar => lastInterceptedChar;
+        public char? TransferredChar
+        {
+            get
+            {
+                char? val = lastInterceptedChar;
+                ClearInterception();
+                return val;
+            }
+        }
+
+        private void ClearInterception()
+        {
+            lastInterceptedChar = null;
+            lastInterceptedString = "";
+            interceptedString = "";
+            lastInterceptedCombination = ESpecialKeyCombinations.None;
+        }
+
+        public ESpecialKeyCombinations TransferredCombination
+        {
+            get
+            {
+                ESpecialKeyCombinations val = lastInterceptedCombination;
+                lastInterceptedCombination = ESpecialKeyCombinations.None;
+                return val;
+            }
+        }
 
         public bool TransferringInput
         {
@@ -199,8 +234,6 @@ namespace SpecialTask
             get => mainWindowInstance.InputBlocked;
             set => mainWindowInstance.InputBlocked = value;
         }
-
-        public ESpecialKeyCombinations TransferredCombination => lastInterceptedCombination;
 
 
         private void Display(string message, EColor color = EColor.None)

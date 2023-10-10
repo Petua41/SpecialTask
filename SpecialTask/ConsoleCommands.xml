@@ -105,12 +105,12 @@ Adds rectangle to the screen
 	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" isNecessary="true" type="Int" commandParameterName="number"/>
 	</command>
 	<!-- edit -->
-	<command userInput="edit" commandClass="EditShapeAttributesCommand" supportsUndo="true">Select figure on the screen and edit it
+	<command userInput="edit" commandClass="EditCommand" supportsUndo="true">Select figure on the screen and edit it
 
 [color:Magenta]Unnecessary arguments:[color]
 	-t --creation_time    Display shapes in creation time order	[default]
 	-c --coordinates      Display shapes in coordinates order<argument shortArgument="-t" longArgument="--creation_time" commandParameterName="creationTime" defaultValue="true"/>
-		<argument shortArgument="-c" longArgument="--coordinates" commandParameterName="creationTime" defaultValue="false"/>
+		<argument shortArgument="-c" longArgument="--coordinates" commandParameterName="coordinates" defaultValue="false"/>
 	</command>
 	<!-- select -->
 	<command userInput="select" commandClass="SelectCommand">Selects rectangular area, specified by coordinates of left-top and right-bottom corners
@@ -180,6 +180,7 @@ Adds rectangle to the screen
     window        Control windows
     edit          Edit shapes on the screen
     select        Select rectangular area
+    paste         Paste selected area
     undo          Undo last actions
     redo          Redo last actions
     save          Save
@@ -194,8 +195,10 @@ Adds rectangle to the screen
     You can type [color:Green]command --help[color] to get context help
 
     ------- GNU GPL v.3 -------
-    No guarantees are provided, including workability and applicability for any purposes.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
 
     (c) Petr Senichenkov, 2023
-    Source code: https://github.com/Petua41/SpecialTask.git</help>
+    Source code: [color:blue]https://github.com/Petua41/SpecialTask.git[color]</help>
 </commands>

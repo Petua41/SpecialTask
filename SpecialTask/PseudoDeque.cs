@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace SpecialTask
@@ -47,17 +48,17 @@ namespace SpecialTask
 
         public IEnumerator<T> GetEnumerator()
         {
-            return list.GetEnumerator();
+            return new PseudoDequeEnumerator<T>(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public bool Remove(T item)
         {
             return list.Remove(item);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return list.GetEnumerator();
         }
 
         public void Push(T item)
@@ -99,7 +100,8 @@ namespace SpecialTask
             {
                 for (int i = 0; i < Count; i++)
                 {
-                    if (!this[i].Equals(other[i])) return false;
+                    if (this[i] == null && other[i] == null) return true;
+                    if (!this[i]?.Equals(other[i]) ?? false) return false;
                 }
                 return true;
             }
@@ -115,5 +117,40 @@ namespace SpecialTask
         {
             return "PseudoDeque { " + string.Join(' ', list) + " }";
         }
+    }
+
+    class PseudoDequeEnumerator<T> : IEnumerator<T>
+    {
+        private int pointer = -1;
+        private readonly PseudoDeque<T> deque;
+
+        public PseudoDequeEnumerator(PseudoDeque<T> deque)
+        {
+            this.deque = deque;
+        }
+
+        public T Current
+        {
+            get
+            {
+                try { return deque[pointer]; }
+                catch (IndexOutOfRangeException) { throw new InvalidOperationException(); }
+            }
+        }
+
+        object? IEnumerator.Current => Current;
+
+        public bool MoveNext()
+        {
+            pointer++;
+            return pointer < deque?.Count;
+        }
+
+        public void Reset()
+        {
+            pointer = -1;
+        }
+
+        public void Dispose() { }
     }
 }

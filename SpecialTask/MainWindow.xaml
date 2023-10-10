@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpecialTask"
         mc:Ignorable="d"
-        Title="Console" Height="450" Width="800" Closed="ConsoleClosed" ScrollViewer.VerticalScrollBarVisibility="Auto" GotFocus="ConsoleWindowGotFocus" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+        Title="Console" Height="600" Width="1000" Closed="ConsoleClosed" ScrollViewer.VerticalScrollBarVisibility="Auto" GotFocus="ConsoleWindowGotFocus" ScrollViewer.HorizontalScrollBarVisibility="Auto">
     <ScrollViewer x:Name="ConsoleScrollViewer">
         <TextBlock x:Name="ConsoleTB" TextWrapping="Wrap" Text="Have much fun!" Background="#FF171717" Foreground="White" FontFamily="Consolas" 
                FontSize="14" Focusable="True" KeyDown="ConsoleTBKeyDown" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True"/>

@@ -18,6 +18,15 @@ namespace SpecialTask
 
     static class TextureController
     {
+        private static readonly Dictionary<string, string> textureDescriptions = new()
+        {
+            { "solid", "Solid color" }, { "horizontallines", "Horizontal lines" }, { "verticallines", "Vertical lines" },
+            { "horizontaltransparencygradient", "Horizontal gradient with transparent on the left and color on the right" },
+            { "rainbow", "Horizontal rainbow gradient. Color is ignored" },
+            { "radialtransparencygradient", "Radial gradient with color in center and transparency on the edge" },
+            { "water", "Water texture. Color is ignored" }, { "dots", "Dots" }
+        };
+
         private static readonly IBrushPrototype horizontalLinesBrush = new GeometryTileTexture(new LineGeometry(new(0, 0), new(10, 0)));
         private static readonly IBrushPrototype verticalLinesBrush = new GeometryTileTexture(new LineGeometry(new(0, 0), new(0, 10)));
         private static readonly IBrushPrototype dotsBrush = new GeometryTileTexture(new EllipseGeometry(new(5, 5), 0.2, 0.2));
@@ -64,17 +73,7 @@ namespace SpecialTask
             };
         }
 
-        public static Dictionary<string, string> GetTexturesWithDescriptions()
-        {
-            return new()
-            {
-                { "solid", "Solid color" }, { "horizontallines", "Horizontal lines" }, { "verticallines", "Vertical lines" },
-                { "horizontaltransparencygradient", "Horizontal gradient with transparent on the left and color on the right" },
-                { "rainbow", "Horizontal rainbow gradient. Color is ignored" },
-                { "radialtransparencygradient", "Radial gradient with color in center and transparency on the edge" },
-                { "water", "Water texture. Color is ignored" }, { "dots", "Dots" }
-            };
-        }
+        public static Dictionary<string, string> TexturesWithDescriptions => textureDescriptions;
     }
 
     /// <summary>
