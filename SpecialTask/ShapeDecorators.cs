@@ -4,12 +4,8 @@ using System.Linq;
 
 namespace SpecialTask
 {
-	abstract class ShapeDecorator : Shape
-	{
-		
-    }
 
-	class StreakDecorator : ShapeDecorator
+	class StreakDecorator : Shape
 	{
 		private EColor streakColor;
 		private EStreakTexture streakTexture;
@@ -107,11 +103,11 @@ namespace SpecialTask
             decoratedShape?.NullifyWPFShape();
         }
 
-		public Shape? DecoratedShape => decoratedShape;
+		public Shape DecoratedShape => decoratedShape ?? throw new HangingDecoratorException();
 
         public override Dictionary<string, object> Accept()
         {
-			return new() { { "streakColor", streakColor }, { "streakTexture", streakTexture } };
+			return new() { { "streakColor", StreakColor }, { "streakTexture", StreakTexture }, { "decoratedShape", DecoratedShape } };
         }
 
         public override void MoveXBy(int offset)

@@ -59,16 +59,6 @@ namespace SpecialTask
 
 		public List<Shape> ShapesOnCurrentWindow => currentWindow.ShapesOnThisWindow;
 
-		public WindowToDraw? GetWindowByNumber(int number)
-		{
-			if (0 <= number && number < existingWindows.Count) return existingWindows[number];
-			else
-			{
-				Logger.Instance.Error(string.Format("Window number {0} doesn`t exist!", number));			// why we don`t throw something?
-				return null;
-			}
-		}
-
 		public void DisplayOnCurrentWindow(Shape shape)
 		{
 			currentWindow.AddShape(shape);
@@ -130,8 +120,6 @@ namespace SpecialTask
             existingWindows.RemoveAt(windowNumber);
         }
 
-		public Canvas Canvas => currentWindow.Canvas;
-
         private void ValidateWindowNumber(int numberOfWindow)
         {
             if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
@@ -156,8 +144,6 @@ namespace SpecialTask
 			assotiatedWindow.Show();
             ChangeTitle(number);
         }
-
-		public Canvas Canvas => assotiatedWindow.DrawingCanvas;
 
 		public void ChangeTitle(int newNumber)
 		{
@@ -315,7 +301,9 @@ namespace SpecialTask
 		private void OnAssotiatedWindowClosed(object? sender, EventArgs e)
 		{
 			WindowManager.Instance.OnSomeAssotiatedWindowClosed(this);
-		}
+        }
+
+        private Canvas Canvas => assotiatedWindow.DrawingCanvas;
     }
     public class WindowSwitchedEventArgs : EventArgs
     {

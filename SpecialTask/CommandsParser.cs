@@ -7,20 +7,20 @@ using System.Xml.Linq;
 
 namespace SpecialTask
 {
-    enum EArgumentType { Int, Color, PseudoBool, String, Texture }
+    public enum EArgumentType { Int, Color, PseudoBool, String, Texture, Points }
 
-    static class ArgumentTypesConstroller
+    public static class ArgumentTypesConstroller
     {
-        public static EArgumentType GetArgumentTypeFromString(string str)
+		private static readonly Dictionary<string, EArgumentType> stringToType = new()
+		{
+			{ "int", EArgumentType.Int }, { "color", EArgumentType.Color }, { "string", EArgumentType.String }, { "texture", EArgumentType.Texture },
+			{ "points", EArgumentType.Points }
+		};
+
+        public static EArgumentType ParseType(string str)
         {
-            return str.ToLower() switch
-            {
-                "int" => EArgumentType.Int,
-                "color" => EArgumentType.Color,
-                "string" => EArgumentType.String,
-                "texture" => EArgumentType.Texture,
-                _ => EArgumentType.PseudoBool
-            };
+			try { return stringToType[str.ToLower()]; }
+			catch (KeyNotFoundException) { return EArgumentType.PseudoBool; }
         }
 
         public static object ParseValue(this EArgumentType type, string value)
@@ -31,9 +31,23 @@ namespace SpecialTask
                 EArgumentType.Color => ColorsController.Parse(value),
                 EArgumentType.String => value,
                 EArgumentType.Texture => TextureController.Parse(value),
+				EArgumentType.Points => ParsePoints(value),
                 _ => value != "false"                   // all true, that not false
             };
         }
+
+		private static List<(int, int)> ParsePoints(string value)
+		{
+			List<string[]> prePoints = (from prePreP in value.Split(',') select prePreP.Split(' ', 
+				StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).ToList();
+			return (from preP in prePoints select (int.Parse(preP[0]), int.Parse(preP[1]))).ToList();
+			// We don`t catch FormatException, because we pass it on
+		}
+
+		public static string PointsToString(List<(int, int)> points)
+		{
+			return string.Join(", ", from p in points select $"{p.Item1} {p.Item2}");
+		}
     }
     struct ConsoleCommand
 	{
@@ -62,7 +76,6 @@ namespace SpecialTask
 					return "";									// no corresponding arguments
 				}
 				return "";										// the argument is already full
-
 			}
 			else
 			{
@@ -108,18 +121,6 @@ namespace SpecialTask
 		public bool isNecessary;
 		public string commandParameterName;
 		public object? defaultValue;
-
-		public readonly object ParseParameter(string value)
-		{
-			return type switch
-			{
-				EArgumentType.Int => int.Parse(value),
-				EArgumentType.Color => ColorsController.Parse(value),
-				EArgumentType.String => value,
-				EArgumentType.Texture => TextureController.Parse(value),
-				_ => value != "false"                   // здесь тоже всё true, что не false
-			};
-		}
 	}
 
 	/// <summary>
@@ -279,7 +280,7 @@ namespace SpecialTask
 					string helpCandidate = elem.Value;
 					if (helpCandidate != "") globalHelp = helpCandidate + "\n";
 				}
-				else Logger.Instance.Warning(string.Format("Unexpected XML tag in root element: {0}", elem.Name));
+				else Logger.Instance.Warning($"Unexpected XML tag in root element: {elem.Name}");
 			}
 
 			return (commands, globalHelp);
@@ -314,7 +315,7 @@ namespace SpecialTask
 						fictional = attr.Value != "false";
 						break;
 					default:
-						Logger.Instance.Warning(string.Format("Unknown attribute {0} in command", attrName));
+						Logger.Instance.Warning($"Unknown attribute {attrName} in command");
 						break;
 				}
 			}
@@ -326,7 +327,7 @@ namespace SpecialTask
 			foreach (XElement child in elem.Elements())
 			{
 				if (child.Name == "argument") arguments.Add(ParseArgumentElement(child));
-				else Logger.Instance.Warning(string.Format("Unexpected XML tag inside {0} command: {1}", neededUserInput, child.Name));
+				else Logger.Instance.Warning($"Unexpected XML tag inside {neededUserInput} command: {child.Name}");
 			}
 
 			return new ConsoleCommand
@@ -363,7 +364,7 @@ namespace SpecialTask
 						longArgument = attr.Value;
 						break;
 					case "type":
-						type = ArgumentTypesConstroller.GetArgumentTypeFromString(attr.Value);
+						type = ArgumentTypesConstroller.ParseType(attr.Value);
 						break;
 					case "isNecessary":
 						isNecessary = attr.Value != "false";
@@ -372,10 +373,11 @@ namespace SpecialTask
 						commandParameterName = attr.Value;
 						break;
 					case "defaultValue":
-						defaultValue = type.ParseValue(attr.Value);
+						try { defaultValue = type.ParseValue(attr.Value); }
+						catch (FormatException) { throw new InvalidResourceFileException(); }
 						break;
 					default:
-						Logger.Instance.Warning(string.Format("Unknown attribute {0} in arguments", attr.Name));
+						Logger.Instance.Warning($"Unknown attribute {attr.Name} in arguments");
 						break;
 				}
 			}
@@ -411,9 +413,9 @@ namespace SpecialTask
 		{
 			if (consoleCommand.fictional)
 			{
-				Logger.Instance.Warning(string.Format("Call of the fictional command {0}", consoleCommand.neededUserInput));
-				MiddleConsole.HighConsole.DisplayError(string.Format("You cannot call {0} without \"second-level command\". Try {0} --help",
-					consoleCommand.neededUserInput));
+				Logger.Instance.Warning($"Call of the fictional command {consoleCommand.neededUserInput}");
+				MiddleConsole.HighConsole.DisplayError(
+					$"You cannot call {consoleCommand.neededUserInput} without \"second-level command\". Try {consoleCommand.neededUserInput} --help");
 				throw new CallOfFictionalCommandException();
 			}
 
@@ -423,8 +425,7 @@ namespace SpecialTask
 				bool isPresent = arguments.ContainsKey(argument.commandParameterName);
 				if (!isPresent && argument.isNecessary)
 				{
-					MiddleConsole.HighConsole.DisplayError(string.Format("Missing required argument {0}. Try {1} --help",
-						argument.longArgument, consoleCommand.neededUserInput));
+					MiddleConsole.HighConsole.DisplayError($"Missing required argument {argument.longArgument}. Try {consoleCommand.neededUserInput} --help");
 					throw new ArgumentParsingError();
 				}
 			}
@@ -470,7 +471,7 @@ namespace SpecialTask
 				try { argumentPairs.Add(kvp.Key, kvp.Value); }
 				catch (ArgumentException)
 				{
-					MiddleConsole.HighConsole.DisplayError(string.Format("Duplicated argument: {0}", kvp.Key));
+					MiddleConsole.HighConsole.DisplayError($"Duplicated argument: {kvp.Key}");
 				}
 			}
 
@@ -490,19 +491,21 @@ namespace SpecialTask
 					string rawValue = argument.Replace(arg.longArgument, "").Replace(arg.shortArgument, "").Trim();
 					try
 					{
-						object value = arg.ParseParameter(rawValue);
+						object value = arg.type.ParseValue(rawValue);
 						string paramName = arg.commandParameterName;
 						return new(paramName, value);
 					}
-					catch (FormatException)		// Error casting string to int. Other types of parameters have default values (EColor.None, etc.)
+					catch (FormatException)		// Error casting string to int or Points. Other types of parameters have default values (EColor.None, etc.)
 					{
-						MiddleConsole.HighConsole.DisplayError(string.Format("{0} should be integer. {1} is not integer. Try {2} --help",
-							arg.longArgument, rawValue, command.neededUserInput));
+						string intOrPoints = arg.type == EArgumentType.Int ? "integer" : "points";
+                        MiddleConsole.HighConsole.DisplayError(
+							$"{arg.longArgument} should be {intOrPoints}. {rawValue} is not {intOrPoints}. Try {command.neededUserInput} --help");
+
 						throw new ArgumentParsingError();
 					}
 				}
 			}
-			MiddleConsole.HighConsole.DisplayError(string.Format("Unknown argument: {0}. Try {1} -- help", argument, command.neededUserInput));
+			MiddleConsole.HighConsole.DisplayError($"Unknown argument: {argument}. Try {command.neededUserInput} -- help");
 			throw new ArgumentParsingError();
 		}
 

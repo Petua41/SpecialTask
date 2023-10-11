@@ -27,7 +27,16 @@ namespace SpecialTaskTest
             MyMap<string, int> secondMap = new() { { "three", 3 }, { "one", 1 } };
             MyMap<string, int> expected = new() { { "one", 1 }, { "two", 2 }, { "three", 3 }, { "one", 1 } };
             MyMap<string, int> actual = firstMap + secondMap;
-            Assert.AreEqual(expected, actual);
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void PointsToStringTest()
+        {
+            List<(int, int)> points = new() { (10, 10), (20, 30), (40, 40) };
+            string expected = "10 10, 20 30, 40 40";
+            string actual = ArgumentTypesConstroller.PointsToString(points);
+            Assert.That(actual, Is.EqualTo(expected));
         }
     }
 }

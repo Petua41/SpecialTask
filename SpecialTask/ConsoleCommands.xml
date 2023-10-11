@@ -92,6 +92,24 @@ Adds rectangle to the screen
     <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
     <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
   </command>
+  <command userInput="new polygon" commandClass="CreatePolygonCommand" supportsUndo="true">
+Adds polygon to the screen
+
+[color:Magenta]Necessary arguments:[color]
+	-p --points           Points, separated by a comma (X1 Y1, X2 Y2, X3 Y3...)
+	-C --color            Line color
+	-t --line_thickness   Line thickness
+
+[color:Magenta]Unnecessary arguments:[color]
+	-s --streak           Fill with texture
+	-c --streak_color     Color to fill
+	-T --texture          Texture to fill<argument shortArgument="-p" longArgument="--points" type="Points" isNecessary="true" commandParameterName="points"/>
+    <argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
+    <argument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" commandParameterName="lineThickness"/>
+    <argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
+    <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
+    <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
+  </command>
 	<!-- window -->
 	<command userInput="window create" commandClass="CreateWindowCommand">Creates new window for drawing</command>
 	<command userInput="window delete" commandClass="DeleteWindowCommand">Closes specified window
@@ -164,7 +182,16 @@ Adds rectangle to the screen
 [color:Magenta]Unnecessary arguments:[color]
 	-s --streak         Fill with texture
 	-c --streak_color   Color to fill
-	-T --texture        Texture to fill</command>
+	-T --texture        Texture to fill
+
+[color:Magenta]Shapes:[color]
+	circle
+	rectangle
+	line
+	text
+	polygon
+
+Enter [color:Green]new shape --help[color] to get help on [color:Green]shape[color]</command>
 	<command userInput="window" fictional="true">Controls windows. You cannot invoke this command without specifying concrete action</command>
 	
 	<!-- common help -->

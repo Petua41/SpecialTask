@@ -42,6 +42,7 @@ namespace SpecialTask
         public void ChangeUndoStackDepth(int depth);
         public void TransferInput(char? character, ESpecialKeyCombinations combination);
         public void ProcessInputString(string input);
+        public void NewLine();
 
     }
 
@@ -55,6 +56,9 @@ namespace SpecialTask
         private ESpecialKeyCombinations lastInterceptedCombination = ESpecialKeyCombinations.None;
         private string lastInterceptedString = "";
 
+        private List<string> prevCommands = new();
+        private int pointer = 0;                    // from end
+
         private const EColor defaultColor = EColor.White;
 
         private MiddleConsole()
@@ -64,7 +68,7 @@ namespace SpecialTask
             try { mainWindowInstance = (MainWindow)Application.Current.MainWindow; }
             catch (NullReferenceException ex)
             {
-                Logger.Instance.Error(string.Format("{0} exception while trying to get MainWindow instance!", ex.GetType().ToString()));
+                Logger.Instance.Error($"{ex.GetType()} exception while trying to get MainWindow instance!");
                 throw;
             }
         }
@@ -169,20 +173,25 @@ namespace SpecialTask
 
         public void ProcessInputString(string input)
         {
+            prevCommands.Add(input);
+            pointer = 0;
+
             CommandsParser.ParseCommand(input);
             DisplayPrompt();
         }
 
         public string ProcessDownArrow()
         {
-            // TODO
-            throw new NotImplementedException();
+            if (pointer > 0) pointer--;
+            if (pointer == 0) return "";
+            return prevCommands[^(pointer + 1)];
         }
 
         public string ProcessUpArrow()
         {
-            // TODO
-            throw new NotImplementedException();
+            string command = prevCommands[^(pointer + 1)];
+            if (pointer + 1 < prevCommands.Count) pointer++;
+            return command;
         }
 
         public string TransferredString
@@ -218,7 +227,7 @@ namespace SpecialTask
             get
             {
                 ESpecialKeyCombinations val = lastInterceptedCombination;
-                lastInterceptedCombination = ESpecialKeyCombinations.None;
+                //lastInterceptedCombination = ESpecialKeyCombinations.None;
                 return val;
             }
         }
@@ -234,7 +243,6 @@ namespace SpecialTask
             get => mainWindowInstance.InputBlocked;
             set => mainWindowInstance.InputBlocked = value;
         }
-
 
         private void Display(string message, EColor color = EColor.None)
         {
@@ -266,7 +274,7 @@ namespace SpecialTask
                         try { lastColor = ColorsController.Parse(colorName); }
                         catch (ColorExcepttion)
                         {
-                            Logger.Instance.Error(string.Format("Invalid color name in escape sequence: {0}", colorName));
+                            Logger.Instance.Error($"Invalid color name in escape sequence: {colorName}");
                             throw new EscapeSequenceParsingError();
                         }
                     }

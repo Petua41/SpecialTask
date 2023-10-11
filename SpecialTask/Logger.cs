@@ -28,7 +28,7 @@ namespace SpecialTask
 #else
 			logLevel = ELogLevels.Warning;
 #endif
-			logFilename = string.Format("Logs/log_{0}", DateTime.Now.ToString().Replace(' ', '_').Replace(':', '.'));
+			logFilename = $"Logs/log_{DateTime.Now.ToString().Replace(' ', '_').Replace(':', '.')}";
 			if (!Directory.Exists("Logs")) Directory.CreateDirectory("Logs");
 			writer = new(File.Create(logFilename));
 			LogGreetings();
@@ -79,15 +79,7 @@ namespace SpecialTask
 		{
 			if (level < logLevel) { return; }
 
-			string logLevelString = logLevel switch
-			{
-				ELogLevels.Info => "INFO",
-				ELogLevels.Warning => "WARNING",
-				ELogLevels.Error => "ERROR",
-				_ => "UNKNOWN",
-			};
-
-			writer.WriteLine(string.Format("{0}[{1}]: {2}", logLevelString, DateTime.Now.ToString(), message));
+			writer.WriteLine($"{level}[{DateTime.Now}]: {message}");
         }
 
 		private void LogGreetings()
@@ -101,14 +93,15 @@ namespace SpecialTask
 			string userName = Environment.UserName;
 			string workingDir = Environment.CurrentDirectory;
 
-			string greetingsText = string.Format("------------ LOG ------------\n" + 
-				"[{0}]: Program started\n" + 
-				"DEBUG: {1}\n" + 
-				"Platform: {2}\n" + 
-				".NET version: {3}\n" + 
-				"Username: {4}\n" + 
-				"Working directory: {5}\n" +
-                "-----------------------------\n\n", DateTime.Now.ToString(), debug.ToString(), platform, dotnetVersion, userName, workingDir);
+			string greetingsText = 
+				"------------ LOG ------------\n" + 
+				$"[{DateTime.Now}]: Program started\n" + 
+				$"DEBUG: {debug}\n" + 
+				$"Platform: {platform}\n" + 
+				$".NET version: {dotnetVersion}\n" + 
+				$"Username: {userName}\n" + 
+				$"Working directory: {workingDir}\n" +
+                "-----------------------------\n\n";
 			writer.Write(greetingsText);
         }
 	}

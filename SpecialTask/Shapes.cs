@@ -9,31 +9,35 @@ using System.Windows.Media;
 
 namespace SpecialTask
 {
-	public enum EColor
+	public enum EColor			// it`s standard ANSI colors (values are similar to ones in xterm)
 	{
-		None,
-		Green,
-		Magenta,
-		Red,
-		White,
-		Yellow,
-		Purple,
-		Black,
-		Blue
-	} // TODO
+		None, Purple,			// I added this line
+		
+		Black, Red, Green, Yellow, Blue,
+		Magenta, Cyan, White, Gray, BrightRed,
+		BrightGreen, BrightYellow, BrightBlue,
+		BrightMagenta, BrightCyan, BrightWhite
+	}
 
 	static class ColorsController
 	{
 		private static readonly Dictionary<string, EColor> colorNames = new()
-		{ 
-			{ "green", EColor.Green }, { "magenta", EColor.Magenta }, { "red", EColor.Red }, { "white", EColor.White }, { "yellow", EColor.Yellow },
-			{ "purple", EColor.Purple }, { "black", EColor.Black }, { "blue", EColor.Blue }
+		{
+			{ "purple", EColor.Purple }, { "black", EColor.Black }, { "red", EColor.Red }, { "green", EColor.Green }, { "yellow", EColor.Yellow },
+			{ "blue", EColor.Blue }, { "magenta", EColor.Magenta }, { "cyan", EColor.Cyan }, { "white", EColor.White }, { "Gray", EColor.Gray },
+			{ "brightred", EColor.BrightRed }, { "brightgreen", EColor.BrightGreen }, { "brightyellow", EColor.BrightYellow },
+			{ "brightblue", EColor.BrightBlue }, { "brightmagenta", EColor.BrightMagenta }, { "brightcyan", EColor.BrightCyan },
+			{ "brightwhite", EColor.BrightWhite}
 		};
 
 		private static readonly Dictionary<EColor, Color> wpfColors = new()
 		{
-			{ EColor.Green, Colors.LimeGreen }, { EColor.Magenta, Colors.Magenta }, { EColor.Red, Colors.Red }, { EColor.White, Colors.White },
-			{ EColor.Yellow, Colors.Yellow }, { EColor.Purple, Color.FromRgb(128, 0, 128) }, { EColor.Black, Colors.Black }, { EColor.Blue, Colors.Blue }
+			{ EColor.Purple, Color.FromRgb(128, 0, 128) }, { EColor.Black, Colors.Black }, { EColor.Red, Color.FromRgb(205, 0, 0) },
+			{ EColor.Green, Color.FromRgb(0, 205, 0) }, { EColor.Yellow, Color.FromRgb(205, 205, 0) }, { EColor.Blue, Color.FromRgb(0, 0, 238) },
+			{ EColor.Magenta, Color.FromRgb(205, 0, 205) }, { EColor.Cyan, Color.FromRgb(0, 205, 205) }, { EColor.White, Color.FromRgb(229, 229, 229) },
+			{ EColor.Gray, Color.FromRgb(127, 127, 127) }, { EColor.BrightRed, Colors.Red }, {EColor.BrightGreen, Color.FromRgb(0, 255, 0) },
+			{ EColor.BrightYellow, Colors.Yellow }, { EColor.BrightBlue, Color.FromRgb(92, 92, 255) }, { EColor.BrightMagenta, Colors.Magenta },
+			{EColor.BrightCyan, Colors.Cyan }, { EColor.BrightWhite, Colors.White }
 		};
 
 		public static Color GetWPFColor(this EColor color)
@@ -62,7 +66,7 @@ namespace SpecialTask
 
 		public static string GetNextUniqueName()
 		{
-			return string.Format("Unknown_Shape_{0}", firstAvailibleUniqueNumber++);
+			return $"Unknown_Shape_{firstAvailibleUniqueNumber++}";
 		}
 
 		public abstract object Edit(string attribute, object value);
@@ -806,7 +810,7 @@ namespace SpecialTask
         private static int firstAvailibleUniqueNumber = 0;
 
         private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" },
-            { "fontSize", "Font size" }, { "text", "Text" }, { "color", "Line color" } };
+            { "fontSize", "Font size" }, { "text", "Text" }, { "color", "Text color" } };
 
         public Text(int leftTopX, int leftTopY, int fontSize, string textValue, EColor color)
         {
@@ -973,6 +977,156 @@ namespace SpecialTask
         public override Shape Clone()
         {
             return new Text(this);
+        }
+
+        public override string UniqueName => uniqueName;
+
+        public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
+    }
+
+	class Polygon: Shape
+	{
+		List<(int, int)> points;
+        private EColor color;
+        private int lineThickness;
+        private readonly string uniqueName;
+        private System.Windows.Shapes.Shape? wpfShape = null;
+
+        private static int firstAvailibleUniqueNumber = 0;
+
+		private readonly MyMap<string, string> ATTRS_TO_EDIT = new() 
+		{ { "points", "Points" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
+
+        public Polygon(List<(int, int)> points, int lineThickness, EColor color)
+        {
+			this.points = points;
+            this.color = color;
+            this.lineThickness = lineThickness;
+            uniqueName = GetNextUniqueName();
+
+            WindowManager.Instance.DisplayOnCurrentWindow(this);
+        }
+
+        public Polygon(Polygon old) : this(old.points, old.lineThickness, old.color) { }
+
+        public static new string GetNextUniqueName()
+        {
+            return $"Polygon_{firstAvailibleUniqueNumber++}";
+        }
+
+        public override (int, int) Center
+        {
+            get
+            {
+                int x = (int)(from p in Points select p.Item1).Average();
+				int y = (int)(from p in Points select p.Item2).Average();
+				return (x, y);
+            }
+        }
+
+        public override object Edit(string attribute, object value)
+        {
+            attribute = attribute.ToLower();
+            object oldValue;
+
+            try
+            {
+                switch (attribute)
+                {
+                    case "points":
+                        oldValue = Points;
+                        Points = (List<(int, int)>)value;
+                        break;
+                    case "lineThickness":
+                        oldValue = LineThickness;
+                        LineThickness = (int)value;
+                        break;
+                    case "color":
+                        oldValue = Color;
+                        Color = (EColor)value;
+                        break;
+                    default:
+                        throw new InvalidShapeAttributeException();
+                }
+            }
+            catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+
+            return oldValue;
+        }
+
+        public override System.Windows.Shapes.Shape WPFShape
+        {
+            get
+            {
+                if (this.wpfShape != null) return this.wpfShape;
+
+				System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Polygon
+                {
+                    Points = new(from p in Points select new Point(p.Item1, p.Item2)),
+					StrokeThickness = LineThickness,
+                    Stroke = new SolidColorBrush(Color.GetWPFColor())
+                };
+                Canvas.SetTop(wpfShape, 0);
+                Canvas.SetLeft(wpfShape, 0);
+
+                this.wpfShape = wpfShape;
+                return wpfShape;
+            }
+        }
+
+        public override Dictionary<string, object> Accept()
+        {
+            return new() { { "points", Points }, { "lineThickness", LineThickness }, { "color", color } };
+        }
+
+        public override void MoveXBy(int offset)
+        {
+            Points = (from p in Points select (p.Item1 + offset, p.Item2)).ToList();
+        }
+
+        public override void MoveYBy(int offset)
+        {
+            Points = (from p in Points select (p.Item1, p.Item2 + offset)).ToList();
+        }
+
+        private List<(int, int)> Points
+        {
+            get => points;
+            set
+            {
+                points = value;
+                Redraw();
+            }
+        }
+
+        private int LineThickness
+        {
+            get => lineThickness;
+            set
+            {
+                lineThickness = value;
+                Redraw();
+            }
+        }
+
+        private EColor Color
+        {
+            get => color;
+            set
+            {
+                color = value;
+                Redraw();
+            }
+        }
+
+        public override void NullifyWPFShape()
+        {
+            wpfShape = null;
+        }
+
+        public override Shape Clone()
+        {
+            return new Polygon(this);
         }
 
         public override string UniqueName => uniqueName;

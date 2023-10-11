@@ -22,8 +22,8 @@ namespace SpecialTask
 		private bool transferringInput = false;
 		private readonly Brush defaultForegroundBrush = new SolidColorBrush(Colors.White);
 		private readonly Logger logger;
+        private readonly List<(TextPointer, TextPointer, Brush)> appliedRanges = new();
 		private readonly WindowManager windowManager;
-		List<(TextPointer, TextPointer, Brush)> appliedRanges = new();
 
 		private readonly Dictionary<Key, char> numberKeys = new()
 		{
@@ -163,6 +163,13 @@ namespace SpecialTask
 				return otherKeys[key];
 			}
 
+			// Maybe I can do it better (YANDERE)
+			if (key == Key.Up || key == Key.Down || key == Key.Right || key == Key.Left || key == Key.End || key == Key.Home)
+			{
+				ProcessArrows(key);
+				return null;
+			}
+
 			switch (key)
 			{
 				case Key.Return:
@@ -175,7 +182,7 @@ namespace SpecialTask
 					return null;
 				case Key.Back:
                     if (TransferringInput) lowConsole.TransferInput(null, ESpecialKeyCombinations.Backspace);
-                    else ProcessBackspace();
+                    else RemoveLastChar();
 					return null;
 				default:
 					return null;
@@ -202,7 +209,7 @@ namespace SpecialTask
 			if (completion.Length > 0) EmulateInput(completion);
 		}
 
-		private void ProcessBackspace()
+		private void RemoveLastChar()
 		{
 			if (currentInput.Length > 0)
 			{
@@ -253,19 +260,18 @@ namespace SpecialTask
 				case Key.Up:
 					if (TransferringInput) return;					// same as Ctrl+Z
 					string prevCommandToDisplay = lowConsole.ProcessUpArrow();
-					// TODO
+
+					ClearInput();
+					ClearInputLine();
+					EmulateInput(prevCommandToDisplay);
 					break;
 				case Key.Down:
 					if (TransferringInput) return;                  // same as Ctrl+Z
                     string nextCommandToDisplay = lowConsole.ProcessDownArrow();
-					if (nextCommandToDisplay == "")
-					{
-						// TODO: вниз листать нечего. Ничего не делаем (нужно убедиться, что всё осталось как было)
-					}
-					else
-					{
-						// TODO
-					}
+					
+					ClearInput();
+                    ClearInputLine();
+                    EmulateInput(nextCommandToDisplay);
 					break;
 				case Key.Left:
 					// TODO: здесь двигаем Caret
@@ -280,7 +286,7 @@ namespace SpecialTask
 					// MoveCaretToStartOfString()
 					break;
 				default:
-					logger.Warning(string.Format("{0} is not an arrow, but invoked ProcessArrows", key.ToString()));
+					logger.Warning($"{key} is not an arrow, but invoked ProcessArrows");
 					break;
 			}
 		}
@@ -292,7 +298,7 @@ namespace SpecialTask
 
 		private void ConsoleClosed(object sender, EventArgs e)
 		{
-			WindowManager.Instance.CloseAll();
+			windowManager.CloseAll();
 
 			logger.Dispose();
 			SaveLoadFacade.Instance.Dispose();
@@ -308,8 +314,8 @@ namespace SpecialTask
 			}
 			catch (FormatException)
 			{
-				logger.Error(string.Format("{0} is not valid undo stack depth", args[2]));
-				Display(string.Format("{0} is not valid undo stack depth. Setting default (15)\n", args[2]), Colors.Red);
+				logger.Error($"{args[2]} is not valid undo stack depth");
+				Display($"{args[2]} is not valid undo stack depth. Setting to default (15)\n", Colors.Red);
 			}
 		}
 
@@ -347,6 +353,20 @@ namespace SpecialTask
 				string text = range.Text;
 				range.ApplyPropertyValue(ForegroundProperty, tp.Item3);
 			}
+		}
+
+		/// <summary>
+		/// Clears displayed input
+		/// </summary>
+		private void ClearInputLine()
+		{
+			// YANDERE + works bad
+			string newText = ConsoleTB.Text;
+			int idx = newText.LastIndexOf("\n");
+			ConsoleTB.Text = newText[..(idx - 1)];
+
+			lowConsole.NewLine();
+			lowConsole.DisplayPrompt();
 		}
 	}
 }

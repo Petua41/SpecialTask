@@ -10,7 +10,7 @@ namespace SpecialTask
     {
         None,
         SolidColor,
-        HorizontalLines, VerticalLines, Dots,                                   // We can add lines (diagonal, vawes, etc.) endlessly
+        HorizontalLines, VerticalLines, Dots, TransparentCircles,               // We can add lines (diagonal, vawes, etc.) endlessly
         HorizontalTransparentToColorGradient, HorizontalRainbow,                // We can add linear gradients endlessly
         RadialColorToTransparentGradient,                                       // We can add radial gradients endlessly
         Water                                                                   // We can add seamless textures really endlessly
@@ -24,12 +24,14 @@ namespace SpecialTask
             { "horizontaltransparencygradient", "Horizontal gradient with transparent on the left and color on the right" },
             { "rainbow", "Horizontal rainbow gradient. Color is ignored" },
             { "radialtransparencygradient", "Radial gradient with color in center and transparency on the edge" },
-            { "water", "Water texture. Color is ignored" }, { "dots", "Dots" }
+            { "water", "Water texture. Color is ignored" }, { "dots", "Dots" }, { "holes", "Solid color with transparent round \"holes\""}
         };
 
         private static readonly IBrushPrototype horizontalLinesBrush = new GeometryTileTexture(new LineGeometry(new(0, 0), new(10, 0)));
         private static readonly IBrushPrototype verticalLinesBrush = new GeometryTileTexture(new LineGeometry(new(0, 0), new(0, 10)));
         private static readonly IBrushPrototype dotsBrush = new GeometryTileTexture(new EllipseGeometry(new(5, 5), 0.2, 0.2));
+        private static readonly IBrushPrototype transpCircles = new GeometryTileTexture(new CombinedGeometry(GeometryCombineMode.Exclude,
+            new RectangleGeometry(new Rect(0, 0, 10, 10)), new EllipseGeometry(new(5, 5), 3.5, 3.5)));
 
         private static readonly IBrushPrototype horizTranspToColorGradientBrush = new LinearGradientTexture(new(0, 0.5), new(1, 0.5))
             { { Colors.Transparent, 0 } };
@@ -52,6 +54,7 @@ namespace SpecialTask
                 "radialtarnsparencygradient" or "rtg" => EStreakTexture.RadialColorToTransparentGradient,
                 "watertexture" or "water" or "wt" => EStreakTexture.Water,
                 "dots" => EStreakTexture.Dots,
+                "holes" or "tc" or "transparentcircles" => EStreakTexture.TransparentCircles,
                 _ => EStreakTexture.None
             };
         }
@@ -69,6 +72,7 @@ namespace SpecialTask
                 EStreakTexture.RadialColorToTransparentGradient => radTranspToColorGradientBrush.Brush(wpfColor),
                 EStreakTexture.Water => waterSeamlessTexture.Brush(wpfColor),
                 EStreakTexture.Dots => dotsBrush.Brush(wpfColor),
+                EStreakTexture.TransparentCircles => transpCircles.Brush(wpfColor),
                 _ => Brushes.Transparent
             };
         }

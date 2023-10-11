@@ -142,6 +142,7 @@ namespace SpecialTask
 					"text" => stringNewValue,
 					"color" or "streakColor" => ColorsController.Parse(stringNewValue),
 					"streakTexture" => TextureController.Parse(stringNewValue),
+					"points" => EArgumentType.Points.ParseValue(stringNewValue),
 					_ => int.Parse(stringNewValue)
 				};
 			}
@@ -288,6 +289,8 @@ namespace SpecialTask
 		private Task task;
 		private CancellationTokenSource tokenSource;
 
+		private bool ctrlCPressed = false;		// YANDERE
+
 		private Shape? shapeToEdit;
 
 		public EditCommand(Dictionary<string, object> parameters)
@@ -315,7 +318,7 @@ namespace SpecialTask
                 if (listOfShapes.Count == 0)
                 {
                     MiddleConsole.HighConsole.DisplayWarning("Nothing to edit");
-                    return;
+                    return;					// FIXME: spare prompt
                 }
 
                 DisplayShapeSelectionPrompt((from shape in listOfShapes select shape.UniqueName).ToList());
@@ -332,6 +335,7 @@ namespace SpecialTask
                     catch (TaskCanceledException) { /* continue */ }
                 }
                 MiddleConsole.HighConsole.NewLine();
+				if (ctrlCPressed) throw new KeyboardInterruptException();
 
                 if (selectedNumber >= listOfShapes.Count) throw new InvalidInputException();
 
@@ -351,6 +355,7 @@ namespace SpecialTask
                     catch (TaskCanceledException) { /* continue */ }
                 }
                 MiddleConsole.HighConsole.NewLine();
+                if (ctrlCPressed) throw new KeyboardInterruptException();
 
                 switch (selectedNumber)
                 {
@@ -370,6 +375,7 @@ namespace SpecialTask
                             catch (TaskCanceledException) { /* continue */ }
                         }
                         MiddleConsole.HighConsole.NewLine();
+                        if (ctrlCPressed) throw new KeyboardInterruptException();
 
                         ELayerDirection dir = selectedNumber switch
                         {
@@ -385,7 +391,7 @@ namespace SpecialTask
 
                         break;
                     case 1:
-						// TODO: edit attributes
+						// edit attributes:
 						MyMap<string, string> attrsWithNames = shapeToEdit.AttributesToEditWithNames;
 						// TODO: add streak, if there`s no
 
@@ -403,6 +409,7 @@ namespace SpecialTask
                             catch (TaskCanceledException) { /* continue */ }
                         }
                         MiddleConsole.HighConsole.NewLine();
+                        if (ctrlCPressed) throw new KeyboardInterruptException();
 
                         if (selectedNumber >= attrsWithNames.Count) throw new InvalidInputException();
 
@@ -420,8 +427,10 @@ namespace SpecialTask
                             try { await task; }
                             catch (TaskCanceledException) { /* continue */ }
                         }
+						MiddleConsole.HighConsole.NewLine();
+                        if (ctrlCPressed) throw new KeyboardInterruptException();
 
-						receiver = new EditShapeAttributesCommand(new() { { "shape", shapeToEdit }, { "attribute", kvp.Key }, { "newValue", interString } });
+                        receiver = new EditShapeAttributesCommand(new() { { "shape", shapeToEdit }, { "attribute", kvp.Key }, { "newValue", interString } });
 						CommandsFacade.ExecuteButDontRegister(receiver);
 
                         break;
@@ -429,7 +438,16 @@ namespace SpecialTask
                         throw new InvalidInputException();
                 }
             }
-			catch (InvalidInputException) { MiddleConsole.HighConsole.DisplayError("Invalid input"); }
+			catch (InvalidInputException) 
+			{
+				Logger.Instance.Error("Edit: invalid input");
+				MiddleConsole.HighConsole.DisplayError("Invalid input"); 
+			}
+			catch (KeyboardInterruptException)
+			{
+				Logger.Instance.Error("Edit: keyboard interrupt");
+				MiddleConsole.HighConsole.DisplayError("Kyboard interrupt");
+			}
 			finally
 			{
                 MiddleConsole.HighConsole.TransferringInput = false;
@@ -487,8 +505,19 @@ namespace SpecialTask
 
         private void OnSomethingTransferred(object? sender, EventArgs e)
         {
-			// FIXME: Ctrl+C
-			//if (MiddleConsole.HighConsole.TransferredCombination == ESpecialKeyCombinations.CtrlC) { throw new KeyboardInterruptException(); }
+			ESpecialKeyCombinations comb = MiddleConsole.HighConsole.TransferredCombination;		// We must save it, because it`s erased on get
+
+			// FIXME: YANDERE
+			if (comb == ESpecialKeyCombinations.CtrlC)
+			{
+				ctrlCPressed = true;
+
+				interString = "KBI";	// so that if (sele.. or if (inter.. ends
+				selectedNumber = 10;
+
+                tokenSource.Cancel(true);
+                return;
+			}
 
 			if (waitingForNumber)
 			{
@@ -503,7 +532,7 @@ namespace SpecialTask
             }
 			else if (waitingForString)
 			{
-				if (MiddleConsole.HighConsole.TransferredCombination == ESpecialKeyCombinations.Enter)
+				if (comb == ESpecialKeyCombinations.Enter)
 				{
 					string trString = MiddleConsole.HighConsole.TransferredString;
 					if (trString.Length > 0)
@@ -711,7 +740,7 @@ namespace SpecialTask
     }
 
     /// <summary>
-    /// Команда для добавления прямоугольника на экран
+    /// Command to add text
     /// </summary>
     class CreateTextCommand : ICommand
     {
@@ -758,6 +787,60 @@ namespace SpecialTask
         public void Execute()
         {
             receiver = new Text(leftTopX, leftTopY, fontSize, textValue, color);
+            if (streak) receiver = new StreakDecorator(receiver, streakColor, streakTexture);
+        }
+
+        public void Unexecute()
+        {
+            if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
+            receiver.Destroy();
+        }
+    }
+
+	/// <summary>
+	/// Command to add polygon
+	/// </summary>
+    class CreatePolygonCommand : ICommand
+    {
+        private Shape? receiver;
+        readonly List<(int, int)> points;
+        readonly int lineThickness;
+        readonly EColor color;
+        readonly bool streak;
+        readonly EColor streakColor;
+        readonly EStreakTexture streakTexture;
+
+        public CreatePolygonCommand(Dictionary<string, object> arguments)
+        {
+            try
+            {
+                points = (List<(int, int)>)arguments["points"];
+                lineThickness = (int)arguments["lineThickness"];
+                color = (EColor)arguments["color"];
+
+                // unnecessary, but if streak is present, other should be too
+                if (arguments.ContainsKey("streak"))
+                {
+                    streak = (bool)arguments["streak"];
+                    streakTexture = (EStreakTexture)arguments["streakTexture"];
+                    streakColor = (EColor)arguments["streakColor"];
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of CreateSquareCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of CreateSquareCommand");
+                throw;
+            }
+        }
+
+        public void Execute()
+        {
+            receiver = new Polygon(points, lineThickness, color);
             if (streak) receiver = new StreakDecorator(receiver, streakColor, streakTexture);
         }
 
@@ -823,8 +906,8 @@ namespace SpecialTask
 			try { receiver.SwitchToWindow(numberOfWindow); }
 			catch (WindowDoesntExistException)
 			{
-				Logger.Instance.Error(string.Format("Trying to switch to window {0}, but window {0} doesn`t exist", numberOfWindow));
-				MiddleConsole.HighConsole.DisplayError(string.Format("Window {0} doesn`t exist!", numberOfWindow));
+				Logger.Instance.Error($"Trying to switch to window {numberOfWindow}, but window {numberOfWindow} doesn`t exist");
+				MiddleConsole.HighConsole.DisplayError($"Window {numberOfWindow} doesn`t exist!");
 			}
 		}
 
@@ -1103,19 +1186,19 @@ namespace SpecialTask
 				string dir = filename[..idx];
 				if (Directory.Exists(dir))
 				{
-					Logger.Instance.Error(string.Format("Cannot save to {0}: invalid characters", filename));
+					Logger.Instance.Error($"Cannot save to {filename}: invalid characters");
 					MiddleConsole.HighConsole.DisplayError("Filename cannot contain theese characters: /\\:*?\"<>|");
 				}
 				else
 				{
-					Logger.Instance.Error(string.Format("Cannot save to {0}: directory {1} doesn`t exists", filename, dir));
-					MiddleConsole.HighConsole.DisplayError(string.Format("Directory {0} doesn`t exist", dir));
+					Logger.Instance.Error($"Cannot save to {filename}: directory {dir} doesn`t exists");
+					MiddleConsole.HighConsole.DisplayError($"Directory {dir} doesn`t exist");
 				}
 			}
 			catch (UnauthorizedAccessException)
 			{
-				Logger.Instance.Error(string.Format("Cannot save to: {0}: no permissions", filename));
-				MiddleConsole.HighConsole.DisplayError(string.Format("you have no permission to write to {0}. This incident will be reported", filename));
+				Logger.Instance.Error($"Cannot save to: {filename}: no permissions");
+				MiddleConsole.HighConsole.DisplayError($"you have no permission to write to {filename}. This incident will be reported");
 			}
 		}
 
@@ -1163,12 +1246,12 @@ namespace SpecialTask
 			try { SaveLoadFacade.Instance.Load(filename); }
 			catch (LoadXMLError)
 			{
-				Logger.Instance.Error(string.Format("Cannot load {0}: invalid file format", filename));
+				Logger.Instance.Error($"Cannot load {filename}: invalid file format");
 				MiddleConsole.HighConsole.DisplayError("Invalid file format");
 			}
 			catch (FileNotFoundException)
 			{
-				Logger.Instance.Error(string.Format("Cannot load {0}: file not found", filename));
+				Logger.Instance.Error($"Cannot load {filename}: file not found");
 				MiddleConsole.HighConsole.DisplayError("File not found");
 			}
 		}
@@ -1304,7 +1387,7 @@ namespace SpecialTask
 		{
 			List<string> colors = ColorsController.GetColorsList();
 			string output = "";
-			foreach (string color in colors) output += string.Format("[color:{0}]{0}[color] ", color);
+			foreach (string color in colors) output += $"[color:{color}]{color}[color] ";
 			output += "\n";
 			receiver.Display(output);
 		}
