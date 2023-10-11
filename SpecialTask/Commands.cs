@@ -852,7 +852,7 @@ namespace SpecialTask
     }
 
     /// <summary>
-    /// Команда для создания нового окна
+    /// Command to create window
     /// </summary>
     class CreateWindowCommand : ICommand
 	{
@@ -1372,7 +1372,7 @@ namespace SpecialTask
 	}
 
 	/// <summary>
-	/// Displays list of colors (with examples!)
+	/// Displays list of colors (with examples)
 	/// </summary>
 	class ColorsCommand: ICommand
 	{

@@ -15,9 +15,9 @@ namespace SpecialTask
 	{
 		private static Logger? singleton;
 
-		private string logFilename;
-		private StreamWriter writer;
-		private ELogLevels logLevel;
+		private readonly string logFilename;
+		private readonly StreamWriter writer;
+		private readonly ELogLevels logLevel;
 
 		Logger()
 		{

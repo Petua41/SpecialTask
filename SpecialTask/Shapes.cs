@@ -27,7 +27,7 @@ namespace SpecialTask
 			{ "blue", EColor.Blue }, { "magenta", EColor.Magenta }, { "cyan", EColor.Cyan }, { "white", EColor.White }, { "Gray", EColor.Gray },
 			{ "brightred", EColor.BrightRed }, { "brightgreen", EColor.BrightGreen }, { "brightyellow", EColor.BrightYellow },
 			{ "brightblue", EColor.BrightBlue }, { "brightmagenta", EColor.BrightMagenta }, { "brightcyan", EColor.BrightCyan },
-			{ "brightwhite", EColor.BrightWhite}
+			{ "brightwhite", EColor.BrightWhite }
 		};
 
 		private static readonly Dictionary<EColor, Color> wpfColors = new()
@@ -37,7 +37,7 @@ namespace SpecialTask
 			{ EColor.Magenta, Color.FromRgb(205, 0, 205) }, { EColor.Cyan, Color.FromRgb(0, 205, 205) }, { EColor.White, Color.FromRgb(229, 229, 229) },
 			{ EColor.Gray, Color.FromRgb(127, 127, 127) }, { EColor.BrightRed, Colors.Red }, {EColor.BrightGreen, Color.FromRgb(0, 255, 0) },
 			{ EColor.BrightYellow, Colors.Yellow }, { EColor.BrightBlue, Color.FromRgb(92, 92, 255) }, { EColor.BrightMagenta, Colors.Magenta },
-			{EColor.BrightCyan, Colors.Cyan }, { EColor.BrightWhite, Colors.White }
+			{ EColor.BrightCyan, Colors.Cyan }, { EColor.BrightWhite, Colors.White }
 		};
 
 		public static Color GetWPFColor(this EColor color)

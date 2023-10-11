@@ -57,7 +57,7 @@ namespace SpecialTask
 		public override List<Shape> GetCompleteResult()
 		{
 			List<Shape> rawList = WindowManager.Instance.ShapesOnCurrentWindow;
-			return rawList.OrderBy(sh => sh, new CoordinatesComparer()).ToList();	// Наверное, делать это вручную было бы эффективнее
+			return rawList.OrderBy(sh => sh, new CoordinatesComparer()).Where(sh => sh is not SelectionMarker).ToList();	// Наверное, делать это вручную было бы эффективнее
 		}
 
 		private class CoordinatesComparer: IComparer<Shape>
@@ -99,7 +99,7 @@ namespace SpecialTask
 
 		public override List<Shape> GetCompleteResult()
 		{
-			return WindowManager.Instance.ShapesOnCurrentWindow;
-		}
+			return WindowManager.Instance.ShapesOnCurrentWindow.Where(sh => sh is not SelectionMarker).ToList();
+        }
 	}
 }
