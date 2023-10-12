@@ -332,7 +332,7 @@ namespace SpecialTask
 
 		public static new string GetNextUniqueName()
 		{
-			return $"Square_{firstAvailibleUniqueNumber++}";
+			return $"Rectangle_{firstAvailibleUniqueNumber++}";
 		}
 
 		public override (int, int) Center

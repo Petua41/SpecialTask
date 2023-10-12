@@ -196,30 +196,38 @@ Enter [color:Green]new shape --help[color] to get help on [color:Green]shape[col
 	
 	<!-- common help -->
 	<help>
-    Special Task 1
+Special Task 1 ver.0.0.1
 
-    Console-managed graphic editor
+Console-managed graphic editor
 
-    Usage: command [arguments]
+Usage: command [arguments]
 
-    [color:Magenta]Commands:[color]
-    new           Add shape to the screen
-    window        Control windows
-    edit          Edit shapes on the screen
-    select        Select rectangular area
-    paste         Paste selected area
-    undo          Undo last actions
-    redo          Redo last actions
-    save          Save
-    save_as       Save as
-    load          Load
-    clear         Clear current screen
+[color:Magenta]Commands:[color]
+	new           Add shape to the screen
+	window        Control windows
+	edit          Edit shapes on the screen
+	select        Select rectangular area
+	paste         Paste selected area
+	undo          Undo last actions
+	redo          Redo last actions
+	save          Save
+	save_as       Save as
+	load          Load
+	clear         Clear current screen
+	
+	colors        Get list of colors
+	textures      Get list of streak textures
+	help          Display this help
 
-    colors        Get list of colors
-    textures      Get list of streak textures
-    help          Display this help
+You can type [color:Green]command --help[color] to get context help
 
-    You can type [color:Green]command --help[color] to get context help
+[color:Magenta]Keyboard shortcuts:[color]
+	Ctrl+S       Save
+	Ctrl+E       Previous command
+	Ctrl+D       Next command
+	Alt+Z        Undo
+	Alt+Shift+Z  Redo
+	Alt+C        Interrupt
 
     ------- GNU GPL v.3 -------
     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;

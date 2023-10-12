@@ -180,6 +180,7 @@ namespace SpecialTask
 
 			if (thereAreArguments)
 			{
+				if (indexOfFirstMinus == 0) return;
 				commandName = userInput[..(indexOfFirstMinus - 1)];
 				arguments = userInput[indexOfFirstMinus..];
 			}

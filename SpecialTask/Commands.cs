@@ -272,8 +272,61 @@ namespace SpecialTask
     }
 
 	/// <summary>
-	/// Wrapper (console-side) to edit shapes
+	/// Command to remove shape
 	/// </summary>
+	class RemoveShapeCommand : ICommand
+    {
+        private readonly Shape? receiver;
+
+        public RemoveShapeCommand(Shape shape)
+        {
+            receiver = shape;
+        }
+
+        public void Execute()
+        {
+			receiver?.Destroy();
+        }
+
+        public void Unexecute()
+        {
+            receiver?.Redraw();
+        }
+    }
+
+	/// <summary>
+	/// Command to decorate shape with StreakDecorator
+	/// </summary>
+    class AddStreakCommand : ICommand
+    {
+        private readonly Shape? receiver;
+		private EColor streakColor;
+		private EStreakTexture streakTexture;
+
+		private StreakDecorator? decorator;
+
+        public AddStreakCommand(Shape shape, EColor streakColor, EStreakTexture streakTexture)
+        {
+            receiver = shape;
+            this.streakColor = streakColor;
+            this.streakTexture = streakTexture;
+        }
+
+        public void Execute()
+        {
+            decorator = new(receiver, streakColor, streakTexture);
+        }
+
+        public void Unexecute()
+        {
+			decorator?.Destroy();
+            receiver?.Redraw();
+        }
+    }
+
+    /// <summary>
+    /// Wrapper (console-side) to edit shapes
+    /// </summary>
     class  EditCommand: ICommand
     {
         private ICommand? receiver = null;
@@ -281,13 +334,12 @@ namespace SpecialTask
 
 		private List<Shape> listOfShapes = new();
 
-		private int selectedNumber = -1;
 		private string interString = "";
-		private bool waitingForNumber = false;
-		private bool waitingForString = false;
+		private int selectedNumber = -1;
 
-		private Task task;
-		private CancellationTokenSource tokenSource;
+		private bool hasStreak = false;
+
+		private CancellationTokenSource tokenSource = new();
 
 		private bool ctrlCPressed = false;		// YANDERE
 
@@ -299,17 +351,13 @@ namespace SpecialTask
 				ESortingOrder.Coordinates : ESortingOrder.CreationTime;
 			IteratorsFacade.SetConcreteIterator(sortingOrder);
 
-			tokenSource = new();
-			task = new(EmptyTask, tokenSource.Token);
-
-			MiddleConsole.HighConsole.SomethingTranferred += OnSomethingTransferred;
+			MiddleConsole.HighConsole.SomethingTranferred += OnStringTransferred;
 		}
 
 		// TODO: this method is TOO long
         public async void Execute()
         {
             MiddleConsole.HighConsole.TransferringInput = true;
-            MiddleConsole.HighConsole.InputBlocked = false;
 
             try 
 			{
@@ -318,44 +366,22 @@ namespace SpecialTask
                 if (listOfShapes.Count == 0)
                 {
                     MiddleConsole.HighConsole.DisplayWarning("Nothing to edit");
-                    return;					// FIXME: spare prompt
+                    return;
                 }
 
                 DisplayShapeSelectionPrompt((from shape in listOfShapes select shape.UniqueName).ToList());
 
-                selectedNumber = -1;
-                waitingForNumber = true;
-
-                while (selectedNumber < 0)
-                {
-                    tokenSource = new();
-                    task = new(EmptyTask, tokenSource.Token);
-
-                    try { await task; }
-                    catch (TaskCanceledException) { /* continue */ }
-                }
-                MiddleConsole.HighConsole.NewLine();
-				if (ctrlCPressed) throw new KeyboardInterruptException();
+				await GetSelectedNumber();
 
                 if (selectedNumber >= listOfShapes.Count) throw new InvalidInputException();
 
                 shapeToEdit = listOfShapes[selectedNumber];
 
-                DisplayWhatToEditSelectionPrompt();
+				if (shapeToEdit is StreakDecorator) hasStreak = true;
 
-                selectedNumber = -1;
-                waitingForNumber = true;
+                DisplayWhatToEditSelectionPrompt(hasStreak);
 
-                while (selectedNumber < 0)
-                {
-                    tokenSource = new();
-                    task = new(EmptyTask, tokenSource.Token);
-
-                    try { await task; }
-                    catch (TaskCanceledException) { /* continue */ }
-                }
-                MiddleConsole.HighConsole.NewLine();
-                if (ctrlCPressed) throw new KeyboardInterruptException();
+                await GetSelectedNumber();
 
                 switch (selectedNumber)
                 {
@@ -363,19 +389,7 @@ namespace SpecialTask
                         // edit layer:
                         DisplayLayerOperationSelectionPrompt(shapeToEdit.UniqueName);
 
-                        selectedNumber = -1;
-                        waitingForNumber = true;
-
-                        while (selectedNumber < 0)
-                        {
-                            tokenSource = new();
-                            task = new(EmptyTask, tokenSource.Token);
-
-                            try { await task; }
-                            catch (TaskCanceledException) { /* continue */ }
-                        }
-                        MiddleConsole.HighConsole.NewLine();
-                        if (ctrlCPressed) throw new KeyboardInterruptException();
+                        await GetSelectedNumber();
 
                         ELayerDirection dir = selectedNumber switch
                         {
@@ -392,48 +406,47 @@ namespace SpecialTask
                         break;
                     case 1:
 						// edit attributes:
-						MyMap<string, string> attrsWithNames = shapeToEdit.AttributesToEditWithNames;
-						// TODO: add streak, if there`s no
+                        MyMap<string, string> attrsWithNames = shapeToEdit.AttributesToEditWithNames;
 
-						DisplayAttributeSelectionPrompt(shapeToEdit.UniqueName, attrsWithNames.Keys);
+                        DisplayAttributeSelectionPrompt(shapeToEdit.UniqueName, attrsWithNames.Keys);
 
-                        selectedNumber = -1;
-                        waitingForNumber = true;
-
-                        while (selectedNumber < 0)
-                        {
-                            tokenSource = new();
-                            task = new(EmptyTask, tokenSource.Token);
-
-                            try { await task; }
-                            catch (TaskCanceledException) { /* continue */ }
-                        }
-                        MiddleConsole.HighConsole.NewLine();
-                        if (ctrlCPressed) throw new KeyboardInterruptException();
+                        await GetSelectedNumber();
 
                         if (selectedNumber >= attrsWithNames.Count) throw new InvalidInputException();
 
 						KeyValuePair<string, string> kvp = attrsWithNames[selectedNumber];
-						DisplayNewAttributePrompt(kvp.Value);
+
+                        DisplayNewAttributePrompt(kvp.Value);
 
 						interString = "";
-						waitingForString = true;
 
-                        while (interString.Length == 0)
-                        {
-                            tokenSource = new();
-                            task = new(EmptyTask, tokenSource.Token);
-
-                            try { await task; }
-                            catch (TaskCanceledException) { /* continue */ }
-                        }
-						MiddleConsole.HighConsole.NewLine();
-                        if (ctrlCPressed) throw new KeyboardInterruptException();
+						await GetInterString();
 
                         receiver = new EditShapeAttributesCommand(new() { { "shape", shapeToEdit }, { "attribute", kvp.Key }, { "newValue", interString } });
 						CommandsFacade.ExecuteButDontRegister(receiver);
 
                         break;
+					case 2:
+						// remove shape:
+						receiver = new RemoveShapeCommand(shapeToEdit);
+						CommandsFacade.ExecuteButDontRegister(receiver);
+						break;
+					case 3:
+						// add streak:
+						DisplayNewAttributePrompt("Streak color");
+						await GetInterString();
+
+						EColor color = ColorsController.Parse(interString);
+
+						DisplayNewAttributePrompt("Streak texture");
+						await GetInterString();
+
+						EStreakTexture texture = TextureController.Parse(interString);
+
+						receiver = new AddStreakCommand(shapeToEdit, color, texture);
+						CommandsFacade.ExecuteButDontRegister(receiver);
+
+						break;
                     default:
                         throw new InvalidInputException();
                 }
@@ -451,30 +464,50 @@ namespace SpecialTask
 			finally
 			{
                 MiddleConsole.HighConsole.TransferringInput = false;
-                MiddleConsole.HighConsole.InputBlocked = false;
 				MiddleConsole.HighConsole.NewLine();
 				MiddleConsole.HighConsole.DisplayPrompt();
             }
         }
 
+		private async Task GetSelectedNumber()
+		{
+			await GetInterString();
+
+            try { selectedNumber = int.Parse(interString); }
+            catch (FormatException) { throw new InvalidInputException(); }
+        }
+
+		private async Task GetInterString()
+		{
+			tokenSource = new();
+            Task task = new(EmptyTask, tokenSource.Token);
+
+            try { await task; }
+            catch (TaskCanceledException) { /* continue */ }
+
+            MiddleConsole.HighConsole.NewLine();
+            if (ctrlCPressed) throw new KeyboardInterruptException();
+        }
+
 		private static void DisplayShapeSelectionPrompt(List<string> lst)
 		{
+			MiddleConsole.HighConsole.NewLine();
 			MiddleConsole.HighConsole.Display("Select figure to edit: ");
 			MiddleConsole.HighConsole.NewLine();
-			for (int i = 0; i < lst.Count; i++)
+			for (int i = 0; i < lst.Count - 1; i++)
 			{
                 MiddleConsole.HighConsole.Display($"{i}. {lst[i]}");
                 MiddleConsole.HighConsole.NewLine();
             }
-		}
+            MiddleConsole.HighConsole.Display($"{lst.Count - 1}. {lst[^1]}");		// so that there`s no spare NewLine
+        }
 
-		private static void DisplayWhatToEditSelectionPrompt()
+		private static void DisplayWhatToEditSelectionPrompt(bool hasDecorator)
 		{
 			MiddleConsole.HighConsole.Display("Select what to edit: ");
 			MiddleConsole.HighConsole.NewLine();
-			MiddleConsole.HighConsole.Display("0. Layer\n1. Figure attributes");
-			MiddleConsole.HighConsole.NewLine();
-			MiddleConsole.HighConsole.DisplayPrompt();
+			MiddleConsole.HighConsole.Display("0. Layer\n1. Figure attributes\n2. Remove shape");
+			if (!hasDecorator) MiddleConsole.HighConsole.Display("\n3. Add streak");
 		}
 
 		private static void DisplayLayerOperationSelectionPrompt(string uniqueName)
@@ -482,20 +515,18 @@ namespace SpecialTask
 			MiddleConsole.HighConsole.Display($"Select what to do with [color:green]{uniqueName}[color]: ");
 			MiddleConsole.HighConsole.NewLine();
 			MiddleConsole.HighConsole.Display("0. Send backwards\n1. Bring forward\n2. Send to back\n3. Bring to front");
-			MiddleConsole.HighConsole.NewLine();
-            MiddleConsole.HighConsole.DisplayPrompt();
         }
 
 		private static void DisplayAttributeSelectionPrompt(string uniqueName, List<string> names)
 		{
             MiddleConsole.HighConsole.Display($"Availible attributes for [color:green]{uniqueName}[color]: ");
             MiddleConsole.HighConsole.NewLine();
-			for (int i = 0; i < names.Count; i++)
+			for (int i = 0; i < names.Count - 1; i++)
 			{
 				MiddleConsole.HighConsole.Display($"{i}. {names[i]}");
 				MiddleConsole.HighConsole.NewLine();
 			}
-            MiddleConsole.HighConsole.DisplayPrompt();
+            MiddleConsole.HighConsole.Display($"{names.Count - 1}. {names[^1]}");				// here too
         }
 
 		private static void DisplayNewAttributePrompt(string attrName)
@@ -503,47 +534,22 @@ namespace SpecialTask
 			MiddleConsole.HighConsole.DisplayQuestion($"Enter new value for {attrName}:");
         }
 
-        private void OnSomethingTransferred(object? sender, EventArgs e)
-        {
-			ESpecialKeyCombinations comb = MiddleConsole.HighConsole.TransferredCombination;		// We must save it, because it`s erased on get
+		private void OnCtrlCTransferred(object? sender, EventArgs e)
+		{
+            // FIXME: YANDERE
+            ctrlCPressed = true;
 
-			// FIXME: YANDERE
-			if (comb == ESpecialKeyCombinations.CtrlC)
-			{
-				ctrlCPressed = true;
+            interString = "KBI";    // so that if (sele.. or if (inter.. ends
 
-				interString = "KBI";	// so that if (sele.. or if (inter.. ends
-				selectedNumber = 10;
-
-                tokenSource.Cancel(true);
-                return;
-			}
-
-			if (waitingForNumber)
-			{
-                char trChar = MiddleConsole.HighConsole.TransferredChar ?? ' ';
-
-                if (char.IsNumber(trChar))
-                {
-                    selectedNumber = int.Parse(trChar.ToString());
-					waitingForNumber = false;
-                    tokenSource.Cancel(true);
-                }
-            }
-			else if (waitingForString)
-			{
-				if (comb == ESpecialKeyCombinations.Enter)
-				{
-					string trString = MiddleConsole.HighConsole.TransferredString;
-					if (trString.Length > 0)
-					{
-						interString = trString;
-						waitingForString = false;
-						tokenSource.Cancel(true);
-					}
-				}
-			}
+            tokenSource.Cancel(true);
+            return;
         }
+
+        private void OnStringTransferred(object? sender, TransferringEventArgs e)
+        {
+			interString = e.Input;
+			tokenSource.Cancel(true);
+		}
 
         private void EmptyTask()
         {
@@ -554,7 +560,7 @@ namespace SpecialTask
 		{
 			if (receiver == null)
 			{
-				Logger.Instance.Warning("Edit command unexecute before execute. Maybe execute was interrupted by keyboard");
+				Logger.Instance.Warning("Edit command unexecute before execute. Maybe execute was interrupted by keyboard or invalid input");
 			}
 			else receiver.Unexecute();
 		}
@@ -1302,7 +1308,10 @@ namespace SpecialTask
         public ExitCommand(Dictionary<string, object> arguments)
 		{
 			receiver = System.Windows.Application.Current;
+
 			MiddleConsole.HighConsole.SomethingTranferred += OnSomethingTransferred;
+			MiddleConsole.HighConsole.CtrlCTransferred += OnCtrlCTransferred;
+
             tokenSource = new();
             task = new Task(EmptyTask, tokenSource.Token);
         }
@@ -1312,7 +1321,6 @@ namespace SpecialTask
             if (SaveLoadFacade.Instance.NeedsSave)
             {
                 MiddleConsole.HighConsole.TransferringInput = true;
-                MiddleConsole.HighConsole.InputBlocked = false;
                 MiddleConsole.HighConsole.DisplayQuestion("File is not saved. Exit? [y, s, n] (default=n)");
 
 				GetInputIfNotSaved();
@@ -1352,16 +1360,23 @@ namespace SpecialTask
             }
         }
 
-		private void OnSomethingTransferred(object? sender, EventArgs e)
+		private void OnSomethingTransferred(object? sender, TransferringEventArgs e)
 		{
-			if (MiddleConsole.HighConsole.TransferredChar == 'y' || MiddleConsole.HighConsole.TransferredChar == 'Y' || 
-				MiddleConsole.HighConsole.TransferredString.ToLower() == "yes") answer = EYesNoSaveAnswer.Yes;
+			string trString = e.Input;
 
-			else if (MiddleConsole.HighConsole.TransferredChar == 's' || MiddleConsole.HighConsole.TransferredChar == 'S' ||
-				MiddleConsole.HighConsole.TransferredString.ToLower() == "save") answer = EYesNoSaveAnswer.Save;
+			answer = trString.ToLower() switch
+			{
+				"y" or "yes" => EYesNoSaveAnswer.Yes,
+				"s" or "save" => EYesNoSaveAnswer.Save,
+				_ => EYesNoSaveAnswer.No
+			};
 
-			else answer = EYesNoSaveAnswer.No;
+			tokenSource.Cancel(true);
+		}
 
+		private void OnCtrlCTransferred(object? sender, EventArgs e)
+		{
+			answer = EYesNoSaveAnswer.No;
 			tokenSource.Cancel(true);
 		}
 

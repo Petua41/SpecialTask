@@ -18,14 +18,10 @@ namespace SpecialTask
         public void Display(string message);
         public void NewLine();
         public void DisplayPrompt();
-
-        public string TransferredString { get; }
-        public char? TransferredChar { get; }
-        public ESpecialKeyCombinations TransferredCombination { get; }
         public bool TransferringInput { get; set; }
-        public bool InputBlocked { get; set; }
 
-        public event EventHandler? SomethingTranferred;
+        public event TransferringEventHandler? SomethingTranferred;
+        public event EventHandler? CtrlCTransferred;
     }
 
     /// <summary>
@@ -40,9 +36,10 @@ namespace SpecialTask
         public string ProcessUpArrow();
         public string ProcessDownArrow();
         public void ChangeUndoStackDepth(int depth);
-        public void TransferInput(char? character, ESpecialKeyCombinations combination);
         public void ProcessInputString(string input);
         public void NewLine();
+        public void TransferInputString(string input);
+        public void TransferCtrlC();
 
     }
 
@@ -51,12 +48,7 @@ namespace SpecialTask
         private static MiddleConsole? singleton;
         private readonly MainWindow mainWindowInstance;
 
-        private string interceptedString = "";
-        private char? lastInterceptedChar = null;
-        private ESpecialKeyCombinations lastInterceptedCombination = ESpecialKeyCombinations.None;
-        private string lastInterceptedString = "";
-
-        private List<string> prevCommands = new();
+        private readonly List<string> prevCommands = new();
         private int pointer = 0;                    // from end
 
         private const EColor defaultColor = EColor.White;
@@ -91,32 +83,15 @@ namespace SpecialTask
             }
         }
 
-        public void TransferInput(char? character, ESpecialKeyCombinations combination)
+        public void TransferInputString(string input)
         {
-            if (combination != ESpecialKeyCombinations.None) lastInterceptedCombination = combination;
-
-            switch (combination)
-            {
-                case ESpecialKeyCombinations.Enter:
-                    lastInterceptedString = interceptedString;
-                    interceptedString = "";
-                    break;
-                case ESpecialKeyCombinations.Backspace:
-                    if (interceptedString.Length > 0) interceptedString = interceptedString[..^1];
-                    break;
-                default:
-                    if (character != null)
-                    {
-                        interceptedString += character;
-                        lastInterceptedChar = character;
-                    }
-                    break;
-            }
-
-            SomethingTranferred?.Invoke(this, new());
+            SomethingTranferred?.Invoke(this, new(input));
         }
 
-        public event EventHandler? SomethingTranferred;
+        public void TransferCtrlC()
+        {
+            CtrlCTransferred?.Invoke(this, new());
+        }
 
         public string Autocomplete(string currentInput)
         {
@@ -130,8 +105,8 @@ namespace SpecialTask
 
         public void DisplayError(string message)
         {
-            Display(message, EColor.Red);
             NewLine();
+            Display(message, EColor.Red);
         }
 
         public void Display(string message)
@@ -156,19 +131,18 @@ namespace SpecialTask
         public void DisplayPrompt()
         {
             Display(">> ", EColor.Green);
-            mainWindowInstance.ClearInput();
-            InputBlocked = false;
         }
 
         public void DisplayQuestion(string message)
         {
+            NewLine();
             Display(message, EColor.Yellow);
         }
 
         public void DisplayWarning(string message)
         {
-            Display(message, EColor.Purple);
             NewLine();
+            Display(message, EColor.Purple);
         }
 
         public void ProcessInputString(string input)
@@ -177,13 +151,12 @@ namespace SpecialTask
             pointer = 0;
 
             CommandsParser.ParseCommand(input);
-            DisplayPrompt();
         }
 
         public string ProcessDownArrow()
         {
             if (pointer > 0) pointer--;
-            if (pointer == 0) return "";
+            else return "";
             return prevCommands[^(pointer + 1)];
         }
 
@@ -194,54 +167,10 @@ namespace SpecialTask
             return command;
         }
 
-        public string TransferredString
-        {
-            get
-            {
-                string val = lastInterceptedString;
-                ClearInterception();
-                return val;
-            }
-        }
-
-        public char? TransferredChar
-        {
-            get
-            {
-                char? val = lastInterceptedChar;
-                ClearInterception();
-                return val;
-            }
-        }
-
-        private void ClearInterception()
-        {
-            lastInterceptedChar = null;
-            lastInterceptedString = "";
-            interceptedString = "";
-            lastInterceptedCombination = ESpecialKeyCombinations.None;
-        }
-
-        public ESpecialKeyCombinations TransferredCombination
-        {
-            get
-            {
-                ESpecialKeyCombinations val = lastInterceptedCombination;
-                //lastInterceptedCombination = ESpecialKeyCombinations.None;
-                return val;
-            }
-        }
-
         public bool TransferringInput
         {
             get => mainWindowInstance.TransferringInput;
             set => mainWindowInstance.TransferringInput = value;
-        }
-
-        public bool InputBlocked
-        {
-            get => mainWindowInstance.InputBlocked;
-            set => mainWindowInstance.InputBlocked = value;
         }
 
         private void Display(string message, EColor color = EColor.None)
@@ -290,5 +219,21 @@ namespace SpecialTask
 
             return messageSplittedByColors;
         }
+
+        public event TransferringEventHandler? SomethingTranferred;
+
+        public event EventHandler? CtrlCTransferred;
     }
+
+    public class TransferringEventArgs : EventArgs
+    {
+        public TransferringEventArgs(string input)
+        {
+            Input = input;
+        }
+
+        public string Input { get; set; }
+    }
+
+    public delegate void TransferringEventHandler(object sender, TransferringEventArgs args);
 }
