@@ -527,7 +527,7 @@ namespace SpecialTask
 				MiddleConsole.HighConsole.Display($"{i}. {names[i]}");
 				MiddleConsole.HighConsole.NewLine();
 			}
-            MiddleConsole.HighConsole.Display($"{names.Count - 1}. {names[^1]}");				// here too
+            if (names.Count > 0) MiddleConsole.HighConsole.Display($"{names.Count - 1}. {names[^1]}");				// here too
         }
 
 		private static void DisplayNewAttributePrompt(string attrName)

@@ -8,14 +8,13 @@ using System.Xml.Linq;
 
 namespace SpecialTask
 {
-    class SaveLoadFacade : IDisposable
+    class SaveLoadFacade
     {
         public string currentFilename;
 
         private bool isSaved = true;
         private static readonly string defaultFolder;
         private const string defaultFilename = "SpecialTaskDrawing";
-        private StreamWriter? writer;
 
         private static SaveLoadFacade? singleton;
 
@@ -73,16 +72,9 @@ namespace SpecialTask
             FilenameChanged(filename);
         }
 
-        public void Dispose()
-        {
-            singleton = null;
-        }
-
         private void FilenameChanged(string newFilename)
         {
             currentFilename = newFilename;
-            writer?.Close();
-            writer = null;
 
             isSaved = true;
         }
@@ -100,21 +92,17 @@ namespace SpecialTask
             isSaved = false;
         }
 
-        private void SaveXML(string filename)
+        private static void SaveXML(string filename)
         {
             XDocument doc = XMLHandler.GenerateXML(WindowManager.Instance.ShapesOnCurrentWindow);
 
-            writer ??= new(filename);
+            StreamWriter writer = new(filename);
             // Pass on:
             //      IOException: file contains invalid characters
             //      UnaothorizedAcessException: no permissions
 
             doc.Save(writer);
-        }
-
-        ~SaveLoadFacade()
-        {
-            writer?.Close();
+            writer.Close();
         }
     }
 

@@ -11,7 +11,7 @@ namespace SpecialTask
 {
 	public enum EColor			// it`s standard ANSI colors (values are similar to ones in xterm)
 	{
-		None, Purple,			// I added this line
+		None, Purple,			// with this line added
 		
 		Black, Red, Green, Yellow, Blue,
 		Magenta, Cyan, White, Gray, BrightRed,
@@ -62,7 +62,9 @@ namespace SpecialTask
 	abstract class Shape
 	{
 		private static int firstAvailibleUniqueNumber = 0;
-		private System.Windows.Shapes.Shape? wpfShape;
+		protected System.Windows.Shapes.Shape? wpfShape;
+		protected string uniqueName = "";
+		protected MyMap<string, string> ATTRS_TO_EDIT = new();
 
 		public static string GetNextUniqueName()
 		{
@@ -71,7 +73,7 @@ namespace SpecialTask
 
 		public abstract object Edit(string attribute, object value);
 
-		public abstract string UniqueName { get; }
+		public virtual string UniqueName => uniqueName;
 
 		/// <summary>
 		/// Windows.Shapes.Shape instance that can be added to Canvas
@@ -80,7 +82,8 @@ namespace SpecialTask
 
 		public abstract (int, int) Center { get; }
 
-		public virtual void Redraw()		// It`s template method
+        // It`s template method
+        public virtual void Redraw()
 		{
 			Destroy();
 			NullifyWPFShape();
@@ -105,7 +108,7 @@ namespace SpecialTask
 
 		public abstract Shape Clone();
 
-		public abstract MyMap<string, string> AttributesToEditWithNames { get; }
+		public virtual MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
 	}
 
 	class Circle : Shape
@@ -115,11 +118,6 @@ namespace SpecialTask
 		private int centerY;
 		private EColor color;
 		private int lineThickness;
-		private readonly string uniqueName;
-		private System.Windows.Shapes.Shape? wpfShape = null;
-
-		private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "centerX", "Center X"}, { "centerY", "Center Y" },
-			{ "radius", "Radius" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
 
 		private static int firstAvailibleUniqueNumber = 0;
 
@@ -132,7 +130,10 @@ namespace SpecialTask
 			this.lineThickness = lineThickness;
 			uniqueName = GetNextUniqueName();
 
-			WindowManager.Instance.DisplayOnCurrentWindow(this);
+            ATTRS_TO_EDIT = new() { { "centerX", "Center X"}, { "centerY", "Center Y" },
+            { "radius", "Radius" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
+
+            WindowManager.Instance.DisplayOnCurrentWindow(this);
 		}
 
 		public Circle(Circle old) : this(old.CenterX, old.CenterY, old.Color, old.Radius, old.LineThickness) { }
@@ -189,7 +190,7 @@ namespace SpecialTask
 		{
 			get
 			{
-				if (this.wpfShape != null) return this.wpfShape;
+				if (base.wpfShape != null) return base.wpfShape;
 
 				System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Ellipse
 				{
@@ -201,7 +202,7 @@ namespace SpecialTask
 				Canvas.SetTop(wpfShape, Top);
 				Canvas.SetLeft(wpfShape, Left);
 
-				this.wpfShape = wpfShape;               // memoize it, so that WindowToDraw can find it on Canvas
+				base.wpfShape = wpfShape;               // memoize it, so that WindowToDraw can find it on Canvas
 				return wpfShape;
 			}
 		}
@@ -210,7 +211,7 @@ namespace SpecialTask
 		{
 			return new()
 			{
-				{ "radius", radius }, { "centerX", centerX }, { "centerY", centerY }, { "color", color }, { "lineThickness", lineThickness }
+				{ "radius", Radius }, { "centerX", CenterX }, { "centerY", CenterY }, { "color", Color }, { "lineThickness", LineThickness }
 			};
 		}
 
@@ -222,18 +223,12 @@ namespace SpecialTask
 		public override void MoveYBy(int offset)
 		{
 			CenterY += offset;
-		}
+        }
 
-		private int Radius
-		{
-			get => radius;
-			set
-			{
-				if (value < 0) throw new ShapeValueException();
-				radius = value;
-				Redraw();
-			}
-		}
+        public override Shape Clone()
+        {
+            return new Circle(this);
+        }
 
 		private int Top
 		{
@@ -251,7 +246,7 @@ namespace SpecialTask
 			set
 			{
 				centerX = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 		private int CenterY
@@ -260,16 +255,28 @@ namespace SpecialTask
 			set
 			{
 				centerY = value;
-				Redraw();
+				base.Redraw();
 			}
-		}
-		private EColor Color
+        }
+
+        private int Radius
+        {
+            get => radius;
+            set
+            {
+                if (value < 0) throw new ShapeValueException();
+                radius = value;
+                base.Redraw();
+            }
+        }
+
+        private EColor Color
 		{
 			get => color;
 			set
 			{
 				color = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -279,23 +286,9 @@ namespace SpecialTask
 			set
 			{
 				lineThickness = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
-
-		public override void NullifyWPFShape()
-		{
-			wpfShape = null;
-		}
-
-		public override Shape Clone()
-		{
-			return new Circle(this);
-		}
-
-		public override string UniqueName => uniqueName;
-
-		public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
     }
 
 	class Square : Shape
@@ -306,14 +299,8 @@ namespace SpecialTask
 		private int rightBottomY;
 		private EColor color;
 		private int lineThickness;
-		private readonly string uniqueName;
-		private System.Windows.Shapes.Shape? wpfShape = null;
 
 		private static int firstAvailibleUniqueNumber = 0;
-
-        private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" },
-            { "rightBottomX", "Right-bottom X" }, { "rightBottomY", "Right-bottom Y" }, { "lineThickness", "Outline thickness" }, 
-			{ "color", "Outline color" } };
 
         public Square(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, EColor color, int lineThickness)
 		{
@@ -325,7 +312,11 @@ namespace SpecialTask
 			this.lineThickness = lineThickness;
 			uniqueName = GetNextUniqueName();
 
-			WindowManager.Instance.DisplayOnCurrentWindow(this);
+            ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" },
+            { "rightBottomX", "Right-bottom X" }, { "rightBottomY", "Right-bottom Y" }, { "lineThickness", "Outline thickness" },
+            { "color", "Outline color" } };
+
+            WindowManager.Instance.DisplayOnCurrentWindow(this);
 		}
 
 		public Square(Square old) : this(old.LeftTopX, old.LeftTopY, old.RightBottomX, old.RightBottomY, old.Color, old.LineThickness) { }
@@ -386,7 +377,7 @@ namespace SpecialTask
 		{
 			get
 			{
-				if (this.wpfShape != null) return this.wpfShape;
+				if (base.wpfShape != null) return base.wpfShape;
 
 				System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Rectangle
 				{
@@ -398,7 +389,7 @@ namespace SpecialTask
 				Canvas.SetTop(wpfShape, LeftTopY);
 				Canvas.SetLeft(wpfShape, LeftTopX);
 
-				this.wpfShape = wpfShape;
+				base.wpfShape = wpfShape;
 				return wpfShape;
 			}
 		}
@@ -407,8 +398,8 @@ namespace SpecialTask
 		{
 			return new()
 			{
-				{ "leftTopX", leftTopX }, { "leftTopY", leftTopY }, { "rightBottomX", rightBottomX },
-				{ "rightBottomY", rightBottomY }, { "color", color }, { "lineThickness", lineThickness }
+				{ "leftTopX", LeftTopX }, { "leftTopY", LeftTopY }, { "rightBottomX", RightBottomX },
+				{ "rightBottomY", RightBottomY }, { "color", Color }, { "lineThickness", LineThickness }
 			};
 		}
 
@@ -440,7 +431,7 @@ namespace SpecialTask
 			set
 			{
 				leftTopX = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -450,7 +441,7 @@ namespace SpecialTask
 			set
 			{
 				leftTopY = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -460,7 +451,7 @@ namespace SpecialTask
 			set
 			{
 				rightBottomX = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -470,7 +461,7 @@ namespace SpecialTask
 			set
 			{
 				rightBottomY = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -480,7 +471,7 @@ namespace SpecialTask
 			set
 			{
 				color = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -490,23 +481,14 @@ namespace SpecialTask
 			set
 			{
 				lineThickness = value;
-				Redraw();
+				base.Redraw();
 			}
-		}
-
-		public override void NullifyWPFShape()
-		{
-			wpfShape = null;
 		}
 
 		public override Shape Clone()
 		{
 			return new Square(this);
         }
-
-        public override string UniqueName => uniqueName;
-
-        public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
     }
 
 	class Line : Shape
@@ -517,14 +499,8 @@ namespace SpecialTask
 		private int secondY;
 		private EColor color;
 		private int lineThickness;
-		private readonly string uniqueName;
-		private System.Windows.Shapes.Shape? wpfShape = null;
 
 		private static int firstAvailibleUniqueNumber = 0;
-
-        private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "firstX", "First X"}, { "firstY", "First Y" },
-            { "secondX", "Second X" }, { "secondY", "Second Y" }, { "lineThickness", "Line thickness" },
-            { "color", "Line color" } };
 
         public Line(int firstX, int firstY, int secondX, int secondY, EColor color, int lineThickness)
 		{
@@ -536,7 +512,11 @@ namespace SpecialTask
 			this.lineThickness = lineThickness;
 			uniqueName = GetNextUniqueName();
 
-			WindowManager.Instance.DisplayOnCurrentWindow(this);
+            ATTRS_TO_EDIT = new() { { "firstX", "First X"}, { "firstY", "First Y" },
+            { "secondX", "Second X" }, { "secondY", "Second Y" }, { "lineThickness", "Line thickness" },
+            { "color", "Line color" } };
+
+            WindowManager.Instance.DisplayOnCurrentWindow(this);
 		}
 
 		public Line(Line old) : this(old.FirstX, old.FirstY, old.SecondX, old.SecondY, old.Color, old.LineThickness) { }
@@ -544,11 +524,6 @@ namespace SpecialTask
 		public static new string GetNextUniqueName()
 		{
 			return $"Line_{firstAvailibleUniqueNumber++}";
-		}
-
-		public override (int, int) Center
-		{
-			get => ((firstX + secondX) / 2, (firstY + secondY) / 2);
 		}
 
 		public override object Edit(string attribute, object value)
@@ -597,7 +572,7 @@ namespace SpecialTask
 		{
 			get
 			{
-				if (this.wpfShape != null) return this.wpfShape;
+				if (base.wpfShape != null) return base.wpfShape;
 
 				System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Line
 				{
@@ -611,7 +586,7 @@ namespace SpecialTask
 				Canvas.SetTop(wpfShape, 0);
 				Canvas.SetLeft(wpfShape, 0);
 
-				this.wpfShape = wpfShape;
+				base.wpfShape = wpfShape;
 				return wpfShape;
 			}
 		}
@@ -620,30 +595,35 @@ namespace SpecialTask
 		{
 			return new()
 			{
-				{ "firstX", firstX }, { "firstY", firstY }, { "secondX", secondX },
-				{ "secondY", secondY }, { "color", color }, { "lineThickness", lineThickness }
+				{ "firstX", FirstX }, { "firstY", FirstY }, { "secondX", SecondX },
+				{ "secondY", SecondY }, { "color", Color }, { "lineThickness", LineThickness }
 			};
 		}
 
 		public override void MoveXBy(int offset)
 		{
 			FirstX += offset;
-			SecondX += offset;         // FIXME
+			SecondX += offset;
 		}
 
 		public override void MoveYBy(int offset)
 		{
 			FirstY += offset;
-			SecondY += offset;      // FIXME
-		}
+			SecondY += offset;
+        }
 
-		private int FirstX
+        public override (int, int) Center
+        {
+            get => ((FirstX + SecondX) / 2, (FirstY + SecondY) / 2);
+        }
+
+        private int FirstX
 		{
 			get => firstX;
 			set
 			{
 				firstX = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -653,7 +633,7 @@ namespace SpecialTask
 			set
 			{
 				firstY = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -663,7 +643,7 @@ namespace SpecialTask
 			set
 			{
 				secondX = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -673,7 +653,7 @@ namespace SpecialTask
 			set
 			{
 				secondY = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -683,7 +663,7 @@ namespace SpecialTask
 			set
 			{
 				color = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -693,31 +673,20 @@ namespace SpecialTask
 			set
 			{
 				lineThickness = value;
-				Redraw();
+				base.Redraw();
 			}
-		}
-
-		public override void NullifyWPFShape()
-		{
-			wpfShape = null;
 		}
 
 		public override Shape Clone()
 		{
 			return new Line(this);
         }
-
-        public override string UniqueName => uniqueName;
-
-        public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
     }
 
 	class SelectionMarker : Shape
 	{
-		private System.Windows.Shapes.Shape? wpfShape;
 		private readonly Brush brush = new GeometryTileTexture(new EllipseGeometry(new(5, 5), 5, 5)).Brush(Colors.Black);
 		private readonly Square square;
-		private readonly string uniqueName;
 
         private static int firstAvailibleUniqueNumber = 0;
 
@@ -760,14 +729,14 @@ namespace SpecialTask
 		{
 			get
 			{
-				if (this.wpfShape != null) return this.wpfShape;
+				if (base.wpfShape != null) return base.wpfShape;
 
 				System.Windows.Shapes.Shape wpfShape = square.WPFShape;
 				wpfShape.Stroke = brush;
 
 				square.Destroy();
 
-				this.wpfShape = wpfShape;
+				base.wpfShape = wpfShape;
 				return wpfShape;
 			}
 		}
@@ -792,8 +761,6 @@ namespace SpecialTask
 			throw new SelectionMarkerException();
         }
 
-		public override string UniqueName => uniqueName;
-
         public override MyMap<string, string> AttributesToEditWithNames => new();
     }
 
@@ -804,13 +771,8 @@ namespace SpecialTask
         private EColor color;
         private int fontSize;
 		private string textValue;
-        private readonly string uniqueName;
-        private System.Windows.Shapes.Shape? wpfShape = null;
 
         private static int firstAvailibleUniqueNumber = 0;
-
-        private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" },
-            { "fontSize", "Font size" }, { "text", "Text" }, { "color", "Text color" } };
 
         public Text(int leftTopX, int leftTopY, int fontSize, string textValue, EColor color)
         {
@@ -821,6 +783,9 @@ namespace SpecialTask
             this.fontSize = fontSize;
             uniqueName = GetNextUniqueName();
 
+            ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" }, { "fontSize", "Font size" }, 
+				{ "text", "Text" }, { "color", "Text color" } };
+
             WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
@@ -830,15 +795,6 @@ namespace SpecialTask
         {
 			return $"Text_{firstAvailibleUniqueNumber++}";
 		}
-
-        public override (int, int) Center
-        {
-            get
-			{
-				if (wpfShape == null) return (0, 0);
-				return (leftTopX + (int)(wpfShape.Width / 2), leftTopY + (int)(wpfShape.Height / 2));
-			}
-        }
 
         public override object Edit(string attribute, object value)
         {
@@ -882,7 +838,7 @@ namespace SpecialTask
         {
             get
             {
-                if (this.wpfShape != null) return this.wpfShape;
+                if (base.wpfShape != null) return base.wpfShape;
 
 				System.Windows.Shapes.Shape wpfShape = new WPFText
 				{
@@ -895,7 +851,7 @@ namespace SpecialTask
                 Canvas.SetTop(wpfShape, 0);
                 Canvas.SetLeft(wpfShape, 0);
 
-                this.wpfShape = wpfShape;
+                base.wpfShape = wpfShape;
                 return wpfShape;
             }
         }
@@ -904,8 +860,8 @@ namespace SpecialTask
         {
             return new()
             {
-                { "leftTopX", leftTopX }, { "leftTopY", leftTopY }, { "fontSize", fontSize },
-                { "textValue", textValue }, { "color", color }
+                { "leftTopX", LeftTopX }, { "leftTopY", LeftTopY }, { "fontSize", FontSize },
+                { "textValue", TextValue }, { "color", Color }
             };
         }
 
@@ -919,13 +875,22 @@ namespace SpecialTask
             LeftTopY += offset;
         }
 
+        public override (int, int) Center
+        {
+            get
+            {
+                if (wpfShape == null) return (0, 0);
+                return (LeftTopX + (int)(wpfShape.Width / 2), LeftTopY + (int)(wpfShape.Height / 2));
+            }
+        }
+
         private int LeftTopX
         {
             get => leftTopX;
             set
             {
                 leftTopX = value;
-                Redraw();
+                base.Redraw();
             }
         }
 
@@ -935,7 +900,7 @@ namespace SpecialTask
             set
             {
                 leftTopY = value;
-                Redraw();
+                base.Redraw();
             }
         }
 
@@ -945,7 +910,7 @@ namespace SpecialTask
             set
             {
                 fontSize = value;
-                Redraw();
+                base.Redraw();
             }
         }
 
@@ -955,7 +920,7 @@ namespace SpecialTask
             set
             {
                 textValue = value;
-                Redraw();
+                base.Redraw();
             }
         }
 
@@ -965,23 +930,14 @@ namespace SpecialTask
             set
             {
                 color = value;
-                Redraw();
+                base.Redraw();
             }
-        }
-
-        public override void NullifyWPFShape()
-        {
-            wpfShape = null;
         }
 
         public override Shape Clone()
         {
             return new Text(this);
         }
-
-        public override string UniqueName => uniqueName;
-
-        public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
     }
 
 	class Polygon: Shape
@@ -989,13 +945,8 @@ namespace SpecialTask
 		List<(int, int)> points;
         private EColor color;
         private int lineThickness;
-        private readonly string uniqueName;
-        private System.Windows.Shapes.Shape? wpfShape = null;
 
         private static int firstAvailibleUniqueNumber = 0;
-
-		private readonly MyMap<string, string> ATTRS_TO_EDIT = new() 
-		{ { "points", "Points" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
 
         public Polygon(List<(int, int)> points, int lineThickness, EColor color)
         {
@@ -1003,6 +954,8 @@ namespace SpecialTask
             this.color = color;
             this.lineThickness = lineThickness;
             uniqueName = GetNextUniqueName();
+
+            ATTRS_TO_EDIT = new() { { "points", "Points" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
 
             WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
@@ -1012,16 +965,6 @@ namespace SpecialTask
         public static new string GetNextUniqueName()
         {
             return $"Polygon_{firstAvailibleUniqueNumber++}";
-        }
-
-        public override (int, int) Center
-        {
-            get
-            {
-                int x = (int)(from p in Points select p.Item1).Average();
-				int y = (int)(from p in Points select p.Item2).Average();
-				return (x, y);
-            }
         }
 
         public override object Edit(string attribute, object value)
@@ -1058,7 +1001,7 @@ namespace SpecialTask
         {
             get
             {
-                if (this.wpfShape != null) return this.wpfShape;
+                if (base.wpfShape != null) return base.wpfShape;
 
 				System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Polygon
                 {
@@ -1069,7 +1012,7 @@ namespace SpecialTask
                 Canvas.SetTop(wpfShape, 0);
                 Canvas.SetLeft(wpfShape, 0);
 
-                this.wpfShape = wpfShape;
+                base.wpfShape = wpfShape;
                 return wpfShape;
             }
         }
@@ -1089,13 +1032,23 @@ namespace SpecialTask
             Points = (from p in Points select (p.Item1, p.Item2 + offset)).ToList();
         }
 
+        public override (int, int) Center
+        {
+            get
+            {
+                int x = (int)(from p in Points select p.Item1).Average();
+                int y = (int)(from p in Points select p.Item2).Average();
+                return (x, y);
+            }
+        }
+
         private List<(int, int)> Points
         {
             get => points;
             set
             {
                 points = value;
-                Redraw();
+                base.Redraw();
             }
         }
 
@@ -1105,7 +1058,7 @@ namespace SpecialTask
             set
             {
                 lineThickness = value;
-                Redraw();
+                base.Redraw();
             }
         }
 
@@ -1115,23 +1068,14 @@ namespace SpecialTask
             set
             {
                 color = value;
-                Redraw();
+                base.Redraw();
             }
-        }
-
-        public override void NullifyWPFShape()
-        {
-            wpfShape = null;
         }
 
         public override Shape Clone()
         {
             return new Polygon(this);
         }
-
-        public override string UniqueName => uniqueName;
-
-        public override MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
     }
 
 	class WPFText: System.Windows.Shapes.Shape

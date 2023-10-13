@@ -69,7 +69,7 @@ namespace SpecialTask
 					List<ConsoleCommandArgument> possibleArgs = TryToAutocompleteLongArgs(lastArgument);
 
 					if (possibleArgs.Count == 1) return possibleArgs.Single().longArgument.Replace(lastArgument, "");		// one corresponding argument
-					else if (possibleArgs.Count > 1)			// several corresponding arguments
+					else if (possibleArgs.Count > 1 && lastArgument.Length > 0)			// several corresponding arguments
 					{
 						return (from arg in possibleArgs select arg.longArgument.Replace(lastArgument, "")).ToList().LongestCommonPrefix();
 					}

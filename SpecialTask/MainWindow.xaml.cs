@@ -68,7 +68,6 @@ namespace SpecialTask
 			windowManager.CloseAll();
 
 			logger.Dispose();
-			SaveLoadFacade.Instance.Dispose();
 		}
 
 		private void ParseCommandLineArguments()

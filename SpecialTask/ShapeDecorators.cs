@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpecialTask
 {
@@ -9,16 +8,15 @@ namespace SpecialTask
 	{
 		private EColor streakColor;
 		private EStreakTexture streakTexture;
-        private System.Windows.Shapes.Shape? wpfShape;
         private readonly Shape? decoratedShape;
-
-		private readonly MyMap<string, string> ATTRS_TO_EDIT = new() { { "streakColor", "Streak color" }, { "streakTexture", "Streak texture" } };
 
         public StreakDecorator(Shape? decoratedShape, EColor streakColor, EStreakTexture streakTexture)
 		{
 			this.decoratedShape = decoratedShape;
 			this.streakColor = streakColor;
 			this.streakTexture = streakTexture;
+
+            ATTRS_TO_EDIT = new() { { "streakColor", "Streak color" }, { "streakTexture", "Streak texture" } };
 
             WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
@@ -57,53 +55,11 @@ namespace SpecialTask
 			return oldValue;
 		}
 
-        public override (int, int) Center
-		{
-			get
-			{
-				if (decoratedShape == null)
-				{
-					Logger.Instance.Error("Trying to get center of hanging decorator");
-					return (0, 0);
-				}
-				return decoratedShape.Center;
-			}
-		}
-
-        public override System.Windows.Shapes.Shape WPFShape
-		{
-			get
-			{
-				if (wpfShape != null) return wpfShape;
-
-				if (decoratedShape == null)
-				{
-					Logger.Instance.Error("Trying to get WPFShape of hanging decorator");
-					throw new HangingDecoratorException();
-				}
-
-				System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
-				shape.Fill = streakTexture.GetWPFTexture(streakColor);
-				decoratedShape.Destroy();               // Shape displays itself in constructor, so we should destroy it
-
-				wpfShape = shape;
-				return shape;
-            }
-        }
-
         public override void Destroy()
         {
             decoratedShape?.Destroy();
             WindowManager.Instance.RemoveFromCurrentWindow(this);
         }
-
-        public override void NullifyWPFShape()
-        {
-            wpfShape = null;
-            decoratedShape?.NullifyWPFShape();
-        }
-
-		public Shape DecoratedShape => decoratedShape ?? throw new HangingDecoratorException();
 
         public override Dictionary<string, object> Accept()
         {
@@ -127,13 +83,49 @@ namespace SpecialTask
 			return new StreakDecorator(this);
         }
 
-		private EStreakTexture StreakTexture
+        public override (int, int) Center
+        {
+            get
+            {
+                if (decoratedShape == null)
+                {
+                    Logger.Instance.Error("Trying to get center of hanging decorator");
+                    return (0, 0);
+                }
+                return decoratedShape.Center;
+            }
+        }
+
+        public override System.Windows.Shapes.Shape WPFShape
+        {
+            get
+            {
+                if (wpfShape != null) return wpfShape;
+
+                if (decoratedShape == null)
+                {
+                    Logger.Instance.Error("Trying to get WPFShape of hanging decorator");
+                    throw new HangingDecoratorException();
+                }
+
+                System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
+                shape.Fill = streakTexture.GetWPFTexture(streakColor);
+                decoratedShape.Destroy();               // Shape displays itself in constructor, so we should destroy it
+
+                wpfShape = shape;
+                return shape;
+            }
+        }
+
+        private Shape DecoratedShape => decoratedShape ?? throw new HangingDecoratorException();
+
+        private EStreakTexture StreakTexture
 		{
 			get => streakTexture;
 			set
 			{
 				streakTexture = value;
-				Redraw();
+				base.Redraw();
 			}
 		}
 
@@ -143,7 +135,7 @@ namespace SpecialTask
             set
             {
                 streakColor = value;
-                Redraw();
+                base.Redraw();
             }
         }
 
