@@ -420,14 +420,20 @@ namespace SpecialTask
 				throw new CallOfFictionalCommandException();
 			}
 
-			for (int i = 0; i < consoleCommand.arguments.Count; i++)
+			// YANDERE
+			foreach(ConsoleCommandArgument argument in consoleCommand.arguments)
 			{
-				ConsoleCommandArgument argument = consoleCommand.arguments[i];
-				bool isPresent = arguments.ContainsKey(argument.commandParameterName);
-				if (!isPresent && argument.isNecessary)
+				if (!arguments.ContainsKey(argument.commandParameterName))
 				{
-					MiddleConsole.HighConsole.DisplayError($"Missing required argument {argument.longArgument}. Try {consoleCommand.neededUserInput} --help");
-					throw new ArgumentParsingError();
+					if (argument.isNecessary)
+					{
+						MiddleConsole.HighConsole.DisplayError($"Missing required argument {argument.longArgument}. Try {consoleCommand.neededUserInput} --help");
+						throw new ArgumentParsingError();
+					}
+					else if (argument.defaultValue != null)
+					{
+						arguments.Add(argument.commandParameterName, argument.defaultValue);
+					}
 				}
 			}
 

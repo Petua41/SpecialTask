@@ -87,10 +87,11 @@ namespace SpecialTask
             isSaved = true;
         }
 
-        private string CorrectFilename(string filename)
+        public static string CorrectFilename(string filename, string neededExtension=".std")
         {
-            if (!filename.Contains('\\')) filename = defaultFolder + "\\" + filename;
-            if (!filename.EndsWith(".std") && !filename.EndsWith(".xml")) filename += ".std";
+            char delim = Environment.OSVersion.Platform == PlatformID.Unix ? '/' : '\\';
+            if (!filename.Contains(delim)) filename = defaultFolder + delim + filename;
+            if (!filename.EndsWith(".std") && !filename.EndsWith(".xml")) filename += neededExtension;
             return filename;
         }
 
@@ -103,10 +104,10 @@ namespace SpecialTask
         {
             XDocument doc = XMLHandler.GenerateXML(WindowManager.Instance.ShapesOnCurrentWindow);
 
-            try { writer ??= new(filename); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { throw; }
-            // IOException: file contains invalid characters
-            // UnaothorizedAcessException: no permissions
+            writer ??= new(filename);
+            // Pass on:
+            //      IOException: file contains invalid characters
+            //      UnaothorizedAcessException: no permissions
 
             doc.Save(writer);
         }

@@ -175,6 +175,14 @@ Adds polygon to the screen
   <command userInput="textures" commandClass="TexturesCommand">Display list of streak textures</command>
   <!-- clear -->
   <command userInput="clear" commandClass="ClearCommand" supportsUndo="true">Clear current screen</command>
+  <!-- export -->
+  <command userInput="export svg" commandClass="ExportSVGCommand">Export to svg
+[color:Magenta]Necessary arguments:[color]
+	-o --out            Output file
+[color:Magenta]Unnecessary arguments:[color]
+	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue="_"/>
+    <argument shortArgument="-o" longArgument="--out" type="String" isNecessary="true" commandParameterName="outFilename"/>
+  </command>
 
 	<!-- fictional commands -->
 	<command userInput="new" fictional="true">Adds specified shape to the screen. You cannot invoke this command without specifying shape
@@ -193,6 +201,7 @@ Adds polygon to the screen
 
 Enter [color:Green]new shape --help[color] to get help on [color:Green]shape[color]</command>
 	<command userInput="window" fictional="true">Controls windows. You cannot invoke this command without specifying concrete action</command>
+  <command userInput="export" fictional="true">Export to other formats. You cannot invoke this command without specifying file format</command>
 	
 	<!-- common help -->
 	<help>
@@ -214,6 +223,7 @@ Usage: command [arguments]
 	save_as       Save as
 	load          Load
 	clear         Clear current screen
+  export        Export to other formats
 	
 	colors        Get list of colors
 	textures      Get list of streak textures

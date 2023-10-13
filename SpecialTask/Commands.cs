@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using SpecialTaskConverter;
 
 namespace SpecialTask
 {
@@ -1441,4 +1442,59 @@ namespace SpecialTask
 			Logger.Instance.Warning("Unexecution of textures command");
 		}
 	}
+
+	/// <summary>
+	/// Export SVG
+	/// </summary>
+	class ExportSVGCommand: ICommand
+	{
+        private readonly STConverter receiver;
+		private string inFilename = "";
+		private string outFilename;
+		private bool createdTempFile = false;
+
+        public ExportSVGCommand(Dictionary<string, object> arguments)
+        {
+            try
+            {
+				inFilename = (string)arguments["inFilename"];
+                outFilename = (string)arguments["outFilename"];
+
+				if (inFilename.Length == 0 || inFilename == "_")
+				{
+					inFilename = SaveLoadFacade.CorrectFilename(DateTime.Now.ToString().Replace(':', '.'));
+					CommandsFacade.ExecuteButDontRegister(new SaveAsCommand(new() { { "filename", inFilename } }));
+					createdTempFile = true;
+				}
+
+				receiver = new(inFilename);
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of ExportSVGCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of ExportSVGCommand");
+                throw;
+            }
+        }
+
+        public void Execute()
+        {
+			receiver.ToSVG(SaveLoadFacade.CorrectFilename(outFilename, ".svg"));
+
+			if (createdTempFile)
+			{
+				try { File.Delete(inFilename); }
+				catch (Exception) { /* ignore */ }
+			}
+        }
+
+        public void Unexecute()
+        {
+            Logger.Instance.Warning("Unexecution of export SVG command");
+        }
+    }
 }

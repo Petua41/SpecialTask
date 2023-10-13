@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpecialTaskConverter\SpecialTaskConverter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\water_texture.jpg" />
   </ItemGroup>
 
