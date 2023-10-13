@@ -126,7 +126,7 @@ namespace SpecialTask
 	{
 		private readonly Shape receiver;
 		private readonly string attribute;
-		private readonly object newValue;
+		private readonly string newValue;
 		private object? oldValue;
 
 		public EditShapeAttributesCommand(Dictionary<string, object> arguments)
@@ -135,17 +135,7 @@ namespace SpecialTask
 			{
 				attribute = (string)arguments["attribute"];
 				receiver = (Shape)arguments["shape"];
-
-				// YANDERE
-				string stringNewValue = (string)arguments["newValue"];
-				newValue = attribute switch
-				{
-					"text" => stringNewValue,
-					"color" or "streakColor" => ColorsController.Parse(stringNewValue),
-					"streakTexture" => TextureController.Parse(stringNewValue),
-					"points" => EArgumentType.Points.ParseValue(stringNewValue),
-					_ => int.Parse(stringNewValue)
-				};
+				newValue = (string)arguments["newValue"];
 			}
 			catch (KeyNotFoundException)
 			{
@@ -342,7 +332,7 @@ namespace SpecialTask
 
 		private CancellationTokenSource tokenSource = new();
 
-		private bool ctrlCPressed = false;		// YANDERE
+		private bool ctrlCPressed = false;
 
 		private Shape? shapeToEdit;
 
@@ -353,6 +343,7 @@ namespace SpecialTask
 			IteratorsFacade.SetConcreteIterator(sortingOrder);
 
 			MiddleConsole.HighConsole.SomethingTranferred += OnStringTransferred;
+			MiddleConsole.HighConsole.CtrlCTransferred += OnCtrlCTransferred;
 		}
 
 		// TODO: this method is TOO long
@@ -537,10 +528,7 @@ namespace SpecialTask
 
 		private void OnCtrlCTransferred(object? sender, EventArgs e)
 		{
-            // FIXME: YANDERE
             ctrlCPressed = true;
-
-            interString = "KBI";    // so that if (sele.. or if (inter.. ends
 
             tokenSource.Cancel(true);
             return;
@@ -1495,6 +1483,69 @@ namespace SpecialTask
         public void Unexecute()
         {
             Logger.Instance.Warning("Unexecution of export SVG command");
+        }
+    }
+
+    /// <summary>
+    /// Export SVG
+    /// </summary>
+    class ExportPDFCommand : ICommand
+    {
+        private readonly STConverter receiver;
+        private string inFilename = "";
+        private string outFilename;
+        private bool createdTempFile = false;
+
+        public ExportPDFCommand(Dictionary<string, object> arguments)
+        {
+            try
+            {
+                inFilename = (string)arguments["inFilename"];
+                outFilename = (string)arguments["outFilename"];
+
+                if (inFilename.Length == 0 || inFilename == "_")
+                {
+                    inFilename = SaveLoadFacade.CorrectFilename(DateTime.Now.ToString().Replace(':', '.'));
+                    CommandsFacade.ExecuteButDontRegister(new SaveAsCommand(new() { { "filename", inFilename } }));
+                    createdTempFile = true;
+                }
+				else inFilename = SaveLoadFacade.CorrectFilename(inFilename);
+
+                receiver = new(inFilename);
+            }
+            catch (KeyNotFoundException)
+            {
+                Logger.Instance.Error("Cannot find a parameter while creating an instance of ExportPDFCommand");
+                throw;
+            }
+            catch (InvalidCastException)
+            {
+                Logger.Instance.Error("Cannot cast a parameter while creating an instance of ExportPDFCommand");
+                throw;
+            }
+        }
+
+        public void Execute()
+        {
+			string correctedFilename = SaveLoadFacade.CorrectFilename(outFilename, ".pdf");
+
+            try { receiver.ToPDF(correctedFilename); }
+			catch (IOException)
+			{
+				Logger.Instance.Error($"Cannot export PDF: cannot open {correctedFilename} for writing");
+				MiddleConsole.HighConsole.DisplayError($"Cannot open {correctedFilename} for writing");
+			}
+
+            if (createdTempFile)
+            {
+                try { File.Delete(inFilename); }
+                catch (Exception) { /* ignore */ }	// TODO: походу writer не успевает закрыться, пока мы до сюда доходим
+            }
+        }
+
+        public void Unexecute()
+        {
+            Logger.Instance.Warning("Unexecution of export PDF command");
         }
     }
 }

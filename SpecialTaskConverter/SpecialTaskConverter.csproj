@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspose.PDF" Version="23.9.0" />
+  </ItemGroup>
+
 </Project>

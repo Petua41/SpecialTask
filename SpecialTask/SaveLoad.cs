@@ -98,7 +98,7 @@ namespace SpecialTask
 
             StreamWriter writer = new(filename);
             // Pass on:
-            //      IOException: file contains invalid characters
+            //      IOException: filename contains invalid characters
             //      UnaothorizedAcessException: no permissions
 
             doc.Save(writer);

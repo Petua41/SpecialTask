@@ -23,7 +23,7 @@ namespace SpecialTask
 
 		public StreakDecorator(StreakDecorator old) : this(old.DecoratedShape, old.StreakColor, old.StreakTexture) { }
 
-		public override object Edit(string attribute, object value)
+		public override object Edit(string attribute, string value)
 		{
 			object oldValue;
 
@@ -39,18 +39,18 @@ namespace SpecialTask
 				{
 					case "streakColor":
 						oldValue = StreakColor;
-						StreakColor = (EColor)value;
+                        StreakColor = ColorsController.Parse(value);
 						break;
 					case "streakTexture":
 						oldValue = StreakTexture;
-						StreakTexture = (EStreakTexture)value;
+						StreakTexture = TextureController.Parse(value);
 						break;
 					default:
 						oldValue = decoratedShape.Edit(attribute, value);
 						break;
 				}
 			}
-			catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+			catch (FormatException) { throw new ShapeAttributeCastException(); }
 
 			return oldValue;
 		}

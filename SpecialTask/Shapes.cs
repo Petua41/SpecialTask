@@ -71,7 +71,7 @@ namespace SpecialTask
 			return $"Unknown_Shape_{firstAvailibleUniqueNumber++}";
 		}
 
-		public abstract object Edit(string attribute, object value);
+		public abstract object Edit(string attribute, string value);
 
 		public virtual string UniqueName => uniqueName;
 
@@ -82,7 +82,7 @@ namespace SpecialTask
 
 		public abstract (int, int) Center { get; }
 
-        // It`s template method
+		// It`s kinda template method
         public virtual void Redraw()
 		{
 			Destroy();
@@ -95,7 +95,7 @@ namespace SpecialTask
 			WindowManager.Instance.RemoveFromCurrentWindow(this);
 		}
 
-		public virtual void NullifyWPFShape()
+		protected virtual void NullifyWPFShape()
 		{
 			wpfShape = null;
 		}
@@ -143,7 +143,7 @@ namespace SpecialTask
 			return $"Circle_{firstAvailibleUniqueNumber++}";
 		}
 
-		public override object Edit(string attribute, object value)
+		public override object Edit(string attribute, string value)
 		{
 			attribute = attribute.ToLower();
 			object oldValue;
@@ -154,29 +154,29 @@ namespace SpecialTask
 				{
 					case "centerx":
 						oldValue = CenterX;
-						CenterX = (int)value;
+						CenterX = int.Parse(value);
 						break;
 					case "centery":
 						oldValue = CenterY;
-						CenterY = (int)value;
+						CenterY = int.Parse(value);
 						break;
 					case "color":
 						oldValue = Color;
-						Color = (EColor)value;
+						Color = ColorsController.Parse(value);
 						break;
 					case "radius":
 						oldValue = Radius;
-						Radius = (int)value;
+						Radius = int.Parse(value);
 						break;
 					case "linethickness":
 						oldValue = LineThickness;
-						LineThickness = (int)value;
+						LineThickness = int.Parse(value);
 						break;
 					default:
 						throw new InvalidShapeAttributeException();
 				}
 			}
-			catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+			catch (FormatException) { throw new ShapeAttributeCastException(); }
 
 			return oldValue;
 		}
@@ -331,7 +331,7 @@ namespace SpecialTask
 			get => ((leftTopX + rightBottomX) / 2, (leftTopY + rightBottomY) / 2);
 		}
 
-		public override object Edit(string attribute, object value)
+		public override object Edit(string attribute, string value)
 		{
 			attribute = attribute.ToLower();
 			object oldValue;
@@ -342,33 +342,33 @@ namespace SpecialTask
 				{
 					case "lefttopx":
 						oldValue = LeftTopX;
-						LeftTopX = (int)value;
+						LeftTopX = int.Parse(value);
 						break;
 					case "lefttopy":
 						oldValue = LeftTopY;
-						LeftTopY = (int)value;
+						LeftTopY = int.Parse(value);
 						break;
 					case "rightbottomx":
 						oldValue = RightBottomX;
-						RightBottomX = (int)value;
+						RightBottomX = int.Parse(value);
 						break;
 					case "rightbottomy":
 						oldValue = RightBottomY;
-						RightBottomY = (int)value;
+						RightBottomY = int.Parse(value);
 						break;
 					case "color":
 						oldValue = Color;
-						Color = (EColor)value;
+						Color = ColorsController.Parse(value);
 						break;
 					case "linethickness":
 						oldValue = LineThickness;
-						LineThickness = (int)value;
+						LineThickness = int.Parse(value);
 						break;
 					default:
 						throw new InvalidShapeAttributeException();
 				}
 			}
-			catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+			catch (FormatException) { throw new ShapeAttributeCastException(); }
 
 			return oldValue;
 		}
@@ -526,7 +526,7 @@ namespace SpecialTask
 			return $"Line_{firstAvailibleUniqueNumber++}";
 		}
 
-		public override object Edit(string attribute, object value)
+		public override object Edit(string attribute, string value)
 		{
 			attribute = attribute.ToLower();
 			object oldValue;
@@ -537,33 +537,33 @@ namespace SpecialTask
 				{
 					case "firstx":
 						oldValue = FirstX;
-						FirstX = (int)value;
+						FirstX = int.Parse(value);
 						break;
 					case "firsty":
 						oldValue = FirstY;
-						FirstY = (int)value;
+						FirstY = int.Parse(value);
 						break;
 					case "secondx":
 						oldValue = SecondX;
-						SecondX = (int)value;
+						SecondX = int.Parse(value);
 						break;
 					case "secondy":
 						oldValue = SecondY;
-						SecondY = (int)value;
+						SecondY = int.Parse(value);
 						break;
 					case "color":
 						oldValue = Color;
-						Color = (EColor)value;
+						Color = ColorsController.Parse(value);
 						break;
 					case "linethickness":
 						oldValue = LineThickness;
-						LineThickness = (int)value;
+						LineThickness = int.Parse(value);
 						break;
 					default:
 						throw new InvalidShapeAttributeException();
 				}
 			}
-			catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+			catch (FormatException) { throw new ShapeAttributeCastException(); }
 
 			return oldValue;
 		}
@@ -705,7 +705,7 @@ namespace SpecialTask
 			return $"SelectionMarker_{firstAvailibleUniqueNumber++}";
 		}
 
-        public override object Edit(string attribute, object value)
+        public override object Edit(string attribute, string value)
 		{
 			throw new SelectionMarkerException();
 		}
@@ -796,7 +796,7 @@ namespace SpecialTask
 			return $"Text_{firstAvailibleUniqueNumber++}";
 		}
 
-        public override object Edit(string attribute, object value)
+        public override object Edit(string attribute, string value)
         {
             attribute = attribute.ToLower();
             object oldValue;
@@ -807,29 +807,29 @@ namespace SpecialTask
                 {
                     case "lefttopx":
                         oldValue = LeftTopX;
-                        LeftTopX = (int)value;
+                        LeftTopX = int.Parse(value);
                         break;
                     case "lefttopy":
                         oldValue = LeftTopY;
-                        LeftTopY = (int)value;
+                        LeftTopY = int.Parse(value);
                         break;
                     case "fontSize":
                         oldValue = FontSize;
-                        FontSize = (int)value;
+                        FontSize = int.Parse(value);
                         break;
                     case "text":
                         oldValue = TextValue;
-                        TextValue = (string)value;
+                        TextValue = value;
                         break;
                     case "color":
                         oldValue = Color;
-                        Color = (EColor)value;
+                        Color = ColorsController.Parse(value);
                         break;
                     default:
                         throw new InvalidShapeAttributeException();
                 }
             }
-            catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+            catch (FormatException) { throw new ShapeAttributeCastException(); }
 
             return oldValue;
         }
@@ -967,7 +967,7 @@ namespace SpecialTask
             return $"Polygon_{firstAvailibleUniqueNumber++}";
         }
 
-        public override object Edit(string attribute, object value)
+        public override object Edit(string attribute, string value)
         {
             attribute = attribute.ToLower();
             object oldValue;
@@ -978,21 +978,21 @@ namespace SpecialTask
                 {
                     case "points":
                         oldValue = Points;
-                        Points = (List<(int, int)>)value;
+                        Points = (List<(int, int)>)EArgumentType.Points.ParseValue(value);
                         break;
                     case "lineThickness":
                         oldValue = LineThickness;
-                        LineThickness = (int)value;
+                        LineThickness = int.Parse(value);
                         break;
                     case "color":
                         oldValue = Color;
-                        Color = (EColor)value;
+                        Color = ColorsController.Parse(value);
                         break;
                     default:
                         throw new InvalidShapeAttributeException();
                 }
             }
-            catch (InvalidCastException) { throw new ShapeAttributeCastException(); }
+            catch (FormatException) { throw new ShapeAttributeCastException(); }
 
             return oldValue;
         }

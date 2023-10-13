@@ -183,6 +183,13 @@ Adds polygon to the screen
 	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue="_"/>
     <argument shortArgument="-o" longArgument="--out" type="String" isNecessary="true" commandParameterName="outFilename"/>
   </command>
+  <command userInput="export pdf" commandClass="ExportPDFCommand">Export to pdf
+[color:Magenta]Necessary arguments:[color]
+	-o --out            Output file
+[color:Magenta]Unnecessary arguments:[color]
+	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue="_"/>
+    <argument shortArgument="-o" longArgument="--out" type="String" isNecessary="true" commandParameterName="outFilename"/>
+  </command>
 
 	<!-- fictional commands -->
 	<command userInput="new" fictional="true">Adds specified shape to the screen. You cannot invoke this command without specifying shape
@@ -200,8 +207,15 @@ Adds polygon to the screen
 	polygon
 
 Enter [color:Green]new shape --help[color] to get help on [color:Green]shape[color]</command>
-	<command userInput="window" fictional="true">Controls windows. You cannot invoke this command without specifying concrete action</command>
-  <command userInput="export" fictional="true">Export to other formats. You cannot invoke this command without specifying file format</command>
+	<command userInput="window" fictional="true">Controls windows. You cannot invoke this command without specifying concrete action
+[color:Magenta]Possible commands:[color]
+	create
+	switch
+	delete</command>
+  <command userInput="export" fictional="true">Export to other formats. You cannot invoke this command without specifying file format
+[color:Magenta]Availible formats:[color]
+	SVG
+	PDF</command>
 	
 	<!-- common help -->
 	<help>
