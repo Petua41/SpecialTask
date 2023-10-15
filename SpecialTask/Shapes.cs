@@ -9,9 +9,9 @@ using System.Windows.Media;
 
 namespace SpecialTask
 {
-	public enum EColor			// it`s standard ANSI colors (values are similar to ones in xterm)
+	public enum EColor				// it`s standard ANSI colors (values are similar to ones in xterm)
 	{
-		None, Purple,			// with this line added
+		None, Purple,				// with this line added
 		
 		Black, Red, Green, Yellow, Blue,
 		Magenta, Cyan, White, Gray, BrightRed,
@@ -24,7 +24,7 @@ namespace SpecialTask
 		private static readonly Dictionary<string, EColor> colorNames = new()
 		{
 			{ "purple", EColor.Purple }, { "black", EColor.Black }, { "red", EColor.Red }, { "green", EColor.Green }, { "yellow", EColor.Yellow },
-			{ "blue", EColor.Blue }, { "magenta", EColor.Magenta }, { "cyan", EColor.Cyan }, { "white", EColor.White }, { "Gray", EColor.Gray },
+			{ "blue", EColor.Blue }, { "magenta", EColor.Magenta }, { "cyan", EColor.Cyan }, { "white", EColor.White }, { "gray", EColor.Gray },
 			{ "brightred", EColor.BrightRed }, { "brightgreen", EColor.BrightGreen }, { "brightyellow", EColor.BrightYellow },
 			{ "brightblue", EColor.BrightBlue }, { "brightmagenta", EColor.BrightMagenta }, { "brightcyan", EColor.BrightCyan },
 			{ "brightwhite", EColor.BrightWhite }

@@ -1436,7 +1436,7 @@ namespace SpecialTask
 	/// </summary>
 	class ExportSVGCommand: ICommand
 	{
-        private readonly STConverter receiver;
+        private readonly STConverter? receiver;
 		private string inFilename = "";
 		private string outFilename;
 		private bool createdTempFile = false;
@@ -1454,8 +1454,14 @@ namespace SpecialTask
 					CommandsFacade.ExecuteButDontRegister(new SaveAsCommand(new() { { "filename", inFilename } }));
 					createdTempFile = true;
 				}
+				else inFilename = SaveLoadFacade.CorrectFilename(inFilename);
 
-				receiver = new(inFilename);
+				try { receiver = new(inFilename); }
+				catch (FileNotFoundException)
+				{
+					Logger.Instance.Error($"Cannot export SVG: File {inFilename} not found");
+					MiddleConsole.HighConsole.DisplayError($"File {inFilename} not found");
+				}
             }
             catch (KeyNotFoundException)
             {
@@ -1471,7 +1477,7 @@ namespace SpecialTask
 
         public void Execute()
         {
-			receiver.ToSVG(SaveLoadFacade.CorrectFilename(outFilename, ".svg"));
+			receiver?.ToSVG(SaveLoadFacade.CorrectFilename(outFilename, ".svg"));
 
 			if (createdTempFile)
 			{
@@ -1487,7 +1493,7 @@ namespace SpecialTask
     }
 
     /// <summary>
-    /// Export SVG
+    /// Export PDF
     /// </summary>
     class ExportPDFCommand : ICommand
     {

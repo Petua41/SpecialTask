@@ -43,7 +43,7 @@ namespace SpecialTask
 
         public bool NeedsSave
         {
-            get => !isSaved;
+            get => !isSaved && WindowManager.Instance.ShapesOnCurrentWindow.Count > 0;
         }
 
         public void Save()
@@ -108,12 +108,10 @@ namespace SpecialTask
 
     static class XMLHandler
     {
-        public const string xmlns = "some_namespace";      // it doesn`t matter, but it must be the same in all elements. Xml.Linq requires it
-
         public static XDocument GenerateXML(List<Shape> shapes)
         {
             XDocument document = new();
-            XElement parent = new(XName.Get("shapes", xmlns));
+            XElement parent = new("shapes");
 
             foreach (Shape shape in shapes)
             {
@@ -271,7 +269,7 @@ namespace SpecialTask
 
         private static XElement GenerateXML(string tag, Dictionary<string, string> nameValuePairs)
         {
-            XName name = XName.Get(tag, XMLHandler.xmlns);
+            XName name = XName.Get(tag);
             XElement element = new(name);
 
             element.Add((from kvp in nameValuePairs select new XAttribute(kvp.Key, kvp.Value)).ToArray());
