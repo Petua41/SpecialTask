@@ -249,6 +249,7 @@ namespace SpecialTask
 				base.Redraw();
 			}
 		}
+
 		private int CenterY
 		{
 			get => centerY;

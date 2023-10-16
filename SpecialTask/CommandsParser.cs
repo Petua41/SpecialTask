@@ -20,19 +20,19 @@ namespace SpecialTask
         public static EArgumentType ParseType(string str)
         {
 			try { return stringToType[str.ToLower()]; }
-			catch (KeyNotFoundException) { return EArgumentType.PseudoBool; }
+			catch (KeyNotFoundException) { return EArgumentType.PseudoBool; }		// all that cannot ba recognized is bool
         }
 
         public static object ParseValue(this EArgumentType type, string value)
         {
             return type switch
             {
-                EArgumentType.Int => int.Parse(value),
-                EArgumentType.Color => ColorsController.Parse(value),
-                EArgumentType.String => value,
-                EArgumentType.Texture => TextureController.Parse(value),
-				EArgumentType.Points => ParsePoints(value),
-                _ => value != "false"                   // all true, that not false
+                EArgumentType.Int		=>	int.Parse(value),
+                EArgumentType.Color		=>	ColorsController.Parse(value),
+                EArgumentType.String	=>	value,
+                EArgumentType.Texture	=>	TextureController.Parse(value),
+				EArgumentType.Points	=>	ParsePoints(value),
+                _						=>	value != "false"                   // all true, that not false
             };
         }
 
@@ -84,7 +84,40 @@ namespace SpecialTask
 			}
 		}
 
-		private static string SelectLastLongArgument(string input)
+        public readonly (string, object) CreateArgumentFromString(string argument)
+        {
+            argument = argument.Trim();         // ParseArguments don`t trim arguments, so we`ll make it here
+
+            if (argument == "-h" || argument == "--help") return ("help", true);
+
+            foreach (ConsoleCommandArgument arg in arguments)
+            {
+                if (argument.StartsWith(arg.longArgument) || argument.StartsWith(arg.shortArgument))
+                {
+                    string rawValue = argument.Replace(arg.longArgument, "").Replace(arg.shortArgument, "").Trim();
+
+                    try
+                    {
+                        object value = arg.type.ParseValue(rawValue);
+                        string paramName = arg.commandParameterName;
+                        return (paramName, value);
+                    }
+                    catch (FormatException)     // Error casting string to int or Points. Other types of parameters have default values (EColor.None, etc.)
+                    {
+						// YANDERE
+                        string intOrPoints = arg.type == EArgumentType.Int ? "integer" : "points";
+                        MiddleConsole.HighConsole.DisplayError(
+                            $"{arg.longArgument} should be {intOrPoints}. {rawValue} is not {intOrPoints}. Try {neededUserInput} --help");
+
+                        throw new ArgumentParsingError();
+                    }
+                }
+            }
+            MiddleConsole.HighConsole.DisplayError($"Unknown argument: {argument}. Try {neededUserInput} -- help");
+            throw new ArgumentParsingError();
+        }
+
+        private static string SelectLastLongArgument(string input)
 		{
 			int indexOfLastSingleMinus = input.LastIndexOf("-");
 			int indexOfLastDoubleMinus = input.LastIndexOf("--");
@@ -96,15 +129,7 @@ namespace SpecialTask
 
 		private readonly List<ConsoleCommandArgument> TryToAutocompleteLongArgs(string argument)
 		{
-			//return (from arg in argumetns where arg.longArgument.StartsWith(argument) select arg).ToList();
-
-			List<ConsoleCommandArgument> result = new();
-
-			foreach (ConsoleCommandArgument arg in arguments)
-			{
-				if (arg.longArgument.StartsWith(argument)) result.Add(arg);
-			}
-			return result;
+			return (from arg in arguments where arg.longArgument.StartsWith(argument) select arg).ToList();
 		}
 
 		private readonly bool IsLongArgumentFull(string argument)
@@ -136,24 +161,24 @@ namespace SpecialTask
 
 		static CommandsParser()
 		{
-			DirectoryInfo? workingDir = Directory.GetParent(Environment.CurrentDirectory);      // GetParent на самом деле получает не Parent, а саму директорию
+			DirectoryInfo? workingDir = Directory.GetParent(Environment.CurrentDirectory);      // GetParent actually gets not parent, but directory itself
 			if (workingDir == null)
 			{
-				LogThatWeAreInRootDir();
+				LogThatWeAreInRootDirAndExit();
 				return;
 			}
 
 			DirectoryInfo? binDir = workingDir.Parent;
 			if (binDir == null)
 			{
-				LogThatWeAreInRootDir();
+				LogThatWeAreInRootDirAndExit();
 				return;
 			}
 
 			projectDir = binDir.Parent?.FullName ?? "";
 			if (projectDir.Length == 0)
 			{
-				LogThatWeAreInRootDir();
+				LogThatWeAreInRootDirAndExit();
 				return;
 			}
 
@@ -168,19 +193,17 @@ namespace SpecialTask
 			}
 		}
 
-		// TODO: this method is TOO long
+		// This method is TOO LONG
 		public static void ParseCommand(string userInput)
 		{
-			bool thereAreArguments = true;
 			int indexOfFirstMinus = userInput.IndexOf('-');
-			if (indexOfFirstMinus == -1) thereAreArguments = false;
 
 			string commandName;
 			string arguments;
 
-			if (thereAreArguments)
+			if (indexOfFirstMinus > 0)
 			{
-				if (indexOfFirstMinus == 0) return;
+				if (indexOfFirstMinus == 0) return;		// input starts with minus: there is no command
 				commandName = userInput[..(indexOfFirstMinus - 1)];
 				arguments = userInput[indexOfFirstMinus..];
 			}
@@ -203,7 +226,7 @@ namespace SpecialTask
 			{
 				Dictionary<string, object> argumentValues = ParseArguments(consoleCommand, arguments);
 
-				if (argumentValues.ContainsKey("help") && (bool)argumentValues["help"])
+				if (argumentValues.ContainsKey("help"))		// in theory, user can enter "--help false". It`s still --help
 				{
 					DisplayHelp(consoleCommand);
                     return;
@@ -214,8 +237,13 @@ namespace SpecialTask
 				if (consoleCommand.supportsUndo) CommandsFacade.RegisterAndExecute(command);
 				else CommandsFacade.ExecuteButDontRegister(command);
 			}
-			catch (CallOfFictionalCommandException) { }			// Nothing happened
-			catch (ArgumentParsingError) { }					// Some required argument is missing || Some extra argument is present || Error casting parameter
+			catch (CallOfFictionalCommandException) 
+			{
+                Logger.Instance.Warning($"Call of the fictional command {consoleCommand.neededUserInput}");
+                MiddleConsole.HighConsole.DisplayError(
+                    $"You cannot call {consoleCommand.neededUserInput} without \"second-level command\". Try {consoleCommand.neededUserInput} --help");
+            }
+			catch (ArgumentParsingError) { /* ignore */ }	// Some required argument is missing || Some extra argument is present || Error casting parameter
 		}
 
 		public static string Autocomplete(string input)
@@ -243,11 +271,10 @@ namespace SpecialTask
 					}
 				}
 			}
-
-			return "";		// empty input => nothing
+			return "";		// empty input => nothing happened
 		}
 
-		private static void LogThatWeAreInRootDir()
+		private static void LogThatWeAreInRootDirAndExit()
 		{
 			Logger.Instance.Warning("Application is running in the root directory!");
 			Logger.Instance.Error("Cannot get current project directory");
@@ -281,7 +308,7 @@ namespace SpecialTask
 					string helpCandidate = elem.Value;
 					if (helpCandidate != "") globalHelp = helpCandidate + "\n";
 				}
-				else Logger.Instance.Warning($"Unexpected XML tag in root element: {elem.Name}");
+				else Logger.Instance.Warning($"Unexpected XML tag inside the root element: {elem.Name}");
 			}
 
 			return (commands, globalHelp);
@@ -378,7 +405,7 @@ namespace SpecialTask
 						catch (FormatException) { throw new InvalidResourceFileException(); }
 						break;
 					default:
-						Logger.Instance.Warning($"Unknown attribute {attr.Name} in arguments");
+						Logger.Instance.Warning($"Unknown attribute {attr.Name} in arguments (in XML)");
 						break;
 				}
 			}
@@ -412,15 +439,9 @@ namespace SpecialTask
 
 		private static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
 		{
-			if (consoleCommand.fictional)
-			{
-				Logger.Instance.Warning($"Call of the fictional command {consoleCommand.neededUserInput}");
-				MiddleConsole.HighConsole.DisplayError(
-					$"You cannot call {consoleCommand.neededUserInput} without \"second-level command\". Try {consoleCommand.neededUserInput} --help");
-				throw new CallOfFictionalCommandException();
-			}
+			if (consoleCommand.fictional) throw new CallOfFictionalCommandException();
 
-			// YANDERE
+			// Check that all necessary arguments are present
 			foreach(ConsoleCommandArgument argument in consoleCommand.arguments)
 			{
 				if (!arguments.ContainsKey(argument.commandParameterName))
@@ -461,65 +482,36 @@ namespace SpecialTask
 
 			while (arguments.Length > 0)
 			{
-				int startOfNextArgument = arguments.IndexOf('-', 2);        // TODO: this way we cannot parse negative numbers. Maybe we don`t need negative numbers?
+				int startOfNextArgument = arguments.IndexOf('-', 2);
 
-				KeyValuePair<string, object> kvp;
+				(string, object) pair;
+				string arg;
                 if (startOfNextArgument > 0)
 				{
-					string arg = arguments[..startOfNextArgument];
+					arg = arguments[..startOfNextArgument];
 					arguments = arguments[startOfNextArgument..];
-					kvp = CreateArgumentFromString(arg, consoleCommand);
 				}
 				else
 				{
-					kvp = CreateArgumentFromString(arguments, consoleCommand);
+					arg = arguments;
 					arguments = "";
-				}
-				try { argumentPairs.Add(kvp.Key, kvp.Value); }
+                }
+                pair = consoleCommand.CreateArgumentFromString(arg);
+
+                try { argumentPairs.Add(pair.Item1, pair.Item2); }
 				catch (ArgumentException)
 				{
-					MiddleConsole.HighConsole.DisplayError($"Duplicated argument: {kvp.Key}");
+					MiddleConsole.HighConsole.DisplayError($"Duplicated argument: {pair.Item1}");
 				}
 			}
 
 			return argumentPairs;
 		}
 
-		private static KeyValuePair<string, object> CreateArgumentFromString(string argument, ConsoleCommand command)
-		{
-			argument = argument.Trim();         // ParseArguments don`t trim arguments, so we`ll make it here
-
-			if (argument == "-h" || argument == "--help") return new("help", true);
-
-			foreach (ConsoleCommandArgument arg in command.arguments)
-			{
-				if (argument.StartsWith(arg.longArgument) || argument.StartsWith(arg.shortArgument))
-				{
-					string rawValue = argument.Replace(arg.longArgument, "").Replace(arg.shortArgument, "").Trim();
-					try
-					{
-						object value = arg.type.ParseValue(rawValue);
-						string paramName = arg.commandParameterName;
-						return new(paramName, value);
-					}
-					catch (FormatException)		// Error casting string to int or Points. Other types of parameters have default values (EColor.None, etc.)
-					{
-						string intOrPoints = arg.type == EArgumentType.Int ? "integer" : "points";
-                        MiddleConsole.HighConsole.DisplayError(
-							$"{arg.longArgument} should be {intOrPoints}. {rawValue} is not {intOrPoints}. Try {command.neededUserInput} --help");
-
-						throw new ArgumentParsingError();
-					}
-				}
-			}
-			MiddleConsole.HighConsole.DisplayError($"Unknown argument: {argument}. Try {command.neededUserInput} -- help");
-			throw new ArgumentParsingError();
-		}
-
 		private static void DisplayHelp(ConsoleCommand command)
 		{
 			string? help = command.help;
-			if (help == null) MiddleConsole.HighConsole.DisplayError("Help not found");
+			if (help == null) MiddleConsole.HighConsole.DisplayError($"Help for {command.neededUserInput} not found");
 			else MiddleConsole.HighConsole.Display(help);
 		}
 	}

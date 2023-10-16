@@ -46,16 +46,16 @@ namespace SpecialTask
         {
             return textureName.ToLower() switch
             {
-                "solid" or "solidcolor" or "color" or "sc" => EStreakTexture.SolidColor,
-                "horizontallines" or "hl" => EStreakTexture.HorizontalLines,
-                "verticallines" or "vl" => EStreakTexture.VerticalLines,
-                "horizontaltransparencygradient" or "htg" or "horizontaltransparenttocolorgradient" => EStreakTexture.HorizontalTransparentToColorGradient,
-                "horizontalrainbow" or "rainbow" or "hrb" => EStreakTexture.HorizontalRainbow,
-                "radialtarnsparencygradient" or "rtg" or "radialcolortotransparentgradient" => EStreakTexture.RadialColorToTransparentGradient,
-                "watertexture" or "water" or "wt" => EStreakTexture.Water,
-                "dots" => EStreakTexture.Dots,
-                "holes" or "tc" or "transparentcircles" => EStreakTexture.TransparentCircles,
-                _ => EStreakTexture.None
+                "solid" or "solidcolor" or "color" or "sc"                                          =>  EStreakTexture.SolidColor,
+                "horizontallines" or "hl"                                                           =>  EStreakTexture.HorizontalLines,
+                "verticallines" or "vl"                                                             =>  EStreakTexture.VerticalLines,
+                "horizontaltransparencygradient" or "htg" or "horizontaltransparenttocolorgradient" =>  EStreakTexture.HorizontalTransparentToColorGradient,
+                "horizontalrainbow" or "rainbow" or "hrb"                                           =>  EStreakTexture.HorizontalRainbow,
+                "radialtarnsparencygradient" or "rtg" or "radialcolortotransparentgradient"         =>  EStreakTexture.RadialColorToTransparentGradient,
+                "watertexture" or "water" or "wt"                                                   =>  EStreakTexture.Water,
+                "dots"                                                                              =>  EStreakTexture.Dots,
+                "holes" or "tc" or "transparentcircles"                                             =>  EStreakTexture.TransparentCircles,
+                _                                                                                   =>  EStreakTexture.None
             };
         }
 
@@ -64,16 +64,16 @@ namespace SpecialTask
             Color wpfColor = color.GetWPFColor();
             return texture switch
             {
-                EStreakTexture.SolidColor => new SolidColorBrush(wpfColor),
-                EStreakTexture.HorizontalLines => horizontalLinesBrush.Brush(wpfColor),
-                EStreakTexture.VerticalLines => verticalLinesBrush.Brush(wpfColor),
-                EStreakTexture.HorizontalTransparentToColorGradient => horizTranspToColorGradientBrush.Brush(wpfColor),
-                EStreakTexture.HorizontalRainbow => horizontalRainbow.Brush(wpfColor),
-                EStreakTexture.RadialColorToTransparentGradient => radTranspToColorGradientBrush.Brush(wpfColor),
-                EStreakTexture.Water => waterSeamlessTexture.Brush(wpfColor),
-                EStreakTexture.Dots => dotsBrush.Brush(wpfColor),
-                EStreakTexture.TransparentCircles => transpCircles.Brush(wpfColor),
-                _ => Brushes.Transparent
+                EStreakTexture.SolidColor                               =>  new SolidColorBrush(wpfColor),
+                EStreakTexture.HorizontalLines                          =>  horizontalLinesBrush.Brush(wpfColor),
+                EStreakTexture.VerticalLines                            =>  verticalLinesBrush.Brush(wpfColor),
+                EStreakTexture.HorizontalTransparentToColorGradient     =>  horizTranspToColorGradientBrush.Brush(wpfColor),
+                EStreakTexture.HorizontalRainbow                        =>  horizontalRainbow.Brush(wpfColor),
+                EStreakTexture.RadialColorToTransparentGradient         =>  radTranspToColorGradientBrush.Brush(wpfColor),
+                EStreakTexture.Water                                    =>  waterSeamlessTexture.Brush(wpfColor),
+                EStreakTexture.Dots                                     =>  dotsBrush.Brush(wpfColor),
+                EStreakTexture.TransparentCircles                       =>  transpCircles.Brush(wpfColor),
+                _                                                       =>  Brushes.Transparent
             };
         }
 

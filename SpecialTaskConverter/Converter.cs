@@ -670,15 +670,14 @@ namespace SpecialTaskConverter
 			catch (STDParsingException) { /* nothing happened */ }
 		}
 
-		private static Aspose.Pdf.Color ConvertColor(string color)
+		private static Color ConvertColor(string color)
 		{
-			// YANDERE
 			if (colorValues.ContainsKey(color.ToLower()))
 			{
 				System.Drawing.Color c = System.Drawing.Color.FromArgb((int)colorValues[color.ToLower()]);
-				return Aspose.Pdf.Color.FromRgb(c);
+				return Color.FromRgb(c);
 			}
-			return Aspose.Pdf.Color.Transparent;
+			return Color.Transparent;
 		}
 	}
 
