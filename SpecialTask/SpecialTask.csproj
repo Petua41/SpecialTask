@@ -17,8 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="ConsoleCommands.xml" />
-    <Resource Include="Resources\water_texture.jpg" />
+    <Resource Include="ConsoleCommands.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\water_texture.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

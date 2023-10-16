@@ -161,25 +161,30 @@ namespace SpecialTask
 
 		static CommandsParser()
 		{
-			DirectoryInfo? workingDir = Directory.GetParent(Environment.CurrentDirectory);      // GetParent actually gets not parent, but directory itself
+			DirectoryInfo? workingDir = Directory.GetParent(Environment.CurrentDirectory);
 			if (workingDir == null)
 			{
 				LogThatWeAreInRootDirAndExit();
 				return;
 			}
 
-			DirectoryInfo? binDir = workingDir.Parent;
-			if (binDir == null)
+			if (workingDir.Name != "Debug") projectDir = workingDir.FullName;
+			else
 			{
-				LogThatWeAreInRootDirAndExit();
-				return;
-			}
 
-			projectDir = binDir.Parent?.FullName ?? "";
-			if (projectDir.Length == 0)
-			{
-				LogThatWeAreInRootDirAndExit();
-				return;
+				DirectoryInfo? binDir = workingDir.Parent;
+				if (binDir == null)
+				{
+					LogThatWeAreInRootDirAndExit();
+					return;
+				}
+
+				projectDir = binDir.Parent?.FullName ?? "";
+				if (projectDir.Length == 0)
+				{
+					LogThatWeAreInRootDirAndExit();
+					return;
+				}
 			}
 
 			try { (consoleCommands, globalHelp) = ParseCommandsXML(); }
