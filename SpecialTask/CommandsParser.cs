@@ -162,16 +162,10 @@ namespace SpecialTask
 		static CommandsParser()
 		{
 			DirectoryInfo? workingDir = Directory.GetParent(Environment.CurrentDirectory);
-			if (workingDir == null)
-			{
-				LogThatWeAreInRootDirAndExit();
-				return;
-			}
 
-			if (workingDir.Name != "Debug") projectDir = workingDir.FullName;
+			if (workingDir == null || (workingDir.Name != "Debug" && workingDir.Name != "Release")) projectDir = Directory.GetCurrentDirectory();
 			else
 			{
-
 				DirectoryInfo? binDir = workingDir.Parent;
 				if (binDir == null)
 				{

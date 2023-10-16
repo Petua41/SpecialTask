@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -54,8 +55,8 @@ namespace SpecialTask
             { Color.FromRgb(36, 9, 53), 1 } };
             radTranspToColorGradientBrush = new RadialGradientTexture() { { Colors.Transparent, 0 } };
 
-            try { waterSeamlessTexture = new SeamlessTexture(@"../../../Resources/water_texture.jpg"); }
-            catch (Exception) { waterSeamlessTexture = new SeamlessTexture(@"../../../Resources/water_texture.jpg"); }
+            if (File.Exists(@"Resources/water_texture.jpg")) waterSeamlessTexture = new SeamlessTexture(@"Resources/water_texture.jpg");
+            else waterSeamlessTexture = new SeamlessTexture(@"../../../Resources/water_texture.jpg");
         }
 
         public static EStreakTexture Parse(string textureName)
@@ -224,7 +225,7 @@ namespace SpecialTask
 
         public SeamlessTexture(string filename)
         {
-            System.Uri uri = new(filename, System.UriKind.Relative);
+            Uri uri = new(filename, System.UriKind.Relative);
             seamlessTexture = new(uri);
         }
 
