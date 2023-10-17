@@ -134,7 +134,7 @@ namespace SpecialTask
 			{
 				ProcessUpArrow();
 			}
-			else if (Keyboard.IsKeyDown(Key.D))
+			else if (Keyboard.IsKeyDown(Key.D))			// 🔽
 			{
 				ProcessDownArrow();
 			}
@@ -144,12 +144,12 @@ namespace SpecialTask
 
 		private void ProcessAlt()
 		{
-			if (Keyboard.IsKeyDown(Key.Z))
+			if (Keyboard.IsKeyDown(Key.Z))				// Ctrl+Z or Ctrl+Shift+Z
 			{
                 bool shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-                DisplayAndProcessInputString(shiftPressed ? "redo" : "undo");
+                if (!TransferringInput) DisplayAndProcessInputString(shiftPressed ? "redo" : "undo");	// when transferring, we don`t either transfer Ctrl+Z or handle it
             }
-            if (Keyboard.IsKeyDown(Key.C))
+            if (Keyboard.IsKeyDown(Key.C))				// Ctrl+C
             {
 				if (TransferringInput) lowConsole.TransferCtrlC();
 				else DisplayAndProcessInputString("exit");

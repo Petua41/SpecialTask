@@ -33,9 +33,18 @@ namespace SpecialTaskTest
         [Test]
         public void PointsToStringTest()
         {
-            List<(int, int)> points = new() { (10, 10), (20, 30), (40, 40) };
+            List<Point> points = new() { new(10, 10), new(20, 30), new(40, 40) };
             string expected = "10 10, 20 30, 40 40";
-            string actual = ArgumentTypesConstroller.PointsToString(points);
+            string actual = points.PointsToString();
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void SplitHexValueTest()
+        {
+            (byte, byte, byte) expected = (255, 0, 130);
+            uint hex = 0xFF0082;
+            (byte, byte, byte) actual = ColorsController.SplitHexValue(hex);
             Assert.That(actual, Is.EqualTo(expected));
         }
     }

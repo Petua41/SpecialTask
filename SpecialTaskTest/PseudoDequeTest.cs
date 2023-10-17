@@ -7,11 +7,11 @@ namespace SpecialTaskTest
         [Test]
         public void PushTest()
         {
-            PseudoDeque<int> deque = new()
+            LimitedStack<int> deque = new(10)
             {
                 1, 2, 3
             };
-            PseudoDeque<int> expected = new()
+            LimitedStack<int> expected = new(10)
             {
                 1, 2, 3, 4
             };
@@ -22,11 +22,11 @@ namespace SpecialTaskTest
         [Test]
         public void PopTest()
         {
-            PseudoDeque<int> deque = new()
+            LimitedStack<int> deque = new(10)
             {
                 1, 2, 3
             };
-            PseudoDeque<int> expected = new()
+            LimitedStack<int> expected = new(10)
             {
                 1, 2
             };
@@ -42,24 +42,9 @@ namespace SpecialTaskTest
 
         private void PopFromEmptyDeque()
         {
-            PseudoDeque<int> deque = new();
+            LimitedStack<int> deque = new(10);
             try { deque.Pop(); }
             catch { throw; }
-        }
-
-        [Test]
-        public void PopBottomTest()
-        {
-            PseudoDeque<int> deque = new()
-            {
-                1, 2, 3
-            };
-            PseudoDeque<int> expected = new()
-            {
-                2, 3
-            };
-            deque.PopBottom();
-            Assert.That(deque, Is.EqualTo(expected));
         }
     }
 }

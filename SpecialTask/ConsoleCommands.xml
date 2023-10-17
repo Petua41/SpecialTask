@@ -237,7 +237,7 @@ Usage: command [arguments]
 	save_as       Save as
 	load          Load
 	clear         Clear current screen
-  export        Export to other formats
+	export        Export to other formats
 	
 	colors        Get list of colors
 	textures      Get list of streak textures

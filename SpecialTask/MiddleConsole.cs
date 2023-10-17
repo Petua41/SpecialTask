@@ -55,8 +55,6 @@ namespace SpecialTask
 
         private MiddleConsole()
         {
-            if (singleton != null) throw new SingletonError();
-
             try { mainWindowInstance = (MainWindow)Application.Current.MainWindow; }
             catch (NullReferenceException ex)
             {
@@ -200,12 +198,7 @@ namespace SpecialTask
                     else
                     {
                         string colorName = colorSequence[7..^1];
-                        try { lastColor = ColorsController.Parse(colorName); }
-                        catch (ColorExcepttion)
-                        {
-                            Logger.Instance.Error($"Invalid color name in escape sequence: {colorName}");
-                            throw new EscapeSequenceParsingError();
-                        }
+                        lastColor = ColorsController.Parse(colorName);
                     }
                     message = message[(endOfColorSequence + 1)..];
                 }

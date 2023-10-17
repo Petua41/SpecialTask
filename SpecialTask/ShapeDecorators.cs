@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace SpecialTask
 {
-
 	class StreakDecorator : Shape
 	{
 		private EColor streakColor;

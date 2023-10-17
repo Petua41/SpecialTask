@@ -16,12 +16,8 @@ namespace SpecialTask
 
 		private WindowManager()
 		{
-			if (singleton != null) throw new SingletonError();
-			else
-			{
-				currentWindow = new(0);
-				existingWindows = new List<WindowToDraw> { currentWindow };
-			}
+			currentWindow = new(0);
+			existingWindows = new List<WindowToDraw> { currentWindow };
 		}
 
 		public static WindowManager Instance

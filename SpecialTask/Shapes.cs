@@ -9,56 +9,6 @@ using System.Windows.Media;
 
 namespace SpecialTask
 {
-	public enum EColor				// it`s standard ANSI colors (values are similar to ones in xterm)
-	{
-		None, Purple,				// with this line added
-		
-		Black, Red, Green, Yellow, Blue,
-		Magenta, Cyan, White, Gray, BrightRed,
-		BrightGreen, BrightYellow, BrightBlue,
-		BrightMagenta, BrightCyan, BrightWhite
-	}
-
-	static class ColorsController
-	{
-		private static readonly Dictionary<string, EColor> colorNames = new()
-		{
-			{ "purple", EColor.Purple }, { "black", EColor.Black }, { "red", EColor.Red }, { "green", EColor.Green }, { "yellow", EColor.Yellow },
-			{ "blue", EColor.Blue }, { "magenta", EColor.Magenta }, { "cyan", EColor.Cyan }, { "white", EColor.White }, { "gray", EColor.Gray },
-			{ "brightred", EColor.BrightRed }, { "brightgreen", EColor.BrightGreen }, { "brightyellow", EColor.BrightYellow },
-			{ "brightblue", EColor.BrightBlue }, { "brightmagenta", EColor.BrightMagenta }, { "brightcyan", EColor.BrightCyan },
-			{ "brightwhite", EColor.BrightWhite }
-		};
-
-		private static readonly Dictionary<EColor, Color> wpfColors = new()
-		{
-			{ EColor.Purple, Color.FromRgb(128, 0, 128) }, { EColor.Black, Colors.Black }, { EColor.Red, Color.FromRgb(205, 0, 0) },
-			{ EColor.Green, Color.FromRgb(0, 205, 0) }, { EColor.Yellow, Color.FromRgb(205, 205, 0) }, { EColor.Blue, Color.FromRgb(0, 0, 238) },
-			{ EColor.Magenta, Color.FromRgb(205, 0, 205) }, { EColor.Cyan, Color.FromRgb(0, 205, 205) }, { EColor.White, Color.FromRgb(229, 229, 229) },
-			{ EColor.Gray, Color.FromRgb(127, 127, 127) }, { EColor.BrightRed, Colors.Red }, {EColor.BrightGreen, Color.FromRgb(0, 255, 0) },
-			{ EColor.BrightYellow, Colors.Yellow }, { EColor.BrightBlue, Color.FromRgb(92, 92, 255) }, { EColor.BrightMagenta, Colors.Magenta },
-			{ EColor.BrightCyan, Colors.Cyan }, { EColor.BrightWhite, Colors.White }
-		};
-
-		public static Color GetWPFColor(this EColor color)
-		{
-			try { return wpfColors[color]; }
-			catch (KeyNotFoundException) { return Colors.Transparent; }
-		}
-
-		public static EColor Parse(string colorString)
-		{
-			colorString = colorString.Trim().ToLower();
-			try { return colorNames[colorString]; }
-			catch (KeyNotFoundException) { return EColor.None; }
-		}
-
-		public static List<string> GetColorsList()
-		{
-			return colorNames.Keys.ToList();
-		}
-	}
-
 	abstract class Shape
 	{
 		private static int firstAvailibleUniqueNumber = 0;
@@ -265,7 +215,6 @@ namespace SpecialTask
             get => radius;
             set
             {
-                if (value < 0) throw new ShapeValueException();
                 radius = value;
                 base.Redraw();
             }
@@ -943,13 +892,13 @@ namespace SpecialTask
 
 	class Polygon: Shape
 	{
-		List<(int, int)> points;
+		List<Point> points;
         private EColor color;
         private int lineThickness;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Polygon(List<(int, int)> points, int lineThickness, EColor color)
+        public Polygon(List<Point> points, int lineThickness, EColor color)
         {
 			this.points = points;
             this.color = color;
@@ -979,7 +928,7 @@ namespace SpecialTask
                 {
                     case "points":
                         oldValue = Points;
-                        Points = (List<(int, int)>)EArgumentType.Points.ParseValue(value);
+                        Points = value.ParsePoints();
                         break;
                     case "lineThickness":
                         oldValue = LineThickness;
@@ -1006,7 +955,7 @@ namespace SpecialTask
 
 				System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Polygon
                 {
-                    Points = new(from p in Points select new Point(p.Item1, p.Item2)),
+					Points = new(from p in Points select (System.Windows.Point)p),
 					StrokeThickness = LineThickness,
                     Stroke = new SolidColorBrush(Color.GetWPFColor())
                 };
@@ -1025,25 +974,23 @@ namespace SpecialTask
 
         public override void MoveXBy(int offset)
         {
-            Points = (from p in Points select (p.Item1 + offset, p.Item2)).ToList();
+            Points = (from p in Points select p + new Point(offset, 0)).ToList();
         }
 
         public override void MoveYBy(int offset)
         {
-            Points = (from p in Points select (p.Item1, p.Item2 + offset)).ToList();
+            Points = (from p in Points select p + new Point(0, offset)).ToList();
         }
 
         public override (int, int) Center
         {
             get
             {
-                int x = (int)(from p in Points select p.Item1).Average();
-                int y = (int)(from p in Points select p.Item2).Average();
-                return (x, y);
+				return ((int, int))Points.Center();
             }
         }
 
-        private List<(int, int)> Points
+        private List<Point> Points
         {
             get => points;
             set
@@ -1090,11 +1037,11 @@ namespace SpecialTask
 		private readonly Typeface typeface = new("Calibri");
         private readonly CultureInfo cultureInfo = CultureInfo.CurrentCulture;
         private readonly FlowDirection flowDirection = FlowDirection.LeftToRight;
-		private const int DIP = 1;
+		private const int DIP = 1;		// idk, how to get this value, but 1 works good
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-			Point point = new(leftTopX, leftTopY);
+			System.Windows.Point point = new(leftTopX, leftTopY);
 			drawingContext.DrawText(FormText, point);
         }
 
@@ -1128,19 +1075,8 @@ namespace SpecialTask
 			set => brush = value;
 		}
 
-		public new int Width => (int)DefiningGeometry.Bounds.Width;
-
-		public new int Height => (int)DefiningGeometry.Bounds.Height;
-
         protected override Geometry DefiningGeometry => FormText.BuildHighlightGeometry(new(Left, Top));
 
-		private FormattedText FormText
-		{
-			get
-			{
-                return new(Text, cultureInfo, flowDirection, typeface, FontSize, Stroke, DIP);
-            }
-        }
-
+		private FormattedText FormText => new(Text, cultureInfo, flowDirection, typeface, FontSize, Stroke, DIP);
     }
 }

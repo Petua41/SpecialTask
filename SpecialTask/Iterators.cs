@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SpecialTask
@@ -7,7 +8,7 @@ namespace SpecialTask
 
     static class IteratorsFacade
 	{
-		private static Iterator concreteIterator;      // Стратегия
+		private static IIterator concreteIterator;      // Стратегия
 
 		static IteratorsFacade()
 		{
@@ -24,28 +25,23 @@ namespace SpecialTask
 			concreteIterator = iteratorType switch
 			{
 				ESortingOrder.Coordinates => CoordinatesIterator.Instance,
-				ESortingOrder.CreationTime => CreationTimeIterator.Instance,
-				_ => throw new StringArgumentNameException(),
+                _ => CreationTimeIterator.Instance
 			};
 		}
 	}
 
-	abstract class Iterator
+	interface IIterator
 	{
-		public static Iterator Instance { get => throw new NotOverridenException(); }
-		public abstract List<Shape> GetCompleteResult();
+		public List<Shape> GetCompleteResult();
 	}
 
-	class CoordinatesIterator : Iterator
+	class CoordinatesIterator : IIterator
 	{
 		private static CoordinatesIterator? singleton;
 
-		private CoordinatesIterator()
-		{
-			if (singleton != null) throw new SingletonError();
-		}
+		private CoordinatesIterator() { }
 
-		public static new Iterator Instance
+		public static IIterator Instance
 		{
 			get
 			{
@@ -54,7 +50,7 @@ namespace SpecialTask
 			}
 		}
 
-		public override List<Shape> GetCompleteResult()
+		public List<Shape> GetCompleteResult()
 		{
 			List<Shape> rawList = WindowManager.Instance.ShapesOnCurrentWindow;
 			return rawList.OrderBy(sh => sh, new CoordinatesComparer()).Where(sh => sh is not SelectionMarker).ToList();	// Наверное, делать это вручную было бы эффективнее
@@ -64,7 +60,9 @@ namespace SpecialTask
 		{
 			int IComparer<Shape>.Compare(Shape? x, Shape? y)
 			{
-				if (x == null || y == null) throw new NullComparisonException();
+				if (x == null && y == null) return 0;
+				if (x == null) return -1;
+				if (y == null) return 1;
 
 				(int firstX, int firstY) = x.Center;
 				(int secondX, int secondY) = y.Center;
@@ -79,16 +77,13 @@ namespace SpecialTask
 		}
 	}
 
-	class CreationTimeIterator : Iterator
+	class CreationTimeIterator : IIterator
 	{
 		private static CreationTimeIterator? singleton;
 
-		private CreationTimeIterator()
-		{
-			if (singleton != null) throw new SingletonError();
-		}
+		private CreationTimeIterator() { }
 
-		public static new Iterator Instance
+		public static IIterator Instance
 		{
 			get
 			{
@@ -97,9 +92,9 @@ namespace SpecialTask
 			}
 		}
 
-		public override List<Shape> GetCompleteResult()
+		public List<Shape> GetCompleteResult()
 		{
-			return WindowManager.Instance.ShapesOnCurrentWindow.Where(sh => sh is not SelectionMarker).ToList();
+			return WindowManager.Instance.ShapesOnCurrentWindow.Where(sh => sh is not SelectionMarker).ToList();	// TODO: это костыль
         }
 	}
 }

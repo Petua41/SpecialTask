@@ -3,81 +3,33 @@
 namespace SpecialTask
 {
     /// <summary>
-    /// Возникает при попытке обратиться к одиночке напрямую, а не через Instance()
-    /// </summary>
-    class SingletonError : Exception { }
-    /// <summary>
     /// Возникает при попытке обратиться к декоратору, который никого не декорирует
     /// </summary>
     class HangingDecoratorException : Exception { }
     /// <summary>
     /// Возникает при попытке изменить несуществующий атрибут в фигуре
     /// </summary>
-    class InvalidShapeAttributeException : StringArgumentNameException { }
-    /// <summary>
-    /// Возникает при попытке присвоить недопустимое значение атрибуту фигуры
-    /// </summary>
-    class ShapeValueException : Exception { }
-    /// <summary>
-    /// Возникает, когда невозможно конвертировать одно представление цвета в другое
-    /// </summary>
-    class ColorExcepttion : Exception { }
+    class InvalidShapeAttributeException : ArgumentException { }
     /// <summary>
     /// Возникает, когда при редактировании фигуры невозможно привести переданное значение к нужному типу
     /// </summary>
     class ShapeAttributeCastException: InvalidCastException { }
     /// <summary>
-    /// Возникает, когда команде передано неправильное количество параметров
-    /// </summary>
-    class InvalidNumberOfCommandParametersException: ArgumentException { }
-    /// <summary>
     /// Возникает при попытке отменить команду, которая ещё не была вызвана (или не закончила выполнение)
     /// </summary>
     class CommandUnexecuteBeforeExecuteException: Exception { }
-    /// <summary>
-    /// Возникает при попытке передать в качетсве аргумента недопустимое строковое значение
-    /// </summary>
-    class StringArgumentNameException: ArgumentException { }
-    /// <summary>
-    /// Возникае при попытке сравнить два объекта, когда один из них null
-    /// </summary>
-    class NullComparisonException : NullReferenceException { }
-    /// <summary>
-    /// Альтернатива abstract для статических методов
-    /// </summary>
-    class NotOverridenException : NotImplementedException { }
     /// <summary>
     /// Возникает, если при переключении окна указан неверный номер окна
     /// </summary>
     class WindowDoesntExistException: ArgumentException { }
     /// <summary>
-    /// Возникает при попытке повторить больше команд, чем было отменено
-    /// </summary>
-    class InvalidRedoNumber: ArgumentException { }
-    /// <summary>
     /// Возникает, когда файл ресурсов не найден или содержит недопсутимые значения
     /// </summary>
     class InvalidResourceFileException: Exception { }
     /// <summary>
-    /// Возникает, если название цвета в escape-последовательности не распознано
-    /// </summary>
-    class EscapeSequenceParsingError: MessageDisplayingError { }
-    /// <summary>
-    /// Возникает, когда по какой-то причине невозможно отобразить сообщение в консоли
-    /// </summary>
-    class  MessageDisplayingError: Exception { }
-    /// <summary>
-    /// Возникает, если при передаче запроса по цепочке обязанностей кто-то передал запрос не туда
-    /// </summary>
-    class  ChainOfResponsibilityException: Exception {  }
-    /// <summary>
-    /// Возникает при попытке снять элемент с пустого PseudoDeque
+    /// Возникает при попытке снять элемент с пустого LimitedStack
     /// </summary>
     public class UnderflowException: Exception { }
-    /// <summary>
-    /// Возникает, когда файл ресурсов не найден
-    /// </summary>
-    class CannotFindResourceFileException: InvalidResourceFileException { }
     /// <summary>
     /// Возникает при ошибке распознавания аргумента, введённого в консоль
     /// </summary>
@@ -110,10 +62,6 @@ namespace SpecialTask
     /// Raised, when called SlectionMarker.Edit or Accept
     /// </summary>
     class SelectionMarkerException: Exception { }
-    /// <summary>
-    /// Raised, when user enters something like "new line -x100 -x50"
-    /// </summary>
-    class DuplicatedConsoleArgument: Exception { }
     /// <summary>
     /// Raised, when shape sent backwards (brought forwards), but it`s already on the back (front)
     /// </summary>

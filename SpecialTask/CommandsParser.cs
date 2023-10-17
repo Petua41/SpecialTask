@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Aspose.Pdf;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,16 +12,19 @@ namespace SpecialTask
 
     public static class ArgumentTypesConstroller
     {
-		private static readonly Dictionary<string, EArgumentType> stringToType = new()
-		{
-			{ "int", EArgumentType.Int }, { "color", EArgumentType.Color }, { "string", EArgumentType.String }, { "texture", EArgumentType.Texture },
-			{ "points", EArgumentType.Points }
-		};
+		private static readonly Dictionary<string, EArgumentType> stringToType = new();
 
-        public static EArgumentType ParseType(string str)
+		static ArgumentTypesConstroller()
+		{
+			foreach (EArgumentType type in Enum.GetValues<EArgumentType>()) stringToType.Add(type.ToString().ToLower(), type);
+		}
+
+        public static EArgumentType ParseType(string? str)
         {
-			try { return stringToType[str.ToLower()]; }
-			catch (KeyNotFoundException) { return EArgumentType.PseudoBool; }		// all that cannot ba recognized is bool
+			if (str == null) return EArgumentType.PseudoBool;
+
+            try { return stringToType[str.ToLower()]; }
+			catch (KeyNotFoundException) { return EArgumentType.PseudoBool; }		// all that cannot be recognized is bool
         }
 
         public static object ParseValue(this EArgumentType type, string value)
@@ -31,24 +35,12 @@ namespace SpecialTask
                 EArgumentType.Color		=>	ColorsController.Parse(value),
                 EArgumentType.String	=>	value,
                 EArgumentType.Texture	=>	TextureController.Parse(value),
-				EArgumentType.Points	=>	ParsePoints(value),
+				EArgumentType.Points	=>	value.ParsePoints(),
                 _						=>	value != "false"                   // all true, that not false
             };
         }
-
-		private static List<(int, int)> ParsePoints(string value)
-		{
-			List<string[]> prePoints = (from prePreP in value.Split(',') select prePreP.Split(' ', 
-				StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).ToList();
-			return (from preP in prePoints select (int.Parse(preP[0]), int.Parse(preP[1]))).ToList();
-			// We don`t catch FormatException, because we pass it on
-		}
-
-		public static string PointsToString(List<(int, int)> points)
-		{
-			return string.Join(", ", from p in points select $"{p.Item1} {p.Item2}");
-		}
     }
+
     struct ConsoleCommand
 	{
 		public string neededUserInput;
@@ -80,7 +72,7 @@ namespace SpecialTask
 			else
 			{
 				Logger.Instance.Error("Query passed to ConsoleCommand, but input doesn`t contain this command");
-				throw new ChainOfResponsibilityException();
+				return "";
 			}
 		}
 
@@ -149,7 +141,8 @@ namespace SpecialTask
 	}
 
 	/// <summary>
-	/// Обрабатывает команды, полученные от STConsole, а также сообщает STConsole всю необходимую информацию
+	/// Processes commands from <see cref="ILowConsole"/>.
+	/// Gives <see cref="IHighConsole"/> and <see cref="ILowConsole"/> necessary information about availible commands
 	/// </summary>
 	static class CommandsParser
 	{
@@ -181,11 +174,7 @@ namespace SpecialTask
 				}
 			}
 
-			try { (consoleCommands, globalHelp) = ParseCommandsXML(); }
-			catch (CannotFindResourceFileException)
-			{
-				Logger.Instance.Fatal("Cannot get XML file with commands! exitting...");
-			}
+			try { consoleCommands = ParseCommandsXML(); }
 			catch (InvalidResourceFileException)
 			{
 				Logger.Instance.Fatal("Invalid XML file with commands! exitting...");
@@ -292,10 +281,10 @@ namespace SpecialTask
 			return (from command in consoleCommands where command.neededUserInput.StartsWith(input) select command).ToList();
 		}
 
-		private static (List<ConsoleCommand>, string) ParseCommandsXML()
+		private static List<ConsoleCommand> ParseCommandsXML()
 		{
 			XDocument commandsFile = XDocument.Load(projectDir + "\\" + XML_WITH_COMMANDS);
-			XElement xmlRoot = commandsFile.Root ?? throw new CannotFindResourceFileException();
+			XElement xmlRoot = commandsFile.Root ?? throw new InvalidResourceFileException();
 
 			List<ConsoleCommand> commands = new();
 
@@ -310,46 +299,22 @@ namespace SpecialTask
 				else Logger.Instance.Warning($"Unexpected XML tag inside the root element: {elem.Name}");
 			}
 
-			return (commands, globalHelp);
+			return commands;
 		}
 
 		private static ConsoleCommand ParseCommandElement(XElement elem)
 		{
-			string neededUserInput = "";
-			string? help;
-			Type? commandType = typeof(ICommand);
 			List<ConsoleCommandArgument> arguments = new();
-			bool supportsUndo = false;
-			bool fictional = false;
 
-			XAttribute[] attrs = elem.Attributes().ToArray();
-			foreach (XAttribute attr in attrs)
-			{
-				string attrName = attr.Name.LocalName;
-				switch (attrName)
-				{
-					case "userInput":
-						neededUserInput = attr.Value;
-						break;
-					case "commandClass":
-						commandType = Type.GetType("SpecialTask." + attr.Value);
-						if (commandType == null) throw new InvalidResourceFileException();
-						break;
-					case "supportsUndo":
-						supportsUndo = attr.Value != "false";       // считаем, что всё true, что не false
-						break;
-					case "fictional":
-						fictional = attr.Value != "false";
-						break;
-					default:
-						Logger.Instance.Warning($"Unknown attribute {attrName} in command");
-						break;
-				}
-			}
+			string neededUserInput = elem.Attribute("userInput")?.Value ?? "";
+            
+			bool fictional = (elem.Attribute("fictional")?.Value ?? "false") != "false";
 
-			help = elem.Value;
+            Type? commandType = Type.GetType("SpecialTask." + elem.Attribute("commandClass")?.Value);
+            if (!fictional && commandType == null) throw new InvalidResourceFileException();
+
+            string? help = elem.Value;
 			if (help == "") help = null;
-			else help += "\n";
 
 			foreach (XElement child in elem.Elements())
 			{
@@ -362,7 +327,7 @@ namespace SpecialTask
 				neededUserInput = neededUserInput,
 				help = help,
 				commandType = commandType,
-				supportsUndo = supportsUndo,
+				supportsUndo = (elem.Attribute("supportsUndo")?.Value ?? "false") != "false",
 				fictional = fictional,
 				arguments = arguments
 			};
@@ -370,52 +335,19 @@ namespace SpecialTask
 
 		private static ConsoleCommandArgument ParseArgumentElement(XElement elem)
 		{
-			string shortArgument = "";
-			string longArgument = "";
-			EArgumentType type = EArgumentType.PseudoBool;
-			bool isNecessary = false;
-			string commandParameterName = "";
-			object? defaultValue = null;
+            EArgumentType type = ArgumentTypesConstroller.ParseType(elem.Attribute("type")?.Value);
 
-			XAttribute[] attrs = elem.Attributes().ToArray();
+            object? defaultValue = null;
+            string? defValueString = elem.Attribute("defaultValue")?.Value;
+			if (defValueString != null) defaultValue = type.ParseValue(defValueString);		// we leave defaultValue null, if there`s no such attribute
 
-			foreach (XAttribute attr in attrs)
+            return new ConsoleCommandArgument
 			{
-				string attrName = attr.Name.LocalName;
-				switch (attrName)
-				{
-					case "shortArgument":
-						shortArgument = attr.Value;
-						break;
-					case "longArgument":
-						longArgument = attr.Value;
-						break;
-					case "type":
-						type = ArgumentTypesConstroller.ParseType(attr.Value);
-						break;
-					case "isNecessary":
-						isNecessary = attr.Value != "false";
-						break;
-					case "commandParameterName":
-						commandParameterName = attr.Value;
-						break;
-					case "defaultValue":
-						try { defaultValue = type.ParseValue(attr.Value); }
-						catch (FormatException) { throw new InvalidResourceFileException(); }
-						break;
-					default:
-						Logger.Instance.Warning($"Unknown attribute {attr.Name} in arguments (in XML)");
-						break;
-				}
-			}
-
-			return new ConsoleCommandArgument
-			{
-				shortArgument = shortArgument,
-				longArgument = longArgument,
-				type = type,
-				isNecessary = isNecessary,
-				commandParameterName = commandParameterName,
+				shortArgument = elem.Attribute("shortArgument")?.Value ?? "",
+				longArgument = elem.Attribute("longArgument")?.Value ?? "",
+                type = type,
+				isNecessary = (elem.Attribute("isNecessary")?.Value ?? "false") != "false",
+				commandParameterName = elem.Attribute("commandParameterName")?.Value ?? "",
 				defaultValue = defaultValue
 			};
 		}
@@ -515,13 +447,22 @@ namespace SpecialTask
 		}
 	}
 
+	/// <summary>
+	/// Provides some extensions to <see cref="IList{T}"/> of <see cref="string"/>s
+	/// </summary>
 	static class ListOfStringsOperations
 	{
+		/// <summary>
+		/// Length of the shortest string in the <paramref name="collection"/>
+		/// </summary>
 		public static int ShortestLength(this IList<string> collection)
 		{
 			return (from str in collection select str.Length).Min();
 		}
 
+		/// <summary>
+		/// The longest common prefix of all strings in <paramref name="collection"/>
+		/// </summary>
 		public static string LongestCommonPrefix(this IList<string> collection)
 		{
 			string lastPrefix = "";
@@ -535,6 +476,51 @@ namespace SpecialTask
 				lastPrefix = commonPrefix;
 			}
 			return lastPrefix;
+		}
+	}
+
+	public struct Point
+	{
+		public int X;
+		public int Y;
+
+		public Point(int x, int y)
+		{
+			X = x;
+			Y = y;
+		}
+
+		public static Point operator +(Point a, Point b)
+		{
+			return new(a.X + b.X, a.Y + b.Y);
+		}
+
+		public static explicit operator (int, int)(Point p) => (p.X, p.Y);
+
+		public static explicit operator System.Windows.Point(Point p) => new(p.X, p.Y);
+	}
+
+	public static class Points
+	{
+		public static string PointsToString(this List<Point> points)
+		{
+            return string.Join(", ", from p in points select $"{p.X} {p.Y}");
+        }
+
+		public static List<Point> ParsePoints(this string value)
+		{
+            List<string[]> prePoints = (from prePreP 
+									in value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                                    select prePreP.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).ToList();
+
+            return (from preP in prePoints select new Point(int.Parse(preP[0]), int.Parse(preP[1]))).ToList();
+        }
+
+		public static Point Center(this List<Point> points)
+		{
+			int x = (int)(from p in points select p.X).Average();
+			int y = (int)(from p in points select p.Y).Average();
+			return new Point(x, y);
 		}
 	}
 }

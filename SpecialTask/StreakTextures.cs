@@ -48,14 +48,15 @@ namespace SpecialTask
             transpCircles = new GeometryTileTexture(new CombinedGeometry(GeometryCombineMode.Exclude,
                     new RectangleGeometry(new Rect(0, 0, 10, 10)), new EllipseGeometry(new(5, 5), 3.5, 3.5)));
 
-            horizTranspToColorGradientBrush = new LinearGradientTexture(new(0, 0.5), new(1, 0.5))
-            { { Colors.Transparent, 0 } };
+            horizTranspToColorGradientBrush = new LinearGradientTexture(new(0, 0.5), new(1, 0.5)) { { Colors.Transparent, 0 } };
             horizontalRainbow = new LinearGradientTexture(new(0.5, 1), new(0.5, 0))
-            { { Colors.Red, 0 }, { Colors.Orange, 0.16 }, { Colors.Yellow, 0.32 }, {Colors.Green, 0.48 }, { Colors.LightBlue, 0.64 }, { Colors.Blue, 0.8 },
-            { Color.FromRgb(36, 9, 53), 1 } };
+            { 
+                { Colors.Red, 0 }, { Colors.Orange, 0.16 }, { Colors.Yellow, 0.32 }, {Colors.Green, 0.48 }, { Colors.LightBlue, 0.64 }, { Colors.Blue, 0.8 },
+                { Color.FromRgb(36, 9, 53), 1 } 
+            };
             radTranspToColorGradientBrush = new RadialGradientTexture() { { Colors.Transparent, 0 } };
 
-            if (File.Exists(@"Resources/water_texture.jpg")) waterSeamlessTexture = new SeamlessTexture(@"Resources/water_texture.jpg");
+            if (Directory.Exists(@"Resources")) waterSeamlessTexture = new SeamlessTexture(@"Resources/water_texture.jpg");
             else waterSeamlessTexture = new SeamlessTexture(@"../../../Resources/water_texture.jpg");
         }
 
@@ -149,11 +150,11 @@ namespace SpecialTask
     /// </summary>
     class LinearGradientTexture : IBrushPrototype, IEnumerable<GradientStop>
     {
-        private List<GradientStop> gradientStops = new();
-        private Point startPoint;
-        private Point endPoint;
+        private readonly List<GradientStop> gradientStops = new();
+        private System.Windows.Point startPoint;
+        private System.Windows.Point endPoint;
 
-        public LinearGradientTexture(Point startPoint, Point endPoint)
+        public LinearGradientTexture(System.Windows.Point startPoint, System.Windows.Point endPoint)
         {
             this.startPoint = startPoint;
             this.endPoint = endPoint;
@@ -189,7 +190,7 @@ namespace SpecialTask
     /// </summary>
     class RadialGradientTexture : IBrushPrototype, IEnumerable<GradientStop>
     {
-        private List<GradientStop> gradientStops = new();
+        private readonly List<GradientStop> gradientStops = new();
 
         public void Add(Color color, double offset)
         {
@@ -225,7 +226,7 @@ namespace SpecialTask
 
         public SeamlessTexture(string filename)
         {
-            Uri uri = new(filename, System.UriKind.Relative);
+            Uri uri = new(filename, UriKind.Relative);
             seamlessTexture = new(uri);
         }
 

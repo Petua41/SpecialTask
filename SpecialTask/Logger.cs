@@ -21,8 +21,6 @@ namespace SpecialTask
 
 		Logger()
 		{
-			if (singleton != null) throw new SingletonError();
-
 #if DEBUG
 			logLevel = ELogLevels.Info;
 #else

@@ -3,6 +3,8 @@ using Aspose.Pdf;
 using Aspose.Pdf.Drawing;
 using Aspose.Pdf.Text;
 
+// All this file is kinda YANDERE
+
 namespace SpecialTaskConverter
 {
 	/// <summary>
@@ -477,21 +479,21 @@ namespace SpecialTaskConverter
 
 	internal class XMLToPDFConverter
 	{
-		private Graph graph;
-		private Page page;
+		private Graph? graph;
+		private Page? page;
 
 		private const double GRAPH_WIDTH = 900;
 		private const double GRAPH_HEIGHT = 500;
 
 		private static readonly Dictionary<string, uint> colorValues = new()
-			{
+		{
 				{ "purple",  0xFF800080 }, { "black", 0xFF000000 }, { "red", 0xFFCD0000 },
 				{ "green", 0xFF00CD00 }, { "yellow", 0xFFCDCD00 }, { "blue", 0xFF0000EE },
 				{ "magenta", 0xFFCD00CD }, { "cyan", 0xFF00CDCD }, { "white", 0xFFE5E5E5 },
-				{ "gray", 0x7E7E7E }, { "brightred", 0xFFFF0000 }, { "brightgreen", 0xFF00FF00 },
+				{ "gray", 0xFF7E7E7E }, { "brightred", 0xFFFF0000 }, { "brightgreen", 0xFF00FF00 },
 				{ "brightyellow", 0xFFFFFF00 }, { "brightblue", 0xFF5C5CFF }, { "brightmagenta", 0xFFFF00FF },
-				{ "brightcyan", 0xFFFF0000 }, { "brightwhite", 0xFFFFFFFF }
-			};
+				{ "brightcyan", 0xFF00FFFF }, { "brightwhite", 0xFFFFFFFF }
+		};
 
 		public Document Convert(XDocument doc)
 		{
@@ -521,19 +523,19 @@ namespace SpecialTaskConverter
 			switch (element.Name.LocalName)
 			{
 				case "circle":
-					graph.Shapes.Add(ConvertCirlce(element));
+					graph?.Shapes.Add(ConvertCirlce(element));
 					break;
 				case "square":
-					graph.Shapes.Add(ConvertSquare(element));
+					graph?.Shapes.Add(ConvertSquare(element));
 					break;
 				case "line":
-					graph.Shapes.Add(ConvertLine(element));
+					graph?.Shapes.Add(ConvertLine(element));
 					break;
 				case "text":
 					ConvertText(element);
 					break;
 				case "polygon":
-					graph.Shapes.Add(ConvertPolygon(element));
+					graph?.Shapes.Add(ConvertPolygon(element));
 					break;
 				default:
 					throw new UnknownElementException();
@@ -618,16 +620,15 @@ namespace SpecialTaskConverter
 			int lineThickness = int.Parse(element.Attribute("lineThickness")?.Value ?? throw new STDParsingException());
 			string color = element.Attribute("color")?.Value ?? throw new STDParsingException();
 
-			List<string> prePointTuples = prePoints.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
-			List<string[]> prePointArrs = (from tp in prePointTuples select
-										   tp.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).ToList();
+            List<string[]> prePointArrs = (from prePreP in 
+										prePoints.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) select 
+										prePreP.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).ToList();
 
-			List<(int, int)> prePointInts = (from arr in prePointArrs select (int.Parse(arr[0]), int.Parse(arr[1]))).ToList();
-			List<float> pointsList = new();
-			foreach ((int, int) tp in prePointInts)
+            List<float> pointsList = new();
+			foreach (string[] arr in prePointArrs)
 			{
-				pointsList.Add(tp.Item1);
-				pointsList.Add((int)GRAPH_HEIGHT - tp.Item2);
+				pointsList.Add(int.Parse(arr[0]));
+				pointsList.Add((int)GRAPH_HEIGHT - int.Parse(arr[1]));
 			}
 			pointsList.Add(pointsList[0]);
 			pointsList.Add(pointsList[1]);

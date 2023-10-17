@@ -1,25 +1,29 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpecialTask
 {
     /// <summary>
-    /// Стэк, к которому добавлен метод PopBottom. Реализован на List
+    /// It`s like <see cref="Stack{T}"/>, but number of it`s elements is never greater than capacity
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PseudoDeque<T> : IEnumerable<T>, ICollection<T>
+    public class LimitedStack<T> : IEnumerable<T>, ICollection<T>
     {
         private readonly List<T> list;
+        private readonly int capacity;
 
-        public PseudoDeque()
+        public LimitedStack(int capacity)
         {
             list = new();
+            this.capacity = capacity;
         }
 
-        public PseudoDeque(IEnumerable<T> collection)
+        public LimitedStack(IEnumerable<T> collection, int capacity)
         {
             list = new(collection);
+            this.capacity = capacity;
         }
 
         public int Count => list.Count;
@@ -48,7 +52,7 @@ namespace SpecialTask
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new PseudoDequeEnumerator<T>(this);
+            return new LimitedStackEnumerator<T>(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -61,8 +65,13 @@ namespace SpecialTask
             return list.Remove(item);
         }
 
+        /// <summary>
+        /// Add <paramref name="item"/> to the top of <see cref="LimitedStack{T}"/>
+        /// If capacity reached, item on the bottom is removed.
+        /// </summary>
         public void Push(T item)
         {
+            while (list.Count >= capacity) PopBottom();
             list.Add(item);
         }
 
@@ -74,7 +83,7 @@ namespace SpecialTask
             return result;
         }
 
-        public T PopBottom()
+        private T PopBottom()
         {
             T result = list[0];
             list.RemoveAt(0);
@@ -86,17 +95,11 @@ namespace SpecialTask
             return list[^1];
         }
 
-        public T this[int index]
-        {
-            get
-            {
-                return list[index];
-            }
-        }
+        public T this[int index] => list[index];
 
         public override bool Equals(object? obj)
         {
-            if (obj is PseudoDeque<T> other && Count == other.Count)
+            if (obj is LimitedStack<T> other && Count == other.Count)
             {
                 for (int i = 0; i < Count; i++)
                 {
@@ -119,12 +122,12 @@ namespace SpecialTask
         }
     }
 
-    class PseudoDequeEnumerator<T> : IEnumerator<T>
+    class LimitedStackEnumerator<T> : IEnumerator<T>
     {
         private int pointer = -1;
-        private readonly PseudoDeque<T> deque;
+        private readonly LimitedStack<T> deque;
 
-        public PseudoDequeEnumerator(PseudoDeque<T> deque)
+        public LimitedStackEnumerator(LimitedStack<T> deque)
         {
             this.deque = deque;
         }

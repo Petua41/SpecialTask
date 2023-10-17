@@ -17,7 +17,7 @@ namespace SpecialTask
 	{
 		private static int undoStackDepth = 15;
 		private static int currentWindowNumber = 0;
-		private static readonly Dictionary<int, PseudoDeque<ICommand>> stacks = new();
+		private static readonly Dictionary<int, LimitedStack<ICommand>> stacks = new();
 		private static readonly Dictionary<int, Stack<ICommand>> undoneStacks = new();
 
 		static CommandsFacade()
@@ -27,7 +27,7 @@ namespace SpecialTask
 
 		public static void RegisterAndExecute(ICommand command)
 		{
-			Push(command);
+			Stack.Push(command);
             ExecuteButDontRegister(command);
         }
 
@@ -44,30 +44,22 @@ namespace SpecialTask
 
 		public static void RedoCommands(int numberOfCommands = 1)
 		{
-			if (numberOfCommands > UndoneStack.Count) throw new InvalidRedoNumber();
+			if (numberOfCommands > UndoneStack.Count) throw new UnderflowException();
 			for (int i = 0; i < numberOfCommands; i++) Redo();
 		}
 
 		public static void ChangeUndoStackDepth(int depth)
 		{
 			undoStackDepth = depth;
+			Stack = new(Stack, undoStackDepth);
 		}
 
 		private static void Undo()
 		{
-			try
-			{
-				ICommand command = Stack.Pop();
-				command.Unexecute();
-				UndoneStack.Push(command);
-			}
-			catch (UnderflowException)
-			{
-				Logger.Instance.Error("Noting to undo!");
-				MiddleConsole.HighConsole.DisplayWarning("Nothung to undo!");
-				throw;
-			}
-		}
+			ICommand command = Stack.Pop();
+			command.Unexecute();
+			UndoneStack.Push(command);
+        }
 
 		private static void Redo()
 		{
@@ -76,23 +68,20 @@ namespace SpecialTask
 				ICommand command = UndoneStack.Pop();
 				RegisterAndExecute(command);
 			}
-			else throw new InvalidRedoNumber();
 		}
 
-		private static void Push(ICommand command)
-		{
-			if (Stack.Count >= undoStackDepth) Stack.PopBottom();
-			Stack.Push(command);
-		}
-
-		private static PseudoDeque<ICommand> Stack
+		private static LimitedStack<ICommand> Stack
 		{
 			get
 			{
 				if (stacks.ContainsKey(currentWindowNumber)) return stacks[currentWindowNumber];
-				PseudoDeque<ICommand> newStack = new();
+				LimitedStack<ICommand> newStack = new(undoStackDepth);
 				stacks.Add(currentWindowNumber, newStack);
 				return newStack;
+			}
+			set
+			{
+				stacks[currentWindowNumber] = value;
 			}
 		}
 
@@ -291,8 +280,8 @@ namespace SpecialTask
     class AddStreakCommand : ICommand
     {
         private readonly Shape? receiver;
-		private EColor streakColor;
-		private EStreakTexture streakTexture;
+		private readonly EColor streakColor;
+		private readonly EStreakTexture streakTexture;
 
 		private StreakDecorator? decorator;
 
@@ -398,7 +387,7 @@ namespace SpecialTask
                         break;
                     case 1:
 						// edit attributes:
-                        MyMap<string, string> attrsWithNames = shapeToEdit.AttributesToEditWithNames;
+                        MyMap<string, string> attrsWithNames = shapeToEdit.AttributesToEditWithNames;	// MyMap, because it`s ordered
 
                         DisplayAttributeSelectionPrompt(shapeToEdit.UniqueName, attrsWithNames.Keys);
 
@@ -798,7 +787,7 @@ namespace SpecialTask
     class CreatePolygonCommand : ICommand
     {
         private Shape? receiver;
-        readonly List<(int, int)> points;
+        readonly List<Point> points;
         readonly int lineThickness;
         readonly EColor color;
         readonly bool streak;
@@ -809,7 +798,7 @@ namespace SpecialTask
         {
             try
             {
-                points = (List<(int, int)>)arguments["points"];
+                points = (List<Point>)arguments["points"];
                 lineThickness = (int)arguments["lineThickness"];
                 color = (EColor)arguments["color"];
 
@@ -988,7 +977,7 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			SelectionMarker marker = new(leftTopX, leftTopY, rightBottomX, rightBottomY);
+			SelectionMarker _ = new(leftTopX, leftTopY, rightBottomX, rightBottomY);
 
 			SelectPasteHandler.SaveArea(leftTopX, leftTopY, rightBottomX, rightBottomY);
 		}
@@ -1070,8 +1059,9 @@ namespace SpecialTask
 			try { CommandsFacade.UndoCommands(number); }
 			catch (UnderflowException)
 			{
-				// Если отменять нечего, это не катастрофа. CommandsFacade уже записывает этот факт в лог
-			}
+                Logger.Instance.Error("Noting to undo!");
+                MiddleConsole.HighConsole.DisplayWarning("Nothung to undo!");
+            }
 		}
 
 		public void Unexecute()
@@ -1105,9 +1095,9 @@ namespace SpecialTask
 		public void Execute()
 		{
 			try { CommandsFacade.RedoCommands(number); }
-			catch (InvalidRedoNumber)
+			catch (UnderflowException)
 			{
-				Logger.Instance.Error("Nothing to redo");
+				Logger.Instance.Warning("Nothing to redo");
 				MiddleConsole.HighConsole.DisplayWarning("Nothing to redo!");
 			}
 		}
@@ -1389,11 +1379,12 @@ namespace SpecialTask
 
 		public void Execute()
 		{
-			List<string> colors = ColorsController.GetColorsList();
-			string output = "";
-			foreach (string color in colors) output += $"[color:{color}]{color}[color] ";
-			output += "\n";
+			receiver.NewLine();
+
+			string output = string.Join(' ', from color in ColorsController.ColorsList select $"[color:{color}]{color}[color]");
+
 			receiver.Display(output);
+			receiver.NewLine();
 		}
 
 		public void Unexecute()
@@ -1417,11 +1408,9 @@ namespace SpecialTask
 		public void Execute()
 		{
 			Dictionary<string, string> textures = TextureController.TexturesWithDescriptions;
-			string output = "";
-			foreach (KeyValuePair<string, string> texture in textures)
-			{
-				output += texture.Key + "  --  " + texture.Value + "\n";
-			}
+
+			string output = string.Join('\n', from kvp in textures select $"{kvp.Key} -- {kvp.Value}");
+
 			receiver.Display(output);
 		}
 
@@ -1437,9 +1426,9 @@ namespace SpecialTask
 	class ExportSVGCommand: ICommand
 	{
         private readonly STConverter? receiver;
-		private string inFilename = "";
-		private string outFilename;
-		private bool createdTempFile = false;
+		private readonly string inFilename = "";
+		private readonly string outFilename;
+		private readonly bool createdTempFile = false;
 
         public ExportSVGCommand(Dictionary<string, object> arguments)
         {
@@ -1498,9 +1487,9 @@ namespace SpecialTask
     class ExportPDFCommand : ICommand
     {
         private readonly STConverter receiver;
-        private string inFilename = "";
-        private string outFilename;
-        private bool createdTempFile = false;
+        private readonly string inFilename = "";
+        private readonly string outFilename;
+        private readonly bool createdTempFile = false;
 
         public ExportPDFCommand(Dictionary<string, object> arguments)
         {

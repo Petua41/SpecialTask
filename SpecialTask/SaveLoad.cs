@@ -25,8 +25,6 @@ namespace SpecialTask
 
         private SaveLoadFacade()
         {
-            if (singleton != null) throw new SingletonError();
-
             WindowManager.Instance.SomethingDisplayed += OnSomethingDisplayed;
 
             currentFilename = defaultFilename + DateTime.Now.ToString().Replace(':', '.');
@@ -41,10 +39,7 @@ namespace SpecialTask
             }
         }
 
-        public bool NeedsSave
-        {
-            get => !isSaved && WindowManager.Instance.ShapesOnCurrentWindow.Count > 0;
-        }
+        public bool NeedsSave => !isSaved && WindowManager.Instance.ShapesOnCurrentWindow.Count > 0;
 
         public void Save()
         {
@@ -155,13 +150,11 @@ namespace SpecialTask
                 string centerY = shapeAttrubutes["centerY"].ToString() ?? "0";
                 string color = shapeAttrubutes["color"].ToString() ?? "none";
                 string lineThickness = shapeAttrubutes["lineThickness"].ToString() ?? "0";
-                if (radius == null || centerX == null || centerY == null || color == null || lineThickness == null) throw new VisitorInvalidAcceptError();
 
                 return GenerateXML("circle", new()
-                { { "radius", radius }, { "centerX", centerX }, { "centerY", centerY }, { "color", color }, { "lineThickness", lineThickness } });
+                    { { "radius", radius }, { "centerX", centerX }, { "centerY", centerY }, { "color", color }, { "lineThickness", lineThickness } });
             }
-            catch (Exception ex) when (ex is InvalidOperationException or InvalidCastException or KeyNotFoundException)
-            { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
         }
 
         private static XElement VisitSquare(Dictionary<string, object> shapeAttrubutes)
@@ -174,8 +167,6 @@ namespace SpecialTask
                 string rightBottomY = shapeAttrubutes["rightBottomY"].ToString() ?? "0";
                 string color = shapeAttrubutes["color"].ToString() ?? "none";
                 string lineThickness = shapeAttrubutes["lineThickness"].ToString() ?? "0";
-                if (leftTopX == null || leftTopY == null || rightBottomX == null || rightBottomY == null || color == null || lineThickness == null)
-                    throw new VisitorInvalidAcceptError();
 
                 return GenerateXML("square", new()
                 {
@@ -183,8 +174,7 @@ namespace SpecialTask
                     { "color", color }, { "lineThickness", lineThickness }
                 });
             }
-            catch (Exception ex) when (ex is InvalidOperationException or InvalidCastException or KeyNotFoundException)
-            { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
         }
 
         private static XElement VisitLine(Dictionary<string, object> shapeAttrubutes)
@@ -197,8 +187,6 @@ namespace SpecialTask
                 string secondY = shapeAttrubutes["secondY"].ToString() ?? "0";
                 string color = shapeAttrubutes["color"].ToString() ?? "none";
                 string lineThickness = shapeAttrubutes["lineThickness"].ToString() ?? "0";
-                if (firstX == null || firstY == null || secondX == null || secondY == null || color == null || lineThickness == null)
-                    throw new VisitorInvalidAcceptError();
 
                 return GenerateXML("line", new()
                 {
@@ -206,8 +194,7 @@ namespace SpecialTask
                     { "lineThickness", lineThickness }
                 });
             }
-            catch (Exception ex) when (ex is InvalidOperationException or InvalidCastException or KeyNotFoundException)
-            { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
         }
 
         private static XElement VisitStreakDecorator(Dictionary<string, object> shapeAttrubutes)
@@ -219,16 +206,13 @@ namespace SpecialTask
                 string streakColor = shapeAttrubutes["streakColor"].ToString() ?? "none";
                 string streakTexture = shapeAttrubutes["streakTexture"].ToString() ?? "none";
 
-                XElement newElem = GenerateXML("decorator", new()
-                    {
-                        { "streak", "true" }, { "streakColor", streakColor }, { "streakTexture", streakTexture }
-                    });
+                XElement newElem = GenerateXML("decorator", new() 
+                    { { "streak", "true" }, { "streakColor", streakColor }, { "streakTexture", streakTexture } });
 
                 elem.Add(newElem.Attributes().ToArray());
                 return elem;
             }
-            catch (Exception ex) when (ex is InvalidOperationException or InvalidCastException or KeyNotFoundException)
-            { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
         }
 
         private static XElement VisitText(Dictionary<string, object> shapeAttrubutes)
@@ -240,31 +224,24 @@ namespace SpecialTask
                 string fontSize = shapeAttrubutes["fontSize"].ToString() ?? "0";
                 string textValue = shapeAttrubutes["textValue"].ToString() ?? "";
                 string color = shapeAttrubutes["color"].ToString() ?? "none";
-                if (leftTopX == null || leftTopY == null || fontSize == null || textValue == null || color == null)
-                    throw new VisitorInvalidAcceptError();
 
                 return GenerateXML("text", new()
-                    {
-                        { "leftTopX", leftTopX }, { "leftTopY", leftTopY }, { "fontSize", fontSize }, { "textValue", textValue }, { "color", color }
-                    });
+                    { { "leftTopX", leftTopX }, { "leftTopY", leftTopY }, { "fontSize", fontSize }, { "textValue", textValue }, { "color", color } });
             }
-            catch (Exception ex) when (ex is InvalidOperationException or InvalidCastException or KeyNotFoundException)
-            { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
         }
 
         private static XElement VisitPolygon(Dictionary<string, object> shapeAttrubutes)
         {
             try
             {
-                string points = ArgumentTypesConstroller.PointsToString((List<(int, int)>)shapeAttrubutes["points"]);
+                string points = ((List<Point>)shapeAttrubutes["points"]).PointsToString();
                 string lineThickness = shapeAttrubutes["lineThickness"].ToString() ?? "0";
                 string color = shapeAttrubutes["color"].ToString() ?? "none";
-                if (points == null || lineThickness == null || color == null) throw new VisitorInvalidAcceptError();
 
                 return GenerateXML("polygon", new() { { "points", points }, { "lineThickness", lineThickness }, { "color", color } });
             }
-            catch (Exception ex) when (ex is InvalidOperationException or InvalidCastException or KeyNotFoundException)
-            { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
         }
 
         private static XElement GenerateXML(string tag, Dictionary<string, string> nameValuePairs)
@@ -292,11 +269,7 @@ namespace SpecialTask
 
         private static void ParseElement(XElement elem)
         {
-            Dictionary<string, string> dict = new();
-            foreach (XAttribute attr in elem.Attributes())
-            {
-                dict.Add(attr.Name.LocalName, attr.Value);
-            }
+            Dictionary<string, string> dict = new(from attr in elem.Attributes() select new KeyValuePair<string, string>(attr.Name.LocalName, attr.Value));
 
             ParseShape(dict, elem.Name.LocalName);
         }
@@ -368,7 +341,7 @@ namespace SpecialTask
 
         private static Polygon ParsePolygon(Dictionary<string, string> dict)
         {
-            List<(int, int)> points = (List<(int, int)>)EArgumentType.Points.ParseValue(dict["points"]);
+            List<Point> points = (List<Point>)EArgumentType.Points.ParseValue(dict["points"]);
             int lineThickness = int.Parse(dict["lineThickness"]);
             EColor color = ColorsController.Parse(dict["color"]);
 
