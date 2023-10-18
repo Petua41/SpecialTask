@@ -37,7 +37,7 @@ namespace SpecialTaskTest
         [Test]
         public void PopOnEmptyTest()
         {
-            Assert.Throws<UnderflowException>(PopFromEmptyDeque);
+            Assert.Throws<InvalidOperationException>(PopFromEmptyDeque);
         }
 
         private void PopFromEmptyDeque()

@@ -107,7 +107,7 @@ namespace SpecialTask
 		private void RemoveWindowFromLists(int windowNumber)
 		{
 			try { ValidateWindowNumber(windowNumber); }
-			catch (WindowDoesntExistException) { return; }			// if window doesn`t exist, don`t remove it
+			catch (ArgumentException) { return; }			// if window doesn`t exist, don`t remove it
 
             for (int i = windowNumber + 1; i < existingWindows.Count; i++)
             {
@@ -118,7 +118,7 @@ namespace SpecialTask
 
         private void ValidateWindowNumber(int numberOfWindow)
         {
-            if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new WindowDoesntExistException();
+            if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new ArgumentException($"Window {numberOfWindow} doesn`t exist");
         }
 
         public event WindowSwitchedEventHandler? WindowSwitchedEvent;
@@ -176,13 +176,13 @@ namespace SpecialTask
 
 		public int SendBackward(string uniqueName)
 		{
-			if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+			if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
 			for (int i = 0; i < allShapesOnThisWindow.Count; i++)
 			{
 				if (uniqueName == allShapesOnThisWindow[i].UniqueName)
 				{
-					if (i == 0) throw new CannotChangeShapeLayerException();
+					if (i == 0) throw new InvalidOperationException();
 
 					(zOrder[i], zOrder[i - 1]) = (zOrder[i - 1], zOrder[i]);
 
@@ -200,13 +200,13 @@ namespace SpecialTask
 
 		public int BringForward(string uniqueName)
         {
-            if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+            if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
             for (int i = 0; i < allShapesOnThisWindow.Count; i++)
             {
                 if (uniqueName == allShapesOnThisWindow[i].UniqueName)
                 {
-                    if (i == allShapesOnThisWindow.Count - 1) throw new CannotChangeShapeLayerException();
+                    if (i == allShapesOnThisWindow.Count - 1) throw new InvalidOperationException();
 
                     (zOrder[i], zOrder[i + 1]) = (zOrder[i + 1], zOrder[i]);
 
@@ -224,7 +224,7 @@ namespace SpecialTask
 
         public int SendToBack(string uniqueName)
         {
-            if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+            if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
             for (int i = 0; i < allShapesOnThisWindow.Count; i++)
             {
@@ -239,7 +239,7 @@ namespace SpecialTask
 
         public int BringToFront(string uniqueName)
         {
-            if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+            if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
             for (int i = 0; i < allShapesOnThisWindow.Count; i++)
             {
@@ -254,7 +254,7 @@ namespace SpecialTask
 
 		public void MoveToLayer(string uniqueName, int newLayer)
         {
-            if (allShapesOnThisWindow.Count <= 1) throw new CannotChangeShapeLayerException();
+            if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
             if (newLayer < 0 || newLayer > allShapesOnThisWindow.Count) throw new ArgumentException();
 

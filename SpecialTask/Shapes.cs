@@ -123,8 +123,8 @@ namespace SpecialTask
 						LineThickness = int.Parse(value);
 						break;
 					default:
-						throw new InvalidShapeAttributeException();
-				}
+						throw new ArgumentException($"Unknown attribute: {attribute}");
+                }
 			}
 			catch (FormatException) { throw new ShapeAttributeCastException(); }
 
@@ -315,7 +315,7 @@ namespace SpecialTask
 						LineThickness = int.Parse(value);
 						break;
 					default:
-						throw new InvalidShapeAttributeException();
+						throw new ArgumentException($"Unknown attribute: {attribute}");
 				}
 			}
 			catch (FormatException) { throw new ShapeAttributeCastException(); }
@@ -510,8 +510,8 @@ namespace SpecialTask
 						LineThickness = int.Parse(value);
 						break;
 					default:
-						throw new InvalidShapeAttributeException();
-				}
+                        throw new ArgumentException($"Unknown attribute: {attribute}");
+                }
 			}
 			catch (FormatException) { throw new ShapeAttributeCastException(); }
 
@@ -655,24 +655,21 @@ namespace SpecialTask
 			return $"SelectionMarker_{firstAvailibleUniqueNumber++}";
 		}
 
-        public override object Edit(string attribute, string value)
-		{
-			throw new SelectionMarkerException();
-		}
+		public override object Edit(string attribute, string value) { throw new InvalidOperationException(); }
 
 		public override Dictionary<string, object> Accept()
 		{
-			throw new SelectionMarkerException();
+			throw new InvalidOperationException();
 		}
 
 		public override void MoveXBy(int offset)
 		{
-			throw new SelectionMarkerException();
+			throw new InvalidOperationException();
 		}
 
 		public override void MoveYBy(int offset)
 		{
-			throw new SelectionMarkerException();
+			throw new InvalidOperationException();
 		}
 
 		public override System.Windows.Shapes.Shape WPFShape
@@ -708,7 +705,7 @@ namespace SpecialTask
 
 		public override Shape Clone()
 		{
-			throw new SelectionMarkerException();
+			throw new InvalidOperationException();
         }
 
         public override MyMap<string, string> AttributesToEditWithNames => new();
@@ -776,7 +773,7 @@ namespace SpecialTask
                         Color = ColorsController.Parse(value);
                         break;
                     default:
-                        throw new InvalidShapeAttributeException();
+                        throw new ArgumentException($"Unknown attribute: {attribute}");
                 }
             }
             catch (FormatException) { throw new ShapeAttributeCastException(); }
@@ -939,7 +936,7 @@ namespace SpecialTask
                         Color = ColorsController.Parse(value);
                         break;
                     default:
-                        throw new InvalidShapeAttributeException();
+                        throw new ArgumentException($"Unknown attribute: {attribute}");
                 }
             }
             catch (FormatException) { throw new ShapeAttributeCastException(); }

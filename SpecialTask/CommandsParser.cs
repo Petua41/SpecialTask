@@ -225,7 +225,7 @@ namespace SpecialTask
 				if (consoleCommand.supportsUndo) CommandsFacade.RegisterAndExecute(command);
 				else CommandsFacade.ExecuteButDontRegister(command);
 			}
-			catch (CallOfFictionalCommandException) 
+			catch (InvalidOperationException) 
 			{
                 Logger.Instance.Warning($"Call of the fictional command {consoleCommand.neededUserInput}");
                 MiddleConsole.HighConsole.DisplayError(
@@ -370,7 +370,7 @@ namespace SpecialTask
 
 		private static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
 		{
-			if (consoleCommand.fictional) throw new CallOfFictionalCommandException();
+			if (consoleCommand.fictional) throw new InvalidOperationException();
 
 			// Check that all necessary arguments are present
 			foreach(ConsoleCommandArgument argument in consoleCommand.arguments)
@@ -389,7 +389,7 @@ namespace SpecialTask
 				}
 			}
 
-			Type type = consoleCommand.commandType ?? throw new CallOfFictionalCommandException();
+			Type type = consoleCommand.commandType ?? throw new InvalidResourceFileException();
 			try
 			{
 				ConstructorInfo constructor = type.GetConstructors().Single();

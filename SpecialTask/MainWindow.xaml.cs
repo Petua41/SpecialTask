@@ -127,7 +127,6 @@ namespace SpecialTask
 		{
 			if (Keyboard.IsKeyDown(Key.S))
 			{
-				Display("CtrlS");
 				DisplayAndProcessInputString("save");
 			}
 			else if (Keyboard.IsKeyDown(Key.E))			// 🔼

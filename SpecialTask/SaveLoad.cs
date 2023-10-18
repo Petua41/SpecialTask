@@ -43,7 +43,7 @@ namespace SpecialTask
 
         public void Save()
         {
-            if (!NeedsSave) throw new NothingToSaveException();
+            if (!NeedsSave) throw new InvalidOperationException();
 
             SaveAs(currentFilename);
         }
@@ -111,8 +111,7 @@ namespace SpecialTask
             foreach (Shape shape in shapes)
             {
                 try { parent.Add(XMLGeneratorVisitor.Visit(shape)); }
-                catch (Exception ex) when (ex is UnknownShapeException or HangingDecoratorException)
-                { /* Ignore unknown shapes and hanging decorators */ }
+                catch (Exception ex) when (ex is UnknownShapeException or InvalidOperationException) { /* Ignore unknown shapes and hanging decorators */ }
             }
 
             document.Add(parent);

@@ -75,9 +75,10 @@ namespace SpecialTask
             list.Add(item);
         }
 
+        /// <exception cref="InvalidOperationException">Stack is empty (underflow)</exception>
         public T Pop()
         {
-            if (list.Count == 0) throw new UnderflowException();
+            if (list.Count == 0) throw new InvalidOperationException();
             T result = list[^1];
             list.RemoveAt(list.Count - 1);
             return result;

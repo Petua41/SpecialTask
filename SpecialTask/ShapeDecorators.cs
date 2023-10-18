@@ -104,7 +104,7 @@ namespace SpecialTask
                 if (decoratedShape == null)
                 {
                     Logger.Instance.Error("Trying to get WPFShape of hanging decorator");
-                    throw new HangingDecoratorException();
+                    throw new InvalidOperationException("Hanging decorator!");
                 }
 
                 System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
@@ -116,7 +116,7 @@ namespace SpecialTask
             }
         }
 
-        private Shape DecoratedShape => decoratedShape ?? throw new HangingDecoratorException();
+        private Shape DecoratedShape => decoratedShape ?? throw new InvalidOperationException("Hanging decorator!");
 
         private EStreakTexture StreakTexture
 		{

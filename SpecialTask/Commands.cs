@@ -44,7 +44,7 @@ namespace SpecialTask
 
 		public static void RedoCommands(int numberOfCommands = 1)
 		{
-			if (numberOfCommands > UndoneStack.Count) throw new UnderflowException();
+			if (numberOfCommands > UndoneStack.Count) throw new InvalidOperationException();
 			for (int i = 0; i < numberOfCommands; i++) Redo();
 		}
 
@@ -141,7 +141,7 @@ namespace SpecialTask
 		public void Execute()
 		{
 			try { oldValue = receiver.Edit(attribute, newValue); }
-			catch (InvalidShapeAttributeException)
+			catch (ArgumentException)
 			{
 				Logger.Instance.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid attribute");
 				MiddleConsole.HighConsole.DisplayError($"{receiver.UniqueName} has no attribute {attribute}");
@@ -149,7 +149,7 @@ namespace SpecialTask
 			catch (ShapeAttributeCastException)
 			{
                 Logger.Instance.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid cast");
-                MiddleConsole.HighConsole.DisplayError($"");
+                MiddleConsole.HighConsole.DisplayError($"Invalid value for {attribute}: {newValue}");
             }
 		}
 
@@ -219,7 +219,7 @@ namespace SpecialTask
                 {
                     case ELayerDirection.Forward:
                         try { receiver.SendBackward(uniqueName); }
-                        catch (CannotChangeShapeLayerException)
+                        catch (InvalidOperationException)
 						{
 							Logger.Instance.Error($"[undo] Cannot send {uniqueName} backward: already on back");
 							MiddleConsole.HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on back");
@@ -227,7 +227,7 @@ namespace SpecialTask
                         break;
                     case ELayerDirection.Backward:
                         try { receiver.BringForward(uniqueName); }
-                        catch (CannotChangeShapeLayerException)
+                        catch (InvalidOperationException)
 						{
                             Logger.Instance.Error($"[undo] Cannot bring {uniqueName} forward: already on top");
                             MiddleConsole.HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on top");
@@ -598,7 +598,7 @@ namespace SpecialTask
 
 		public void Unexecute()
 		{
-			if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
+			if (receiver == null) throw new InvalidOperationException();
 			receiver.Destroy();
 		}
 	}
@@ -658,7 +658,7 @@ namespace SpecialTask
 
 		public void Unexecute()
 		{
-			if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
+			if (receiver == null) throw new InvalidOperationException();
 			receiver.Destroy();
 		}
 	}
@@ -718,7 +718,7 @@ namespace SpecialTask
 
 		public void Unexecute()
 		{
-			if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
+			if (receiver == null) throw new InvalidOperationException();
 			receiver.Destroy();
 		}
     }
@@ -776,7 +776,7 @@ namespace SpecialTask
 
         public void Unexecute()
         {
-            if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
+            if (receiver == null) throw new InvalidOperationException();
             receiver.Destroy();
         }
     }
@@ -830,7 +830,7 @@ namespace SpecialTask
 
         public void Unexecute()
         {
-            if (receiver == null) throw new CommandUnexecuteBeforeExecuteException();
+            if (receiver == null) throw new InvalidOperationException();
             receiver.Destroy();
         }
     }
@@ -888,7 +888,7 @@ namespace SpecialTask
 		public void Execute()
 		{
 			try { receiver.SwitchToWindow(numberOfWindow); }
-			catch (WindowDoesntExistException)
+			catch (ArgumentException)
 			{
 				Logger.Instance.Error($"Trying to switch to window {numberOfWindow}, but window {numberOfWindow} doesn`t exist");
 				MiddleConsole.HighConsole.DisplayError($"Window {numberOfWindow} doesn`t exist!");
@@ -931,7 +931,7 @@ namespace SpecialTask
 		public void Execute()
 		{
 			try { receiver.DestroyWindow(numberOfWindow); }
-			catch (WindowDoesntExistException)
+			catch (ArgumentException)
 			{
 				Logger.Instance.Error(string.Format("Trying to delete window {0}, but window {0} doesn`t exist", numberOfWindow));
 				MiddleConsole.HighConsole.DisplayError(string.Format("[color:red]Window {0} doesn`t exist![color]", numberOfWindow));
@@ -1057,7 +1057,7 @@ namespace SpecialTask
 		public void Execute()
 		{
 			try { CommandsFacade.UndoCommands(number); }
-			catch (UnderflowException)
+			catch (InvalidOperationException)
 			{
                 Logger.Instance.Error("Noting to undo!");
                 MiddleConsole.HighConsole.DisplayWarning("Nothung to undo!");
@@ -1095,7 +1095,7 @@ namespace SpecialTask
 		public void Execute()
 		{
 			try { CommandsFacade.RedoCommands(number); }
-			catch (UnderflowException)
+			catch (InvalidOperationException)
 			{
 				Logger.Instance.Warning("Nothing to redo");
 				MiddleConsole.HighConsole.DisplayWarning("Nothing to redo!");
@@ -1123,7 +1123,7 @@ namespace SpecialTask
 		public void Execute()
 		{
 			try { SaveLoadFacade.Instance.Save(); }
-			catch (NothingToSaveException)
+			catch (InvalidOperationException)
 			{
 				Logger.Instance.Warning("Nothing to save");
 				MiddleConsole.HighConsole.DisplayWarning("File is already saved");
