@@ -114,8 +114,10 @@ namespace SpecialTask
 	class EditShapeAttributesCommand : ICommand
 	{
 		private readonly Shape receiver;
+
 		private readonly string attribute;
 		private readonly string newValue;
+
 		private object? oldValue;
 
 		public EditShapeAttributesCommand(Dictionary<string, object> arguments)
@@ -166,6 +168,7 @@ namespace SpecialTask
 	class EditLayerCommand: ICommand
 	{
 		private readonly WindowManager receiver;
+
         private readonly string uniqueName;
 		private readonly ELayerDirection direction;
 
@@ -280,6 +283,7 @@ namespace SpecialTask
     class AddStreakCommand : ICommand
     {
         private readonly Shape? receiver;
+
 		private readonly EColor streakColor;
 		private readonly EStreakTexture streakTexture;
 
@@ -310,19 +314,15 @@ namespace SpecialTask
     class  EditCommand: ICommand
     {
         private ICommand? receiver = null;
+
 		private readonly ESortingOrder sortingOrder;
 
 		private List<Shape> listOfShapes = new();
-
 		private string interString = "";
 		private int selectedNumber = -1;
-
 		private bool hasStreak = false;
-
 		private CancellationTokenSource tokenSource = new();
-
 		private bool ctrlCPressed = false;
-
 		private Shape? shapeToEdit;
 
 		public EditCommand(Dictionary<string, object> parameters)
@@ -550,6 +550,7 @@ namespace SpecialTask
     class CreateCircleCommand : ICommand
 	{
 		private Shape? receiver;        // Нужен для отмены
+		
 		readonly int centerX;
 		readonly int centerY;
 		readonly EColor color;
@@ -609,6 +610,7 @@ namespace SpecialTask
 	class CreateSquareCommand : ICommand
 	{
 		private Shape? receiver;
+		
 		readonly int leftTopX;
 		readonly int leftTopY;
 		readonly int rightBottomX;
@@ -669,6 +671,7 @@ namespace SpecialTask
 	class CreateLineCommand : ICommand
 	{
 		private Shape? receiver;
+		
 		readonly int firstX;
 		readonly int firstY;
 		readonly int secondX;
@@ -729,7 +732,8 @@ namespace SpecialTask
     class CreateTextCommand : ICommand
     {
         private Shape? receiver;
-        readonly int leftTopX;
+        
+		readonly int leftTopX;
         readonly int leftTopY;
         readonly int fontSize;
         readonly string textValue;
@@ -787,7 +791,8 @@ namespace SpecialTask
     class CreatePolygonCommand : ICommand
     {
         private Shape? receiver;
-        readonly List<Point> points;
+        
+		readonly List<Point> points;
         readonly int lineThickness;
         readonly EColor color;
         readonly bool streak;
@@ -802,7 +807,7 @@ namespace SpecialTask
                 lineThickness = (int)arguments["lineThickness"];
                 color = (EColor)arguments["color"];
 
-                // unnecessary, but if streak is present, other should be too
+                // unnecessary, but if streak is present, others should be too
                 if (arguments.ContainsKey("streak"))
                 {
                     streak = (bool)arguments["streak"];
@@ -864,6 +869,7 @@ namespace SpecialTask
 	class SwitchWindowCommand : ICommand
 	{
 		private readonly WindowManager receiver;
+		
 		private readonly int numberOfWindow;
 
 		public SwitchWindowCommand(Dictionary<string, object> arguments)
@@ -907,6 +913,7 @@ namespace SpecialTask
 	class DeleteWindowCommand : ICommand
 	{
 		private readonly WindowManager receiver;
+		
 		private readonly int numberOfWindow;
 
 		public DeleteWindowCommand(Dictionary<string, object> arguments)
@@ -995,8 +1002,7 @@ namespace SpecialTask
     {
         private readonly int leftTopX;
         private readonly int leftTopY;
-		// TODO: receiver -- something to save area
-
+		
 		private List<Shape> pastedShapes = new();
 
         public PasteCommand(Dictionary<string, object> arguments)
@@ -1113,12 +1119,9 @@ namespace SpecialTask
 	/// </summary>
 	class SaveCommand : ICommand
 	{
-        // no receiver, because SaveLoadFacade is static
+		// no receiver, because SaveLoadFacade is static
 
-        public SaveCommand(Dictionary<string, object> arguments)
-		{
-			// nothing to do
-		}
+		public SaveCommand(Dictionary<string, object> arguments) { }
 
 		public void Execute()
 		{
@@ -1250,6 +1253,7 @@ namespace SpecialTask
 	class ClearCommand: ICommand
 	{
 		private readonly WindowManager receiver;
+
 		private List<Shape> destroyedShapes = new();
 
 		public ClearCommand(Dictionary<string, object> arguments)
@@ -1280,6 +1284,7 @@ namespace SpecialTask
 		enum EYesNoSaveAnswer { None, Yes, No, Save }
 
 		private readonly System.Windows.Application receiver;
+
 		private EYesNoSaveAnswer answer = EYesNoSaveAnswer.None;
 		private readonly Task task;
 		private readonly CancellationTokenSource tokenSource;
@@ -1426,8 +1431,10 @@ namespace SpecialTask
 	class ExportSVGCommand: ICommand
 	{
         private readonly STConverter? receiver;
+
 		private readonly string inFilename = "";
 		private readonly string outFilename;
+		
 		private readonly bool createdTempFile = false;
 
         public ExportSVGCommand(Dictionary<string, object> arguments)
@@ -1468,10 +1475,10 @@ namespace SpecialTask
         {
 			receiver?.ToSVG(SaveLoadFacade.CorrectFilename(outFilename, ".svg"));
 
-			if (createdTempFile)
+			if (createdTempFile)		// FIXME: Stream не успевает закрыться до этого момента
 			{
-				try { File.Delete(inFilename); }
-				catch (Exception) { /* ignore */ }
+                try { File.Delete(inFilename); }
+                catch (Exception) { /* ignore */ }
 			}
         }
 
@@ -1520,22 +1527,16 @@ namespace SpecialTask
             }
         }
 
-        public void Execute()
+        public async void Execute()
         {
 			string correctedFilename = SaveLoadFacade.CorrectFilename(outFilename, ".pdf");
 
-            try { receiver.ToPDF(correctedFilename); }
+            try { await Task.Run(() => { receiver.ToPDF(correctedFilename); }); }
 			catch (IOException)
 			{
 				Logger.Instance.Error($"Cannot export PDF: cannot open {correctedFilename} for writing");
 				MiddleConsole.HighConsole.DisplayError($"Cannot open {correctedFilename} for writing");
 			}
-
-            if (createdTempFile)
-            {
-                try { File.Delete(inFilename); }
-                catch (Exception) { /* ignore */ }	// TODO: походу writer не успевает закрыться, пока мы до сюда доходим
-            }
         }
 
         public void Unexecute()

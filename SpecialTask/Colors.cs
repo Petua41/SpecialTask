@@ -31,7 +31,6 @@ namespace SpecialTask
 	public static class ColorsController
 	{
 		private static readonly Dictionary<string, EColor> colorNames = new();
-
 		private static readonly Dictionary<EColor, Color> wpfColors = new();
 
 		static ColorsController()
