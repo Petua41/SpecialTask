@@ -43,6 +43,9 @@ namespace SpecialTask
 
     }
 
+    /// <summary>
+    /// Like mediator for the whole system: knows to whom send which query
+    /// </summary>
     public class MiddleConsole : IHighConsole, ILowConsole          // double-singleton
     {
         private static MiddleConsole? singleton;
@@ -176,7 +179,7 @@ namespace SpecialTask
             mainWindowInstance.Display(message, color.GetWPFColor());
         }
 
-        // TODO: this method is TOO long
+        // This method is TOO LONG
         public static MyMap<string, EColor> SplitMessageByColors(string message)        // This must be private, but I wanna test it
         {
             MyMap<string, EColor> messageSplittedByColors = new();
@@ -185,6 +188,7 @@ namespace SpecialTask
             do
             {
                 int indexOfNextColorChange = message.IndexOf("[color");
+
                 if (indexOfNextColorChange == -1)
                 {
                     messageSplittedByColors.Add(message, lastColor);

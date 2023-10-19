@@ -1494,9 +1494,9 @@ namespace SpecialTask
     class ExportPDFCommand : ICommand
     {
         private readonly STConverter receiver;
+
         private readonly string inFilename = "";
         private readonly string outFilename;
-        private readonly bool createdTempFile = false;
 
         public ExportPDFCommand(Dictionary<string, object> arguments)
         {
@@ -1509,7 +1509,6 @@ namespace SpecialTask
                 {
                     inFilename = SaveLoadFacade.CorrectFilename(DateTime.Now.ToString().Replace(':', '.'));
                     CommandsFacade.ExecuteButDontRegister(new SaveAsCommand(new() { { "filename", inFilename } }));
-                    createdTempFile = true;
                 }
 				else inFilename = SaveLoadFacade.CorrectFilename(inFilename);
 

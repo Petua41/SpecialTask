@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpecialTask
 {
     /// <summary>
     /// It`s like <see cref="Stack{T}"/>, but number of it`s elements is never greater than capacity
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public class LimitedStack<T> : IEnumerable<T>, ICollection<T>
     {
         private readonly List<T> list;
@@ -84,13 +82,6 @@ namespace SpecialTask
             return result;
         }
 
-        private T PopBottom()
-        {
-            T result = list[0];
-            list.RemoveAt(0);
-            return result;
-        }
-
         public T Peek()
         {
             return list[^1];
@@ -120,6 +111,13 @@ namespace SpecialTask
         public override string ToString()
         {
             return "PseudoDeque { " + string.Join(' ', list) + " }";
+        }
+
+        private T PopBottom()
+        {
+            T result = list[0];
+            list.RemoveAt(0);
+            return result;
         }
     }
 

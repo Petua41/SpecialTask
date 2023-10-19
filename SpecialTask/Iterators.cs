@@ -8,7 +8,7 @@ namespace SpecialTask
 
     static class IteratorsFacade
 	{
-		private static IIterator concreteIterator;      // Стратегия
+		private static IIterator concreteIterator;      // Strategy
 
 		static IteratorsFacade()
 		{

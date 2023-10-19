@@ -952,7 +952,7 @@ namespace SpecialTask
 
 				System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Polygon
                 {
-					Points = new(from p in Points select (System.Windows.Point)p),
+					Points = new(from p in points select (System.Windows.Point)p),
 					StrokeThickness = LineThickness,
                     Stroke = new SolidColorBrush(Color.GetWPFColor())
                 };
