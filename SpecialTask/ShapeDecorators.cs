@@ -82,7 +82,7 @@ namespace SpecialTask
 			return new StreakDecorator(this);
         }
 
-        public override (int, int) Center
+        public override Point Center
         {
             get
             {

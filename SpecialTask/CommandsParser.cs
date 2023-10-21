@@ -145,7 +145,11 @@ namespace SpecialTask
 
 			int commandNumber = SelectCommand(commandName);
 			// Если команда не найдена, выводим глобальную помощь (help и ? тоже не будут найдены)
-			if (commandNumber < 0) MiddleConsole.HighConsole.DisplayGlobalHelp();
+			if (commandNumber < 0)
+			{
+				MiddleConsole.HighConsole.DisplayGlobalHelp();
+				return;
+			}
 
 			ConsoleCommand consoleCommand = consoleCommands[commandNumber];
 
@@ -439,9 +443,17 @@ namespace SpecialTask
 			return new(a.X + b.X, a.Y + b.Y);
 		}
 
-		public static explicit operator (int, int)(Point p) => (p.X, p.Y);
+		public static implicit operator (int, int)(Point p) => (p.X, p.Y);
 
 		public static explicit operator System.Windows.Point(Point p) => new(p.X, p.Y);
+
+		public static implicit operator Point((int, int) tp) => new(tp.Item1, tp.Item2);
+
+		public readonly void Deconstruct(out int x, out int y)
+		{
+			x = X;
+			y = Y;
+		}
 	}
 
 	/// <summary>

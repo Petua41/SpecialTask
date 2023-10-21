@@ -72,6 +72,7 @@ namespace SpecialTask
 
 				if (firstX < secondX) return -1;
 				else if (firstX > secondX) return 1;
+
 				return 0;
 			}
 		}

@@ -32,12 +32,9 @@ namespace SpecialTask
 		/// <summary>
 		/// Создаёт новое окно для рисования. Создавать окна можно ТОЛЬКО так.
 		/// </summary>
-		/// <returns>Номер созданного окна</returns>
-		public int CreateWindow()
+		public void CreateWindow()
 		{
-			int numberOfNewWindow = existingWindows.Count;
-			existingWindows.Add(new(numberOfNewWindow));
-			return numberOfNewWindow;
+			existingWindows.Add(new(existingWindows.Count));
 		}
 
 		public void DestroyWindow(int numberOfWindow)
@@ -256,7 +253,7 @@ namespace SpecialTask
         {
             if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
-            if (newLayer < 0 || newLayer > allShapesOnThisWindow.Count) throw new ArgumentException();
+            if (newLayer < 0 || newLayer > allShapesOnThisWindow.Count) throw new InvalidOperationException();
 
             for (int i = 0; i < allShapesOnThisWindow.Count; i++)
             {

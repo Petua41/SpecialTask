@@ -23,15 +23,6 @@ namespace SpecialTask
 
 		public abstract object Edit(string attribute, string value);
 
-		public virtual string UniqueName => uniqueName;
-
-		/// <summary>
-		/// Windows.Shapes.Shape instance that can be added to Canvas
-		/// </summary>
-		public abstract System.Windows.Shapes.Shape WPFShape { get; }
-
-		public abstract (int, int) Center { get; }
-
 		// It`s kinda template method
         public virtual void Redraw()
 		{
@@ -45,11 +36,6 @@ namespace SpecialTask
 			WindowManager.Instance.RemoveFromCurrentWindow(this);
 		}
 
-		protected virtual void NullifyWPFShape()
-		{
-			wpfShape = null;
-		}
-
 		public abstract Dictionary<string, object> Accept();
 
 		public abstract void MoveXBy(int offset);
@@ -59,7 +45,21 @@ namespace SpecialTask
 		public abstract Shape Clone();
 
 		public virtual MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
-	}
+
+        public virtual string UniqueName => uniqueName;
+
+        /// <summary>
+        /// Windows.Shapes.Shape instance that can be added to Canvas
+        /// </summary>
+        public abstract System.Windows.Shapes.Shape WPFShape { get; }
+
+        public abstract Point Center { get; }
+
+        protected void NullifyWPFShape()
+        {
+            wpfShape = null;
+        }
+    }
 
 	class Circle : Shape
 	{
@@ -131,7 +131,7 @@ namespace SpecialTask
 			return oldValue;
 		}
 
-		public override (int, int) Center
+		public override Point Center
 		{
 			get => (CenterX, CenterY);
 		}
@@ -276,7 +276,7 @@ namespace SpecialTask
 			return $"Rectangle_{firstAvailibleUniqueNumber++}";
 		}
 
-		public override (int, int) Center
+		public override Point Center
 		{
 			get => ((leftTopX + rightBottomX) / 2, (leftTopY + rightBottomY) / 2);
 		}
@@ -562,7 +562,7 @@ namespace SpecialTask
 			SecondY += offset;
         }
 
-        public override (int, int) Center
+        public override Point Center
         {
             get => ((FirstX + SecondX) / 2, (FirstY + SecondY) / 2);
         }
@@ -688,7 +688,7 @@ namespace SpecialTask
 			}
 		}
 
-		public override (int, int) Center => square.Center;
+		public override Point Center => square.Center;
 
 		private async void DestroyAfterDelay(int delay)
 		{
@@ -822,7 +822,7 @@ namespace SpecialTask
             LeftTopY += offset;
         }
 
-        public override (int, int) Center
+        public override Point Center
         {
             get
             {
@@ -979,11 +979,11 @@ namespace SpecialTask
             Points = (from p in Points select p + new Point(0, offset)).ToList();
         }
 
-        public override (int, int) Center
+        public override Point Center
         {
             get
             {
-				return ((int, int))Points.Center();
+				return Points.Center();
             }
         }
 

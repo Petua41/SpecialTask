@@ -50,11 +50,6 @@ namespace SpecialTask
 			ScrollToEnd();
 		}
 
-		/// <summary>
-		/// Transferring input: every char or special key combination is sent to STConsole
-		/// </summary>
-		public bool TransferringInput { get; set; }
-
 		private void ScrollToEnd()
 		{
 			ConsoleScrollViewer.ScrollToEnd();
@@ -102,18 +97,13 @@ namespace SpecialTask
 
             if (key == Key.Enter)
 			{
-				EmulateEnter();
-			}
+                DisplayAndProcessInputString(ConsoleEntry.Text);
+                ClearInputLine();
+            }
 			else if (key == Key.Tab)
 			{
                 Autocomplete(ConsoleEntry.Text);
 			}
-        }
-
-        private void EmulateEnter()
-        {
-            DisplayAndProcessInputString(ConsoleEntry.Text);
-            ConsoleEntry.Text = "";
         }
 
         private void Autocomplete(string input)
@@ -146,28 +136,27 @@ namespace SpecialTask
 			if (Keyboard.IsKeyDown(Key.Z))				// Ctrl+Z or Ctrl+Shift+Z
 			{
                 bool shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-                if (!TransferringInput) DisplayAndProcessInputString(shiftPressed ? "redo" : "undo");	// when transferring, we don`t either transfer Ctrl+Z or handle it
+				DisplayAndProcessInputString(shiftPressed ? "redo" : "undo");
             }
             if (Keyboard.IsKeyDown(Key.C))				// Ctrl+C
             {
-				if (TransferringInput) lowConsole.TransferCtrlC();
-				else DisplayAndProcessInputString("exit");
+				lowConsole.ProcessCtrlC();
             }
         }
 
         private void ProcessUpArrow()
         {
-            if (TransferringInput) return;                  // same as Ctrl+Z
-
-            ClearInputLine();
-            EmulateInput(lowConsole.ProcessUpArrow());
-            MoveCaretToEnd();
+			string comp = lowConsole.ProcessUpArrow();
+			if (comp.Length > 0)
+			{
+				ClearInputLine();
+				EmulateInput(comp);
+				MoveCaretToEnd();
+			}
         }
 
         private void ProcessDownArrow()
         {
-            if (TransferringInput) return;                  // same as Ctrl+Z
-
             ClearInputLine();
             EmulateInput(lowConsole.ProcessDownArrow());
             MoveCaretToEnd();
@@ -183,14 +172,13 @@ namespace SpecialTask
 			ConsoleEntry.CaretIndex = ConsoleEntry.Text.Length;
 		}
 
-        private void DisplayAndProcessInputString(string text)
+        public void DisplayAndProcessInputString(string text)
 		{
 			lowConsole.NewLine();
 			lowConsole.DisplayPrompt();
 			Display(text);
 
-			if (TransferringInput) lowConsole.TransferInputString(text);
-			else lowConsole.ProcessInputString(text);
+			lowConsole.ProcessInputString(text);
 		}
 
 		private void ClearInputLine()
