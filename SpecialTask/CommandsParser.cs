@@ -118,6 +118,7 @@ namespace SpecialTask
 	{
 		const string XML_PATH = @"..\ConsoleCommands.xml";
 		const string XML_ALT_PATH = @"..\..\..\ConsoleCommands.xml";
+		// string xml = Properties.Resources.file_name;
 
 		static readonly List<ConsoleCommand> consoleCommands = new();
 		public static string globalHelp = "[color:purple]Global help not found![purple]";
@@ -275,12 +276,7 @@ namespace SpecialTask
 		private static int SelectCommand(string commandName)
 		{
 			commandName = commandName.Trim();
-
-			for (int i = 0; i < consoleCommands.Count; i++)
-			{
-				if (consoleCommands[i].neededUserInput == commandName) return i;
-			}
-			return -1;
+			return consoleCommands.FindIndex(t => t.neededUserInput == commandName); // ТАК НАДО ВЕЗДЕ		!!!!!!!!!!!!!!!!
 		}
 
 		private static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
@@ -377,7 +373,7 @@ namespace SpecialTask
 			else
 			{
 				commandName = input;
-				arguments = "";
+                arguments = "";
 			}
 
 			return (commandName, arguments);
@@ -459,7 +455,7 @@ namespace SpecialTask
 	/// <summary>
 	/// Provides some extensions to <see cref="List{T}"/> of <see cref="Point"/>s
 	/// </summary>
-	public static class Points
+	public static class PointListExtensions
 	{
 		public static string PointsToString(this List<Point> points)
 		{

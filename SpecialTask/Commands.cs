@@ -113,6 +113,10 @@ namespace SpecialTask
 	/// </summary>
 	class EditShapeAttributesCommand : ICommand
 	{
+		private const string ATTRIBUTE = "attribute";
+		private const string SHAPE = "shape";
+		private const string NEW_VALUE = "newValue";
+
 		private readonly Shape receiver;
 
 		private readonly string attribute;
@@ -124,9 +128,9 @@ namespace SpecialTask
 		{
 			try
 			{
-				attribute = (string)arguments["attribute"];
-				receiver = (Shape)arguments["shape"];
-				newValue = (string)arguments["newValue"];
+				attribute = (string)arguments[ATTRIBUTE];
+				receiver = (Shape)arguments[SHAPE];
+				newValue = (string)arguments[NEW_VALUE];
 			}
 			catch (KeyNotFoundException)
 			{
@@ -175,7 +179,7 @@ namespace SpecialTask
 		private int oldLayer = -1;
 		private bool layerChanged = false;
 
-		public EditLayerCommand(string uniqueName,  ELayerDirection direction)
+		public EditLayerCommand(string uniqueName, ELayerDirection direction)
 		{
 			receiver = WindowManager.Instance;
 			this.uniqueName = uniqueName;
@@ -259,7 +263,7 @@ namespace SpecialTask
 	/// </summary>
 	class RemoveShapeCommand : ICommand
     {
-        private readonly Shape? receiver;
+        private readonly Shape receiver;
 
         public RemoveShapeCommand(Shape shape)
         {
@@ -268,12 +272,12 @@ namespace SpecialTask
 
         public void Execute()
         {
-			receiver?.Destroy();
+			receiver.Destroy();
         }
 
         public void Unexecute()
         {
-            receiver?.Redraw();
+            receiver.Redraw();
         }
     }
 
@@ -321,14 +325,17 @@ namespace SpecialTask
 		private string interString = "";
 		private int selectedNumber = -1;
 		private bool hasStreak = false;
+
 		private CancellationTokenSource tokenSource = new();
 		private bool ctrlCPressed = false;
 		private Shape? shapeToEdit;
 
 		public EditCommand(Dictionary<string, object> parameters)
 		{
-            sortingOrder = (parameters.ContainsKey("coordinates") && (bool)parameters["coordinates"]) ? 
-				ESortingOrder.Coordinates : ESortingOrder.CreationTime;
+            sortingOrder = (parameters.ContainsKey("coordinates") && (bool)parameters["coordinates"])
+				? ESortingOrder.Coordinates
+				: ESortingOrder.CreationTime;
+
 			IteratorsFacade.SetConcreteIterator(sortingOrder);
 
 			MiddleConsole.HighConsole.SomethingTranferred += OnStringTransferred;
@@ -466,6 +473,16 @@ namespace SpecialTask
             try { await task; }
             catch (TaskCanceledException) { /* continue */ }
 
+            // проверить можно ли написать так:
+            // Task.Run(EmptyTask, tokenSource.Token)
+            /*
+			task.ContinueWith(t =>
+			{
+				MiddleConsole.HighConsole.NewLine();
+				if (ctrlCPressed) throw new KeyboardInterruptException();
+			});
+			*/
+
             MiddleConsole.HighConsole.NewLine();
             if (ctrlCPressed) throw new KeyboardInterruptException();
         }
@@ -549,7 +566,7 @@ namespace SpecialTask
     /// </summary>
     class CreateCircleCommand : ICommand
 	{
-		private Shape? receiver;        // Нужен для отмены
+		private Shape? receiver;        // Needed for Unexecution
 		
 		readonly int centerX;
 		readonly int centerY;
@@ -847,12 +864,14 @@ namespace SpecialTask
 	{
 		private readonly WindowManager receiver;
 
-		public CreateWindowCommand(Dictionary<string, object> arguments)        // arguments in unused, but it`s a part of interface (not defined in interface)
+#pragma warning disable IDE0060
+        public CreateWindowCommand(Dictionary<string, object> arguments)        // arguments in unused, but it`s a part of interface (not defined in interface)
 		{
 			receiver = WindowManager.Instance;
 		}
+#pragma warning restore IDE0060
 
-		public void Execute()
+        public void Execute()
 		{
 			receiver.CreateWindow();
 		}
@@ -1171,7 +1190,7 @@ namespace SpecialTask
 			catch (IOException)
 			{
 				int idx = filename.LastIndexOf('\\');
-				string dir = filename[..idx];
+				string dir = filename[..idx]; // use Path.... here
 				if (Directory.Exists(dir))
 				{
 					Logger.Instance.Error($"Cannot save to {filename}: invalid characters");

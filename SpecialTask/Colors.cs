@@ -59,7 +59,7 @@ namespace SpecialTask
 			catch (KeyNotFoundException) { return EColor.None; }
 		}
 
-		public static List<string> ColorsList => colorNames.Keys.ToList();
+		public static IReadOnlyList<string> ColorsList => colorNames.Keys.ToList();
 
 		public static (byte, byte, byte) SplitHexValue(this uint hexValue)         // it`s private, but I wanna test it
 		{
