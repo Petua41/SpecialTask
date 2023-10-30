@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
+using SpecialTask.Commands;
 
 namespace SpecialTask
 {
-	public enum EArgumentType { Int, Color, PseudoBool, String, Texture, Points }
+    public enum EArgumentType { Int, Color, PseudoBool, String, Texture, Points }
 
 	public static class ArgumentTypesConstroller
 	{
@@ -44,7 +45,7 @@ namespace SpecialTask
 	{
 		public string neededUserInput;
 		public string? help;
-		public Type? commandType;
+		public string commandType;
 		public List<ConsoleCommandArgument> arguments;
 		public bool supportsUndo;
 		public bool fictional;                                  // Только для help. При вызове печатает что-то типа "invalid command"
@@ -226,9 +227,6 @@ namespace SpecialTask
 			
 			bool fictional = (elem.Attribute("fictional")?.Value ?? "false") != "false";
 
-			Type? commandType = Type.GetType("SpecialTask." + elem.Attribute("commandClass")?.Value);
-			if (!fictional && commandType == null) throw new InvalidResourceFileException();
-
 			string? help = elem.Value;
 			if (help == "") help = null;
 
@@ -242,8 +240,8 @@ namespace SpecialTask
 			{
 				neededUserInput = neededUserInput,
 				help = help,
-				commandType = commandType,
-				supportsUndo = (elem.Attribute("supportsUndo")?.Value ?? "false") != "false",
+				commandType = elem.Attribute("commandClass")?.Value.Replace("Command", "") ?? "",
+                supportsUndo = (elem.Attribute("supportsUndo")?.Value ?? "false") != "false",
 				fictional = fictional,
 				arguments = arguments
 			};
@@ -276,7 +274,7 @@ namespace SpecialTask
 		private static int SelectCommand(string commandName)
 		{
 			commandName = commandName.Trim();
-			return consoleCommands.FindIndex(t => t.neededUserInput == commandName); // ТАК НАДО ВЕЗДЕ		!!!!!!!!!!!!!!!!
+			return consoleCommands.FindIndex(t => t.neededUserInput == commandName);		// ТАК НАДО ВЕЗДЕ		!!!!!!!!!!!!!!!!
 		}
 
 		private static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
@@ -300,22 +298,7 @@ namespace SpecialTask
 				}
 			}
 
-			Type type = consoleCommand.commandType ?? throw new InvalidResourceFileException();
-			try
-			{
-				ConstructorInfo constructor = type.GetConstructors().Single();
-				return (ICommand)constructor.Invoke(new object[] { arguments });
-			}
-			catch (InvalidOperationException)
-			{
-				Logger.Instance.Error("{0} must contain exactly one constructor!");
-				throw new InvalidCommandClassException();
-			}
-			catch (InvalidCastException)
-			{
-				Logger.Instance.Error("{0} must implement ICommand!");
-				throw new InvalidCommandClassException();
-			}
+			return CommandCreator.CreateCommand(consoleCommand.commandType, arguments);
 		}
 
 		private static Dictionary<string, object> ParseArguments(ConsoleCommand consoleCommand, string arguments)
