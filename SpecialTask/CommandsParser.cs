@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml.Linq;
 using SpecialTask.Commands;
 
@@ -117,24 +115,20 @@ namespace SpecialTask
 	/// </summary>
 	static class CommandsParser
 	{
-		const string XML_PATH = @"..\ConsoleCommands.xml";
-		const string XML_ALT_PATH = @"..\..\..\ConsoleCommands.xml";
-		// string xml = Properties.Resources.file_name;
-
 		static readonly List<ConsoleCommand> consoleCommands = new();
 		public static string globalHelp = "[color:purple]Global help not found![purple]";
 
 		static CommandsParser()
 		{
+			string xmlContents = Properties.Resources.ConsoleCommands;
+
 			try
 			{
-				if (File.Exists(XML_PATH)) consoleCommands = ParseCommandsXML(XML_PATH);
-				else if (File.Exists(XML_ALT_PATH)) consoleCommands = ParseCommandsXML(XML_ALT_PATH);
-				else Logger.Instance.Fatal("Cannot find XML file with commands!");
+				consoleCommands = ParseCommandsXML(xmlContents);
 			}
 			catch (InvalidResourceFileException)
 			{
-				Logger.Instance.Fatal("Invalid XML file with commands!");
+				Logger.Instance.Fatal($"Invalid XML file with commands!{Environment.NewLine}Please, contact us");
 			}
 		}
 
@@ -198,9 +192,9 @@ namespace SpecialTask
 			}
 		}
 
-		private static List<ConsoleCommand> ParseCommandsXML(string xmlWithCommands)
+		private static List<ConsoleCommand> ParseCommandsXML(string xmlContent)
 		{
-			XDocument commandsFile = XDocument.Load(xmlWithCommands);
+			XDocument commandsFile = XDocument.Parse(xmlContent);
 			XElement xmlRoot = commandsFile.Root ?? throw new InvalidResourceFileException();
 
 			List<ConsoleCommand> commands = new();
@@ -240,7 +234,7 @@ namespace SpecialTask
 			{
 				neededUserInput = neededUserInput,
 				help = help,
-				commandType = elem.Attribute("commandClass")?.Value.Replace("Command", "") ?? "",
+				commandType = elem.Attribute("commandClass")?.Value ?? "",
                 supportsUndo = (elem.Attribute("supportsUndo")?.Value ?? "false") != "false",
 				fictional = fictional,
 				arguments = arguments

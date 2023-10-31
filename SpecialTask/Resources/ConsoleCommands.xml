@@ -3,7 +3,7 @@
   <!-- We should add some kind of easter egg. Like moo, fortune or draw_logo -->
   
 	<!-- new -->
-	<command userInput="new circle" commandClass="CreateCircleCommand" supportsUndo="true">Adds circle to the screen
+	<command userInput="new circle" commandClass="CreateCircle" supportsUndo="true">Adds circle to the screen
 
 [color:Magenta]Necessary arguments:[color]
 	-x --center_x         X of center
@@ -24,7 +24,7 @@
 		<argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
 		<argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
 	</command>
-	<command userInput="new rectangle" commandClass="CreateSquareCommand" supportsUndo="true">Adds rectangle to the screen
+	<command userInput="new rectangle" commandClass="CreateSquare" supportsUndo="true">Adds rectangle to the screen
 
 [color:Magenta]Necessary arguments:[color]
 	-x --left_top_x       X of left-top corner
@@ -47,7 +47,7 @@
     <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
     <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
 	</command>
-	<command userInput="new line" commandClass="CreateLineCommand" supportsUndo="true">Adds line to the screen
+	<command userInput="new line" commandClass="CreateLine" supportsUndo="true">Adds line to the screen
 
 [color:Magenta]Necessary arguments:[color]
   -x --first_x          X of first point
@@ -70,7 +70,7 @@
     <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
     <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
 	</command>
-  <command userInput="new text" commandClass="CreateTextCommand" supportsUndo="true">
+  <command userInput="new text" commandClass="CreateText" supportsUndo="true">
 Adds rectangle to the screen
 
 [color:Magenta]Necessary arguments:[color]
@@ -92,7 +92,7 @@ Adds rectangle to the screen
     <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
     <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
   </command>
-  <command userInput="new polygon" commandClass="CreatePolygonCommand" supportsUndo="true">
+  <command userInput="new polygon" commandClass="CreatePolygon" supportsUndo="true">
 Adds polygon to the screen
 
 [color:Magenta]Necessary arguments:[color]
@@ -111,19 +111,19 @@ Adds polygon to the screen
     <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
   </command>
 	<!-- window -->
-	<command userInput="window create" commandClass="CreateWindowCommand">Creates new window for drawing</command>
-	<command userInput="window delete" commandClass="DeleteWindowCommand">Closes specified window
+	<command userInput="window create" commandClass="CreateWindow">Creates new window for drawing</command>
+	<command userInput="window delete" commandClass="DeleteWindow">Closes specified window
 
 [color:Magenta]Necessary arguments:[color]
 	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" isNecessary="true" type="Int" commandParameterName="number"/>
 	</command>
-	<command userInput="window switch" commandClass="SwitchWindowCommand">Switches to specified window
+	<command userInput="window switch" commandClass="SwitchWindow">Switches to specified window
 
 [color:Magenta]Necessary arguments:[color]
 	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" isNecessary="true" type="Int" commandParameterName="number"/>
 	</command>
 	<!-- edit -->
-	<command userInput="edit" commandClass="EditCommand" supportsUndo="true">Select figure on the screen and edit it
+	<command userInput="edit" commandClass="Edit" supportsUndo="true">Select figure on the screen and edit it
 
 [color:Magenta]Unnecessary arguments:[color]
 	-t --creation_time    Display shapes in creation time order	[default]
@@ -131,7 +131,7 @@ Adds polygon to the screen
 		<argument shortArgument="-c" longArgument="--coordinates" commandParameterName="coordinates" defaultValue="false"/>
 	</command>
 	<!-- select -->
-	<command userInput="select" commandClass="SelectCommand">Selects rectangular area, specified by coordinates of left-top and right-bottom corners
+	<command userInput="select" commandClass="Select">Selects rectangular area, specified by coordinates of left-top and right-bottom corners
 
 [color:Magenta]Necessary arguments:[color]
 	-x --left_top_x       X of left-top corner
@@ -143,47 +143,47 @@ Adds polygon to the screen
 		<argument shortArgument="-Y" longArgument="--right_bottom_y" type="Int" isNecessary="true" commandParameterName="rightBottomY"/>
 	</command>
   <!-- paste -->
-  <command userInput="paste" commandClass="PasteCommand" supportsUndo="true">Pastes selected area<argument shortArgument="-x" longArgument="--leftTopX" type="Int" isNecessary="true" commandParameterName="leftTopX"/>
+  <command userInput="paste" commandClass="Paste" supportsUndo="true">Pastes selected area<argument shortArgument="-x" longArgument="--leftTopX" type="Int" isNecessary="true" commandParameterName="leftTopX"/>
     <argument shortArgument="-y" longArgument="--leftTopY" type="Int" commandParameterName="leftTopY"/>
   </command>
 	<!-- undo -->
-	<command userInput="undo" commandClass="UndoCommand">Cancels the specified number (default is 1) of last commands
+	<command userInput="undo" commandClass="Undo">Cancels the specified number (default is 1) of last commands
 
 [color:Magenta]Unnecessary arguments:[color]
 	-n --number       Number of commands to cancel<argument shortArgument="-n" longArgument="--number" type="Int" commandParameterName="number" defaultValue="1"/>
 	</command>
 	<!-- redo -->
-	<command userInput="redo" commandClass="RedoCommand">Repeats the specified number (default is 1) of last cancelled commands
+	<command userInput="redo" commandClass="Redo">Repeats the specified number (default is 1) of last cancelled commands
 
 [color:Magenta]Unnecessary arguments:[color]
 -n --number         Number of commands to repeat<argument shortArgument="-n" longArgument="--number" type="Int" commandParameterName="number" defaultValue="1"/>
 	</command>
 	<!-- save -->
-	<command userInput="save" commandClass="SaveCommand">Save file</command>
+	<command userInput="save" commandClass="Save">Save file</command>
 	<!-- save_as -->
 	<command userInput="save_as" commandClass="SaveAsCommand">Save file as<argument shortArgument="-f" longArgument="--filename" isNecessary="true" type="String" commandParameterName="filename"/>
 	</command>
 	<!-- load -->
-	<command userInput="load" commandClass="LoadCommand">Load file<argument shortArgument="-f" longArgument="--filename" type="String" isNecessary="true" commandParameterName="filename"/>
+	<command userInput="load" commandClass="Load">Load file<argument shortArgument="-f" longArgument="--filename" type="String" isNecessary="true" commandParameterName="filename"/>
     <argument shortArgument="-c" longArgument="--clear" defaultValue="false" commandParameterName="clearScreen"/>
 	</command>
   <!-- exit -->
-  <command userInput="exit" commandClass="ExitCommand">Close application</command>
+  <command userInput="exit" commandClass="Exit">Close application</command>
   <!-- colors -->
-  <command userInput="colors" commandClass="ColorsCommand">Display list of colors</command>
+  <command userInput="colors" commandClass="Colors">Display list of colors</command>
   <!-- textures -->
-  <command userInput="textures" commandClass="TexturesCommand">Display list of streak textures</command>
+  <command userInput="textures" commandClass="Textures">Display list of streak textures</command>
   <!-- clear -->
-  <command userInput="clear" commandClass="ClearCommand" supportsUndo="true">Clear current screen</command>
+  <command userInput="clear" commandClass="Clear" supportsUndo="true">Clear current screen</command>
   <!-- export -->
-  <command userInput="export svg" commandClass="ExportSVGCommand">Export to svg
+  <command userInput="export svg" commandClass="ExportSVG">Export to svg
 [color:Magenta]Necessary arguments:[color]
 	-o --out            Output file
 [color:Magenta]Unnecessary arguments:[color]
 	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue="_"/>
     <argument shortArgument="-o" longArgument="--out" type="String" isNecessary="true" commandParameterName="outFilename"/>
   </command>
-  <command userInput="export pdf" commandClass="ExportPDFCommand">Export to pdf
+  <command userInput="export pdf" commandClass="ExportPDF">Export to pdf
 [color:Magenta]Necessary arguments:[color]
 	-o --out            Output file
 [color:Magenta]Unnecessary arguments:[color]

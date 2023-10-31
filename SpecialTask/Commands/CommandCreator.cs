@@ -27,6 +27,7 @@ namespace SpecialTask.Commands
         };
 
         /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
         public static ICommand CreateCommand(string name, Dictionary<string, object> dict)
         {
             name = name.Trim().ToLower();
