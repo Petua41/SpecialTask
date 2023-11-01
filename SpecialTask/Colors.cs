@@ -7,10 +7,10 @@ namespace SpecialTask
 {
 	public enum EColor: uint	// it`s standard ANSI colors (values are similar to ones in xterm) with None and Purple added
 	{
-		None,					// None is 0x000000, like Black. But it`s not bad, because None is handled differently
+		None,
 		Purple = 0x800080,
 
-		Black = 0x000000,
+		Black = 0x010101,			// so that it has other number than None
 		Red = 0xCD0000,
 		Green = 0x00CD00,
 		Yellow = 0xCDCD00,

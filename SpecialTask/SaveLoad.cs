@@ -76,9 +76,8 @@ namespace SpecialTask
 
         public static string CorrectFilename(string filename, string neededExtension=".std")
         {
-            char delim = Environment.OSVersion.Platform == PlatformID.Unix ? '/' : '\\';
-            if (!filename.Contains(delim)) filename = defaultFolder + delim + filename;
-            if (!filename.EndsWith(".std") && !filename.EndsWith(".xml")) filename += neededExtension;
+            if (!Path.IsPathFullyQualified(filename)) filename = Path.Combine(defaultFolder, filename);
+            if (!Path.HasExtension(filename)) filename += neededExtension;
             return filename;
         }
 

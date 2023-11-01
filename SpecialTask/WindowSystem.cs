@@ -95,6 +95,11 @@ namespace SpecialTask
 			for (int i = existingWindows.Count - 1; i >= 0; i--) DestroyWindow(i);
         }
 
+		/// <summary>
+		/// I should do something with this
+		/// </summary>
+		public Canvas Canvas => currentWindow.Canvas;
+
 		public void OnSomeAssotiatedWindowClosed(WindowToDraw winToDraw)
 		{
 			int idx = existingWindows.IndexOf(winToDraw);
@@ -123,7 +128,7 @@ namespace SpecialTask
 		public event EventHandler? SomethingDisplayed;
 	}
 
-	class WindowToDraw
+	internal class WindowToDraw
 	{
 		private readonly DrawingWindow assotiatedWindow;
 
@@ -296,7 +301,7 @@ namespace SpecialTask
 			WindowManager.Instance.OnSomeAssotiatedWindowClosed(this);
         }
 
-        private Canvas Canvas => assotiatedWindow.DrawingCanvas;
+        public Canvas Canvas => assotiatedWindow.DrawingCanvas;
     }
     public class WindowSwitchedEventArgs : EventArgs
     {

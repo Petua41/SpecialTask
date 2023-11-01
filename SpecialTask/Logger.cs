@@ -87,14 +87,14 @@ namespace SpecialTask
 			string workingDir = Environment.CurrentDirectory;
 
 			string greetingsText = 
-				"------------ LOG ------------\n" + 
-				$"[{DateTime.Now}]: Program started\n" + 
-				$"DEBUG: {debug}\n" + 
-				$"Platform: {platform}\n" + 
-				$".NET version: {dotnetVersion}\n" + 
-				$"Username: {userName}\n" + 
-				$"Working directory: {workingDir}\n" +
-                "-----------------------------\n\n";
+				"------------ LOG ------------" + Environment.NewLine +
+				$"[{DateTime.Now}]: Program started" + Environment.NewLine +
+                $"DEBUG: {debug}" + Environment.NewLine +
+                $"Platform: {platform}" + Environment.NewLine +
+                $".NET version: {dotnetVersion}" + Environment.NewLine +
+                $"Username: {userName}" + Environment.NewLine +
+                $"Working directory: {workingDir}" + Environment.NewLine +
+                "-----------------------------" + Environment.NewLine + Environment.NewLine;
 			writer.Write(greetingsText);
         }
 	}

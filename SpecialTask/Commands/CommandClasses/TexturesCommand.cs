@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SpecialTask.Commands.CommandClasses
@@ -19,7 +20,9 @@ namespace SpecialTask.Commands.CommandClasses
         {
             Dictionary<string, string> textures = TextureController.TexturesWithDescriptions;
 
-            string output = string.Join('\n', from kvp in textures select $"{kvp.Key} -- {kvp.Value}");
+            receiver.NewLine();
+
+            string output = string.Join(Environment.NewLine, textures.Select(x => $"{x.Key} -- {x.Value}"));
 
             receiver.Display(output);
         }

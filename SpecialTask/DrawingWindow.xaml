@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:SpecialTask"
         mc:Ignorable="d"
         Title="DrawingWindow" Height="450" Width="800" Closed="DrawingWindowClosed">
-    <Grid>
-        <Canvas x:Name="DrawingCanvas"/>
+    <Grid x:Name="CanvasGrid">
+        <Canvas x:Name="DrawingCanvas" Background="White" AutomationProperties.AutomationId="DrawingCanvas">
+        </Canvas>
 
     </Grid>
 </Window>

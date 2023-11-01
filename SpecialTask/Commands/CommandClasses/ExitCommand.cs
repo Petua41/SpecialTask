@@ -63,7 +63,7 @@ namespace SpecialTask.Commands.CommandClasses
                     break;
                 case EYesNoSaveAnswer.Save:
                     MiddleConsole.HighConsole.Display("saving...");
-                    CommandsFacade.ExecuteButDontRegister(new SaveCommand());		// We don`t need to check anything here. SaveLoadFacade will do
+                    CommandsFacade.Execute(new SaveCommand());		// We don`t need to check anything here. SaveLoadFacade will do
                     receiver.Shutdown();
                     break;
                 default:

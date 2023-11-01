@@ -2,10 +2,10 @@
 
 namespace SpecialTask.Commands.CommandClasses
 {
-    /// <summary>
+	/// <summary>
 	/// Command to delete window
 	/// </summary>
-	class DeleteWindowCommand : ICommand
+	internal class DeleteWindowCommand : ICommand
     {
         private readonly WindowManager receiver;
 
@@ -19,15 +19,18 @@ namespace SpecialTask.Commands.CommandClasses
 
         public void Execute()
         {
-            try { receiver.DestroyWindow(number); }
-            catch (ArgumentException)
+            try
+			{
+				receiver.DestroyWindow(number);
+			}
+			catch (ArgumentException)
             {
-                Logger.Instance.Error(string.Format("Trying to delete window {0}, but window {0} doesn`t exist", number));
-                MiddleConsole.HighConsole.DisplayError(string.Format("[color:red]Window {0} doesn`t exist![color]", number));
+                Logger.Instance.Error($"Trying to delete window {number}, but window {number} doesn`t exist");
+                MiddleConsole.HighConsole.DisplayError($"[color:red]Window {number} doesn`t exist![color]");
             }
-        }
+		}
 
-        public void Unexecute()
+		public void Unexecute()
         {
             Logger.Instance.Warning("Unexecution of window command");
         }

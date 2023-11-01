@@ -52,8 +52,7 @@ namespace SpecialTask
 		{
 			string lastArgument = SelectLastLongArgument(argumentsInput).Trim();
 
-			return (from arg in arguments where arg.longArgument.StartsWith(lastArgument) 
-												 select arg.longArgument).ToList().RemovePrefix(lastArgument).LongestCommonPrefix();
+			return arguments.Select(x => x.LongArgument).Where(x => x.StartsWith(lastArgument)).ToList().RemovePrefix(lastArgument).LongestCommonPrefix();
 		}
 
 		public readonly (string, object) CreateArgumentFromString(string argument)
@@ -64,21 +63,21 @@ namespace SpecialTask
 
 			foreach (ConsoleCommandArgument arg in arguments)
 			{
-				if (argument.StartsWith(arg.longArgument) || argument.StartsWith(arg.shortArgument))
+				if (argument.StartsWith(arg.LongArgument) || argument.StartsWith(arg.ShortArgument))
 				{
-					string rawValue = argument.Replace(arg.longArgument, "").Replace(arg.shortArgument, "").Trim();
+					string rawValue = argument.Replace(arg.LongArgument, "").Replace(arg.ShortArgument, "").Trim();
 
 					try
 					{
-						object value = arg.type.ParseValue(rawValue);
-						string paramName = arg.commandParameterName;
+						object value = arg.Type.ParseValue(rawValue);
+						string paramName = arg.CommandParameterName;
 						return (paramName, value);
 					}
 					catch (FormatException)     // Error casting string
 					{
-						string argType = arg.type.ToString();
+						string argType = arg.Type.ToString();
 						MiddleConsole.HighConsole.DisplayError( 
-							$"{arg.longArgument} should be {argType}. {rawValue} is not {argType}. Try {neededUserInput} --help");
+							$"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}. Try {neededUserInput} --help");
 
 						throw new ArgumentParsingError();
 					}
@@ -99,15 +98,8 @@ namespace SpecialTask
 		}
 	}
 
-	struct ConsoleCommandArgument
-	{
-		public string shortArgument;
-		public string longArgument;
-		public EArgumentType type;
-		public bool isNecessary;
-		public string commandParameterName;
-		public object? defaultValue;
-	}
+	record struct ConsoleCommandArgument(string ShortArgument, string LongArgument, EArgumentType Type, bool IsNecessary, 
+		string CommandParameterName, object? DefaultValue);
 
 	/// <summary>
 	/// Processes commands from <see cref="ILowConsole"/>.
@@ -161,8 +153,9 @@ namespace SpecialTask
 
 				ICommand command = CreateCommand(consoleCommand, argumentValues);
 
-				if (consoleCommand.supportsUndo) CommandsFacade.RegisterAndExecute(command);
-				else CommandsFacade.ExecuteButDontRegister(command);
+				if (consoleCommand.supportsUndo) CommandsFacade.Register(command);
+
+				CommandsFacade.Execute(command);
 			}
 			catch (InvalidOperationException) 
 			{
@@ -205,7 +198,7 @@ namespace SpecialTask
 				else if (elem.Name == "help")
 				{
 					string helpCandidate = elem.Value;
-					if (helpCandidate != "") globalHelp = helpCandidate + "\n";
+					if (helpCandidate != "") globalHelp = helpCandidate + Environment.NewLine;
 				}
 				else Logger.Instance.Warning($"Unexpected XML tag inside the root element: {elem.Name}");
 			}
@@ -251,20 +244,19 @@ namespace SpecialTask
 
 			return new ConsoleCommandArgument
 			{
-				shortArgument = elem.Attribute("shortArgument")?.Value ?? "",
-				longArgument = elem.Attribute("longArgument")?.Value ?? "",
-				type = type,
-				isNecessary = (elem.Attribute("isNecessary")?.Value ?? "false") != "false",
-				commandParameterName = elem.Attribute("commandParameterName")?.Value ?? "",
-				defaultValue = defaultValue
+				ShortArgument = elem.Attribute("shortArgument")?.Value ?? "",
+				LongArgument = elem.Attribute("longArgument")?.Value ?? "",
+				Type = type,
+				IsNecessary = (elem.Attribute("isNecessary")?.Value ?? "false") != "false",
+				CommandParameterName = elem.Attribute("commandParameterName")?.Value ?? "",
+				DefaultValue = defaultValue
 			};
 		}
 
 		/// <summary>
 		/// Finds ConsoleCommand by user input
 		/// </summary>
-		/// <param name="commandName">Часть введённой строки до аргументов</param>
-		/// <returns>Индекс в списке команд или -1, если команда не найдена</returns>
+		/// <returns>Index in commands list or -1 if not found</returns>
 		private static int SelectCommand(string commandName)
 		{
 			commandName = commandName.Trim();
@@ -278,16 +270,16 @@ namespace SpecialTask
 			// Check that all necessary arguments are present
 			foreach(ConsoleCommandArgument argument in consoleCommand.arguments)
 			{
-				if (!arguments.ContainsKey(argument.commandParameterName))
+				if (!arguments.ContainsKey(argument.CommandParameterName))
 				{
-					if (argument.isNecessary)
+					if (argument.IsNecessary)
 					{
-						MiddleConsole.HighConsole.DisplayError($"Missing required argument {argument.longArgument}. Try {consoleCommand.neededUserInput} --help");
+						MiddleConsole.HighConsole.DisplayError($"Missing required argument {argument.LongArgument}. Try {consoleCommand.neededUserInput} --help");
 						throw new ArgumentParsingError();
 					}
-					else if (argument.defaultValue != null)
+					else if (argument.DefaultValue != null)
 					{
-						arguments.Add(argument.commandParameterName, argument.defaultValue);
+						arguments.Add(argument.CommandParameterName, argument.DefaultValue);
 					}
 				}
 			}
@@ -371,7 +363,7 @@ namespace SpecialTask
 		}
 
 		/// <summary>
-		/// The longest common prefix of all strings in <paramref name="collection"/> or <see cref="String.Empty"/> if <paramref name="collection"/> is empty
+		/// The longest common prefix of all strings in <paramref name="collection"/> or <see cref="string.Empty"/> if <paramref name="collection"/> is empty
 		/// </summary>
 		public static string LongestCommonPrefix(this IList<string> collection)
 		{

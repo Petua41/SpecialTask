@@ -20,16 +20,15 @@ namespace SpecialTask.Commands
             WindowManager.Instance.WindowSwitchedEvent += OnWindowSwitched;
         }
 
-        public static void RegisterAndExecute(ICommand command)
+        public static void Register(ICommand command)
         {
             Stack.Push(command);
-            ExecuteButDontRegister(command);
         }
 
-        public static void ExecuteButDontRegister(ICommand command)
+        public static void Execute(ICommand command)
         {
             try { command.Execute(); }
-            catch (KeyboardInterruptException) { MiddleConsole.HighConsole.DisplayError("Keyboard interrupt"); }
+            catch (KeyboardInterruptException) { MiddleConsole.HighConsole.DisplayError("Keyboar interrupt"); }
         }
 
         public static void UndoCommands(int numberOfCommands = 1)
@@ -61,7 +60,8 @@ namespace SpecialTask.Commands
             if (UndoneStack.Count > 0)
             {
                 ICommand command = UndoneStack.Pop();
-                RegisterAndExecute(command);
+                Register(command);
+                Execute(command);
             }
         }
 

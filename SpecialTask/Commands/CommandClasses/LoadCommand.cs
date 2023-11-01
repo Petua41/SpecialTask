@@ -22,7 +22,9 @@ namespace SpecialTask.Commands.CommandClasses
         {
             if (clearScreen)
             {
-                CommandsFacade.RegisterAndExecute(new ClearCommand());
+                ICommand command = new ClearCommand();
+                CommandsFacade.Register(command);
+                CommandsFacade.Execute(command);
             }
 
             try { SaveLoadFacade.Instance.Load(filename); }

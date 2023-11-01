@@ -73,7 +73,7 @@ namespace SpecialTask
 			catch (FormatException)
 			{
 				logger.Error($"{args[2]} is not valid undo stack depth");
-				Display($"{args[2]} is not valid undo stack depth. Setting to default (15)\n", Colors.Red);
+				Display($"{args[2]} is not valid undo stack depth. Setting to default (15){Environment.NewLine}", Colors.Red);
 			}
 		}
 

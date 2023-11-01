@@ -161,7 +161,7 @@ Adds polygon to the screen
 	<!-- save -->
 	<command userInput="save" commandClass="Save">Save file</command>
 	<!-- save_as -->
-	<command userInput="save_as" commandClass="SaveAsCommand">Save file as<argument shortArgument="-f" longArgument="--filename" isNecessary="true" type="String" commandParameterName="filename"/>
+	<command userInput="save_as" commandClass="SaveAs">Save file as<argument shortArgument="-f" longArgument="--filename" isNecessary="true" type="String" commandParameterName="filename"/>
 	</command>
 	<!-- load -->
 	<command userInput="load" commandClass="Load">Load file<argument shortArgument="-f" longArgument="--filename" type="String" isNecessary="true" commandParameterName="filename"/>
@@ -180,16 +180,19 @@ Adds polygon to the screen
 [color:Magenta]Necessary arguments:[color]
 	-o --out            Output file
 [color:Magenta]Unnecessary arguments:[color]
-	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue="_"/>
+	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue=""/>
     <argument shortArgument="-o" longArgument="--out" type="String" isNecessary="true" commandParameterName="outFilename"/>
   </command>
   <command userInput="export pdf" commandClass="ExportPDF">Export to pdf
 [color:Magenta]Necessary arguments:[color]
 	-o --out            Output file
 [color:Magenta]Unnecessary arguments:[color]
-	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue="_"/>
+	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue=""/>
     <argument shortArgument="-o" longArgument="--out" type="String" isNecessary="true" commandParameterName="outFilename"/>
   </command>
+  <!-- screenshot -->
+  <command userInput="screenshot" commandClass="Screenshot">Captures a screenshot of current drawing window<argument shortArgument="-f" longArgument="--filename" type="String" isNecessary="true" commandParameterName="filename" />
+</command>
 
 	<!-- fictional commands -->
 	<command userInput="new" fictional="true">Adds specified shape to the screen. You cannot invoke this command without specifying shape

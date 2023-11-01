@@ -81,7 +81,7 @@ namespace SpecialTask.Commands.CommandClasses
                         };
 
                         receiver = new EditLayerCommand(shapeToEdit.UniqueName, dir);
-                        CommandsFacade.ExecuteButDontRegister(receiver);
+                        CommandsFacade.Execute(receiver);
 
                         break;
                     case 1:
@@ -103,13 +103,13 @@ namespace SpecialTask.Commands.CommandClasses
                         await GetInterString();
 
                         receiver = new EditShapeAttributesCommand(shape: shapeToEdit, attribute: kvp.Key, newValue: interString);
-                        CommandsFacade.ExecuteButDontRegister(receiver);
+                        CommandsFacade.Execute(receiver);
 
                         break;
                     case 2:
                         // remove shape:
                         receiver = new RemoveShapeCommand(shapeToEdit);
-                        CommandsFacade.ExecuteButDontRegister(receiver);
+                        CommandsFacade.Execute(receiver);
                         break;
                     case 3:
                         // add streak:
@@ -124,7 +124,7 @@ namespace SpecialTask.Commands.CommandClasses
                         EStreakTexture texture = TextureController.Parse(interString);
 
                         receiver = new AddStreakCommand(shapeToEdit, color, texture);
-                        CommandsFacade.ExecuteButDontRegister(receiver);
+                        CommandsFacade.Execute(receiver);
 
                         break;
                     default:
@@ -163,17 +163,7 @@ namespace SpecialTask.Commands.CommandClasses
             Task task = new(EmptyTask, tokenSource.Token);
 
             try { await task; }
-            catch (TaskCanceledException) { /* continue */ }
-
-            // проверить можно ли написать так:
-            // Task.Run(EmptyTask, tokenSource.Token)
-            /*
-			task.ContinueWith(t =>
-			{
-				MiddleConsole.HighConsole.NewLine();
-				if (ctrlCPressed) throw new KeyboardInterruptException();
-			});
-			*/
+            catch (TaskCanceledException) { /* continue */  }
 
             MiddleConsole.HighConsole.NewLine();
             if (ctrlCPressed) throw new KeyboardInterruptException();
@@ -196,15 +186,16 @@ namespace SpecialTask.Commands.CommandClasses
         {
             MiddleConsole.HighConsole.Display("Select what to edit: ");
             MiddleConsole.HighConsole.NewLine();
-            MiddleConsole.HighConsole.Display("0. Layer\n1. Figure attributes\n2. Remove shape");
-            if (!hasDecorator) MiddleConsole.HighConsole.Display("\n3. Add streak");
+            MiddleConsole.HighConsole.Display($"0. Layer{Environment.NewLine}1. Figure attributes{Environment.NewLine}2. Remove shape");
+            if (!hasDecorator) MiddleConsole.HighConsole.Display($"{Environment.NewLine}3. Add streak");
         }
 
         private static void DisplayLayerOperationSelectionPrompt(string uniqueName)
         {
             MiddleConsole.HighConsole.Display($"Select what to do with [color:green]{uniqueName}[color]: ");
             MiddleConsole.HighConsole.NewLine();
-            MiddleConsole.HighConsole.Display("0. Send backwards\n1. Bring forward\n2. Send to back\n3. Bring to front");
+            MiddleConsole.HighConsole.Display(
+                $"0. Send backwards{Environment.NewLine}1. Bring forward{Environment.NewLine}2. Send to back{Environment.NewLine}3. Bring to front");
         }
 
         private static void DisplayAttributeSelectionPrompt(string uniqueName, List<string> names)

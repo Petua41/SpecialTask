@@ -20,10 +20,10 @@ namespace SpecialTask.Commands.CommandClasses
             inFilename = (string)args[0];
             outFilename = (string)args[1];
 
-            if (inFilename.Length == 0 || inFilename == "_")
+            if (inFilename.Length == 0)
             {
                 inFilename = SaveLoadFacade.CorrectFilename(DateTime.Now.ToString().Replace(':', '.'));
-                CommandsFacade.ExecuteButDontRegister(new SaveAsCommand(inFilename));
+                CommandsFacade.Execute(new SaveAsCommand(inFilename));
             }
             else inFilename = SaveLoadFacade.CorrectFilename(inFilename);
 

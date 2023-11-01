@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecialTask", "SpecialTask\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecialTaskTest", "SpecialTaskTest\SpecialTaskTest.csproj", "{B913DF45-545E-4EF0-8A52-5FE9A09B9608}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecialTaskConverter", "SpecialTaskConverter\SpecialTaskConverter.csproj", "{D1673483-D73A-41D2-A5C7-3F2420516580}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecialTaskConverter", "SpecialTaskConverter\SpecialTaskConverter.csproj", "{D1673483-D73A-41D2-A5C7-3F2420516580}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
