@@ -3,10 +3,12 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using SpecialTask.Console;
+using SpecialTask.Helpers;
 
 namespace SpecialTask
 {
-	public enum ESpecialKeyCombinations { None, Enter, Backspace, CtrlC }
+    public enum ESpecialKeyCombinations { None, Enter, Backspace, CtrlC }
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

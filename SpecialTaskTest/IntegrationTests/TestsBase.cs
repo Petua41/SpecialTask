@@ -49,18 +49,6 @@ namespace SpecialTaskTest.IntegrationTests
             return mainWindow.FindFirstDescendant(x => x.ByAutomationId(name));
         }
 
-        protected AutomationElement? FindElementOnDrawingWindow(int numberOfWindow, string name)
-        {
-            Window? win = Windows.Find(x => x.Title == $"Drawing window {numberOfWindow}");
-            Assert.That(win, Is.Not.Null);
-            return win.FindFirstDescendant(x => x.ByAutomationId(name));
-        }
-
-        protected AutomationElement? GetCanvas(int numberOfWindow = 0)
-        {
-            return FindElementOnDrawingWindow(numberOfWindow, "DrawingCanvas");
-        }
-
         protected void EnterCommand(string command)
         {
             consoleEntry.Focus();

@@ -1,4 +1,7 @@
 using SpecialTask;
+using SpecialTask.Console;
+using SpecialTask.Drawing;
+using SpecialTask.Helpers;
 
 namespace SpecialTaskTest
 {

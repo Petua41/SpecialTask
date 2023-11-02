@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SpecialTaskConverter\SpecialTaskConverter.csproj" />
   </ItemGroup>
 
