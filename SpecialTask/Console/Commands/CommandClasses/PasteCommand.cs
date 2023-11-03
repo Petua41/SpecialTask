@@ -22,7 +22,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Execute()
         {
-            pastedShapes = SelectPasteHandler.PasteArea(leftTopX, leftTopY);
+            pastedShapes = SelectionMemento.PasteArea(leftTopX, leftTopY);
         }
 
         public void Unexecute()

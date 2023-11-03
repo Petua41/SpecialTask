@@ -29,8 +29,6 @@ namespace SpecialTask.Drawing.Shapes
 
             ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" }, { "fontSize", "Font size" },
                 { "text", "Text" }, { "color", "Text color" } };
-
-            WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
         public Text(Text old) : this(old.LeftTopX, old.LeftTopY, old.fontSize, old.textValue, old.Color) { }

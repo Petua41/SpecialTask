@@ -39,7 +39,10 @@ namespace SpecialTask.Console.Commands.CommandClasses
         public void Execute()
         {
             receiver = new Square(leftTopX, leftTopY, rightBottomX, rightBottomY, color, lineThickness);
+
             if (streak) receiver = new StreakDecorator(receiver, streakColor, streakTexture);
+
+            receiver.Display();
         }
 
         public void Unexecute()

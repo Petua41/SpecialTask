@@ -1,7 +1,7 @@
 using SpecialTask;
 using SpecialTask.Console;
-using SpecialTask.Drawing;
 using SpecialTask.Helpers;
+using static SpecialTask.Helpers.Extensoins.StringExtensions;
 
 namespace SpecialTaskTest
 {
@@ -18,7 +18,7 @@ namespace SpecialTaskTest
                 { "magenta", EColor.Magenta },
                 { "none", EColor.None }
             };
-            MyMap<string, EColor> actual = MiddleConsole.SplitMessageByColors(message);
+            MyMap<string, EColor> actual = message.SplitByColors();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -30,7 +30,7 @@ namespace SpecialTaskTest
             {
                 { "this is a colorless message", EColor.None }
             };
-            MyMap<string, EColor> actual = MiddleConsole.SplitMessageByColors(message);
+            MyMap<string, EColor> actual = message.SplitByColors();
             Assert.That(actual, Is.EqualTo(expected));
         }
     }

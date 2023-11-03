@@ -3,47 +3,10 @@ using SpecialTask.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using static SpecialTask.Helpers.Extensoins.StringExtensions;
 
 namespace SpecialTask.Console
 {
-    /// <summary>
-    /// High-level console interface for business classes
-    /// </summary>
-    public interface IHighConsole
-    {
-        public static IHighConsole? HighConsole { get; }
-
-        public void DisplayGlobalHelp();
-        public void DisplayError(string message);
-        public void DisplayWarning(string message);
-        public void DisplayQuestion(string message);
-        public void Display(string message);
-        public void NewLine();
-        public void DisplayPrompt();
-        public bool TransferringInput { get; set; }
-
-        public event TransferringEventHandler? SomethingTranferred;
-        public event EventHandler? CtrlCTransferred;
-    }
-
-    /// <summary>
-    /// Low-level console interface for WPF classes
-    /// </summary>
-    public interface ILowConsole
-    {
-        public static ILowConsole? LowConsole { get; }
-
-        public void DisplayPrompt();
-        public string Autocomplete(string currentInput);
-        public string ProcessUpArrow();
-        public string ProcessDownArrow();
-        public void ChangeUndoStackDepth(int depth);
-        public void ProcessInputString(string input);
-        public void NewLine();
-        public void ProcessCtrlC();
-
-    }
-
     /// <summary>
     /// Like mediator for the whole system: knows to whom send which query
     /// </summary>
@@ -54,8 +17,6 @@ namespace SpecialTask.Console
 
         private readonly List<string> prevCommands = new();
         private int pointer = 0;                    // from end
-
-        private const EColor defaultColor = EColor.White;
 
         private MiddleConsole()
         {
@@ -103,7 +64,7 @@ namespace SpecialTask.Console
 
         public void Display(string message)
         {
-            MyMap<string, EColor> messageSplittedByColors = SplitMessageByColors(message);
+            MyMap<string, EColor> messageSplittedByColors = message.SplitByColors();
             foreach (KeyValuePair<string, EColor> kvp in messageSplittedByColors)
             {
                 Display(kvp.Key, kvp.Value);
@@ -112,7 +73,7 @@ namespace SpecialTask.Console
 
         public void NewLine()
         {
-            Display(Environment.NewLine, defaultColor);
+            Display(Environment.NewLine, EColor.None);      // no matter, in which color we display \n
         }
 
         public void DisplayGlobalHelp()
@@ -184,58 +145,8 @@ namespace SpecialTask.Console
             mainWindowInstance.Display(message, color.GetWPFColor());
         }
 
-        // This method is TOO LONG
-        public static MyMap<string, EColor> SplitMessageByColors(string message)        // This must be private, but I wanna test it
-        {
-            MyMap<string, EColor> messageSplittedByColors = new();
-
-            EColor lastColor = defaultColor;
-            do
-            {
-                int indexOfNextColorChange = message.IndexOf("[color");
-
-                if (indexOfNextColorChange == -1)
-                {
-                    messageSplittedByColors.Add(message, lastColor);
-                    message = "";
-                }
-                else if (indexOfNextColorChange == 0)
-                {
-                    int endOfColorSequence = message.IndexOf("]");
-                    string colorSequence = message[..(endOfColorSequence + 1)];
-                    if (colorSequence == "[color]") lastColor = defaultColor;
-                    else
-                    {
-                        string colorName = colorSequence[7..^1];
-                        lastColor = ColorsController.Parse(colorName);
-                    }
-                    message = message[(endOfColorSequence + 1)..];
-                }
-                else
-                {
-                    string currentPartOfMessage = message[..indexOfNextColorChange];
-                    message = message[indexOfNextColorChange..];
-                    messageSplittedByColors.Add(currentPartOfMessage, lastColor);
-                }
-            } while (message.Length > 0);
-
-            return messageSplittedByColors;
-        }
-
         public event TransferringEventHandler? SomethingTranferred;
 
         public event EventHandler? CtrlCTransferred;
     }
-
-    public class TransferringEventArgs : EventArgs
-    {
-        public TransferringEventArgs(string input)
-        {
-            Input = input;
-        }
-
-        public string Input { get; set; }
-    }
-
-    public delegate void TransferringEventHandler(object sender, TransferringEventArgs args);
 }

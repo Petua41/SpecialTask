@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Linq;
 
-namespace SpecialTask
+namespace SpecialTask.Helpers
 {
     /// <summary>
     /// Представляет упорядоченную коллекцию пар "ключ-значение", не требующую уникальность ключей
@@ -100,41 +99,6 @@ namespace SpecialTask
             MyMap<K, V> result = (MyMap<K, V>)a.Clone();
             foreach (KeyValuePair<K, V> kvp in b) result.Add(kvp.Key, kvp.Value);
             return result;
-        }
-    }
-
-    class MyMapEnumerator<K, V> : IEnumerator<KeyValuePair<K, V>>
-    {
-        private readonly MyMap<K, V> map;
-        private int pointer = -1;
-
-        public MyMapEnumerator(MyMap<K, V> map)
-        {
-            this.map = map;
-        }
-
-        public KeyValuePair<K, V> Current
-        {
-            get
-            {
-                try { return map[pointer]; }
-                catch (IndexOutOfRangeException) { throw new InvalidOperationException(); }
-            }
-        }
-
-        object IEnumerator.Current => Current;
-
-        public void Dispose() { }
-
-        public bool MoveNext()
-        {
-            pointer++;
-            return pointer < map.Count;
-        }
-
-        public void Reset()
-        {
-            pointer = -1;
         }
     }
 }

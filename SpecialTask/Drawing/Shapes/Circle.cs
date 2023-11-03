@@ -28,8 +28,6 @@ namespace SpecialTask.Drawing.Shapes
 
             ATTRS_TO_EDIT = new() { { "centerX", "Center X"}, { "centerY", "Center Y" },
             { "radius", "Radius" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
-
-            WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
         public Circle(Circle old) : this(old.CenterX, old.CenterY, old.Color, old.Radius, old.LineThickness) { }

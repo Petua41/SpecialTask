@@ -1,7 +1,8 @@
-﻿using System;
+﻿using SpecialTask.Helpers;
+using SpecialTask.Helpers.CommandHelpers;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SpecialTask.Helpers.CommandHelpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {

@@ -1,4 +1,4 @@
-﻿using SpecialTask;
+﻿using SpecialTask.Helpers;
 
 namespace SpecialTaskTest
 {

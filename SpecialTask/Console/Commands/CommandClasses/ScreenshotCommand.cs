@@ -1,10 +1,7 @@
-﻿using System;
+﻿using SpecialTask.Helpers;
+using System;
 using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -13,25 +10,16 @@ namespace SpecialTask.Console.Commands.CommandClasses
     /// </summary>
     class ScreenshotCommand : ICommand
     {
-        private readonly WindowManager receiver;
-
         private string filename;
 
         public ScreenshotCommand(object[] args)
         {
-            receiver = WindowManager.Instance;
             filename = (string)args[0];
         }
 
         public void Execute()
         {
-            Canvas canvas = receiver.Canvas;
-
-            double width = canvas.ActualWidth;
-            double height = canvas.ActualHeight;
-
-            RenderTargetBitmap bmp = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
-            bmp.Render(canvas);
+            BitmapSource bmp = CurrentWindow.CanvasBitmapSource;
 
             PngBitmapEncoder encoder = new();
             encoder.Frames.Add(BitmapFrame.Create(bmp));

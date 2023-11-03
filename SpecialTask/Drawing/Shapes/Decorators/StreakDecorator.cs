@@ -18,8 +18,6 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             this.streakTexture = streakTexture;
 
             ATTRS_TO_EDIT = new() { { "streakColor", "Streak color" }, { "streakTexture", "Streak texture" } };
-
-            WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
         public StreakDecorator(StreakDecorator old) : this(old.DecoratedShape, old.StreakColor, old.StreakTexture) { }
@@ -59,7 +57,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
         public override void Destroy()
         {
             decoratedShape?.Destroy();
-            WindowManager.Instance.RemoveFromCurrentWindow(this);
+            CurrentWindow.RemoveShape(this);
         }
 
         public override Dictionary<string, object> Accept()
@@ -111,7 +109,6 @@ namespace SpecialTask.Drawing.Shapes.Decorators
 
                 System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
                 shape.Fill = streakTexture.GetWPFTexture(streakColor);
-                decoratedShape.Destroy();               // Shape displays itself in constructor, so we should destroy it
 
                 wpfShape = shape;
                 return shape;

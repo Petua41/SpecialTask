@@ -23,9 +23,10 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Execute()
         {
-            _ = new SelectionMarker(leftTopX, leftTopY, rightBottomX, rightBottomY);
+            SelectionMarker marker = new(leftTopX, leftTopY, rightBottomX, rightBottomY);
+            marker.Display();
 
-            SelectPasteHandler.SaveArea(leftTopX, leftTopY, rightBottomX, rightBottomY);
+            SelectionMemento.SaveArea(leftTopX, leftTopY, rightBottomX, rightBottomY);
         }
 
         public void Unexecute()

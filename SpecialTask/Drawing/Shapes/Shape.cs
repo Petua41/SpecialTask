@@ -17,17 +17,22 @@ namespace SpecialTask.Drawing
 
         public abstract object Edit(string attribute, string value);
 
+        public virtual void Display()
+        {
+            CurrentWindow.AddShape(this);
+        }
+
         // It`s kinda template method
         public virtual void Redraw()
         {
             Destroy();
             NullifyWPFShape();
-            WindowManager.Instance.DisplayOnCurrentWindow(this);
+            Display();
         }
 
         public virtual void Destroy()
         {
-            WindowManager.Instance.RemoveFromCurrentWindow(this);
+            CurrentWindow.RemoveShape(this);
         }
 
         public abstract Dictionary<string, object> Accept();

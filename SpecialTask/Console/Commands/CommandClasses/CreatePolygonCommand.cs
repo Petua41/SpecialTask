@@ -35,7 +35,10 @@ namespace SpecialTask.Console.Commands.CommandClasses
         public void Execute()
         {
             receiver = new Polygon(points, lineThickness, color);
+
             if (streak) receiver = new StreakDecorator(receiver, streakColor, streakTexture);
+
+            receiver.Display();
         }
 
         public void Unexecute()

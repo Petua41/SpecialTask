@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace SpecialTask
+namespace SpecialTask.Helpers
 {
     /// <summary>
     /// It`s like <see cref="Stack{T}"/>, but number of it`s elements is never greater than capacity
@@ -119,40 +119,5 @@ namespace SpecialTask
             list.RemoveAt(0);
             return result;
         }
-    }
-
-    class LimitedStackEnumerator<T> : IEnumerator<T>
-    {
-        private int pointer = -1;
-        private readonly LimitedStack<T> deque;
-
-        public LimitedStackEnumerator(LimitedStack<T> deque)
-        {
-            this.deque = deque;
-        }
-
-        public T Current
-        {
-            get
-            {
-                try { return deque[pointer]; }
-                catch (IndexOutOfRangeException) { throw new InvalidOperationException(); }
-            }
-        }
-
-        object? IEnumerator.Current => Current;
-
-        public bool MoveNext()
-        {
-            pointer++;
-            return pointer < deque?.Count;
-        }
-
-        public void Reset()
-        {
-            pointer = -1;
-        }
-
-        public void Dispose() { }
     }
 }

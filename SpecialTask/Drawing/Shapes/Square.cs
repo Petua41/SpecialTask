@@ -31,8 +31,6 @@ namespace SpecialTask.Drawing.Shapes
             ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" },
             { "rightBottomX", "Right-bottom X" }, { "rightBottomY", "Right-bottom Y" }, { "lineThickness", "Outline thickness" },
             { "color", "Outline color" } };
-
-            WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
         public Square(Square old) : this(old.LeftTopX, old.LeftTopY, old.RightBottomX, old.RightBottomY, old.Color, old.LineThickness) { }

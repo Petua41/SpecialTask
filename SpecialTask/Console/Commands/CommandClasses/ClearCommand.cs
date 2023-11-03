@@ -1,5 +1,6 @@
 ﻿using SpecialTask.Drawing;
 using System.Collections.Generic;
+using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -8,18 +9,11 @@ namespace SpecialTask.Console.Commands.CommandClasses
     /// </summary>
     class ClearCommand : ICommand
     {
-        private readonly WindowManager receiver;
-
         private List<Shape> destroyedShapes = new();
-
-        public ClearCommand()
-        {
-            receiver = WindowManager.Instance;
-        }
 
         public void Execute()
         {
-            destroyedShapes = new(receiver.ShapesOnCurrentWindow);
+            destroyedShapes = new(CurrentWindow.Shapes);
 
             foreach (Shape shape in destroyedShapes) shape.Destroy();
         }

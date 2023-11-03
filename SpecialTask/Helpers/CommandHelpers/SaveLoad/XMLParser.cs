@@ -43,7 +43,9 @@ namespace SpecialTask.Helpers.CommandHelpers.SaveLoad
                     _ => throw new UnknownShapeException()
                 };
 
-                if (dict.ContainsKey("streak") && dict["streak"] == "true") ParseStreakDecorator(dict, shape);
+                if (dict.ContainsKey("streak") && dict["streak"] == "true") shape = ParseStreakDecorator(dict, shape);
+
+                shape.Display();
             }
             catch (Exception ex) when (ex is FormatException or KeyNotFoundException) { throw new LoadXMLError(); }
         }
@@ -103,14 +105,14 @@ namespace SpecialTask.Helpers.CommandHelpers.SaveLoad
             return new(points, lineThickness, color);
         }
 
-        private static void ParseStreakDecorator(Dictionary<string, string> dict, Shape shape)
+        private static StreakDecorator ParseStreakDecorator(Dictionary<string, string> dict, Shape shape)
         {
             try
             {
                 EColor streakColor = ColorsController.Parse(dict["streakColor"]);
                 EStreakTexture streakTexture = TextureController.Parse(dict["streakTexture"]);
 
-                StreakDecorator _ = new(shape, streakColor, streakTexture);
+                return new(shape, streakColor, streakTexture);
             }
             catch (KeyNotFoundException) { throw new LoadXMLError(); }
         }

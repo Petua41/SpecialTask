@@ -18,15 +18,18 @@ namespace SpecialTask.Drawing.Shapes
         {
             square = new(leftTopX, leftTopY, rightBottomX, rightBottomY, EColor.Black, 1);
             uniqueName = GetNextUniqueName();
-
-            WindowManager.Instance.DisplayOnCurrentWindow(this);
-
-            DestroyAfterDelay(5000);
         }
 
         public static new string GetNextUniqueName()
         {
             return $"SelectionMarker_{firstAvailibleUniqueNumber++}";
+        }
+
+        public override void Display()
+        {
+            square.Display();
+
+            DestroyAfterDelay(5000);
         }
 
         public override object Edit(string attribute, string value) { throw new InvalidOperationException(); }

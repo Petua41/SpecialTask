@@ -5,7 +5,7 @@ using SpecialTask.Drawing.Shapes;
 
 namespace SpecialTask.Helpers
 {
-    static class SelectPasteHandler
+    static class SelectionMemento
     {
         private static List<Shape> savedShapes = new();
         private static int savedLeftTopX = 0;
@@ -13,11 +13,9 @@ namespace SpecialTask.Helpers
 
         public static void SaveArea(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY)
         {
-            savedShapes = (from shape in WindowManager.Instance.ShapesOnCurrentWindow
-                           where shape is not SelectionMarker &&
-                           leftTopX <= shape.Center.X && shape.Center.X <= rightBottomX &&
-                           leftTopY <= shape.Center.Y && shape.Center.Y <= rightBottomY
-                           select shape).ToList();
+            savedShapes = CurrentWindow.Shapes.Where(sh => sh is not SelectionMarker &&
+                leftTopX <= sh.Center.X && sh.Center.X <= rightBottomX &&
+                leftTopY < sh.Center.Y && sh.Center.Y <= rightBottomY).ToList();
 
             savedLeftTopX = leftTopX;
             savedLeftTopY = leftTopY;
@@ -31,6 +29,8 @@ namespace SpecialTask.Helpers
             foreach (Shape shape in savedShapes)
             {
                 Shape sh = shape.Clone();
+
+                sh.Display();
 
                 sh.MoveXBy(xOffset);
                 sh.MoveYBy(yOffset);

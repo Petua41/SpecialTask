@@ -31,8 +31,6 @@ namespace SpecialTask.Drawing.Shapes
             ATTRS_TO_EDIT = new() { { "firstX", "First X"}, { "firstY", "First Y" },
             { "secondX", "Second X" }, { "secondY", "Second Y" }, { "lineThickness", "Line thickness" },
             { "color", "Line color" } };
-
-            WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
         public Line(Line old) : this(old.FirstX, old.FirstY, old.SecondX, old.SecondY, old.Color, old.LineThickness) { }

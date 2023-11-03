@@ -11,8 +11,6 @@ namespace SpecialTask.Console.Commands.CommandClasses
     /// </summary>
     class EditLayerCommand : ICommand
     {
-        private readonly WindowManager receiver;
-
         private readonly string uniqueName;
         private readonly ELayerDirection direction;
 
@@ -21,7 +19,6 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public EditLayerCommand(string uniqueName, ELayerDirection direction)
         {
-            receiver = WindowManager.Instance;
             this.uniqueName = uniqueName;
             this.direction = direction;
         }
@@ -33,19 +30,19 @@ namespace SpecialTask.Console.Commands.CommandClasses
                 switch (direction)
                 {
                     case ELayerDirection.Forward:
-                        oldLayer = receiver.BringForward(uniqueName);
+                        oldLayer = CurrentWindow.BringForward(uniqueName);
                         layerChanged = true;
                         break;
                     case ELayerDirection.Backward:
-                        oldLayer = receiver.SendBackward(uniqueName);
+                        oldLayer = CurrentWindow.SendBackward(uniqueName);
                         layerChanged = true;
                         break;
                     case ELayerDirection.Front:
-                        oldLayer = receiver.BringToFront(uniqueName);
+                        oldLayer = CurrentWindow.BringToFront(uniqueName);
                         layerChanged = true;
                         break;
                     case ELayerDirection.Back:
-                        oldLayer = receiver.SendToBack(uniqueName);
+                        oldLayer = CurrentWindow.SendToBack(uniqueName);
                         layerChanged = true;
                         break;
                 }
@@ -65,7 +62,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
                 switch (direction)
                 {
                     case ELayerDirection.Forward:
-                        try { receiver.SendBackward(uniqueName); }
+                        try { CurrentWindow.SendBackward(uniqueName); }
                         catch (InvalidOperationException)
                         {
                             Logger.Instance.Error($"[undo] Cannot send {uniqueName} backward: already on back");
@@ -73,7 +70,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
                         }
                         break;
                     case ELayerDirection.Backward:
-                        try { receiver.BringForward(uniqueName); }
+                        try { CurrentWindow.BringForward(uniqueName); }
                         catch (InvalidOperationException)
                         {
                             Logger.Instance.Error($"[undo] Cannot bring {uniqueName} forward: already on top");
@@ -81,12 +78,12 @@ namespace SpecialTask.Console.Commands.CommandClasses
                         }
                         break;
                     case ELayerDirection.Front:
-                        try { receiver.MoveToLayer(uniqueName, oldLayer); }
-                        catch (ArgumentException) { receiver.SendToBack(uniqueName); }
+                        try { CurrentWindow.MoveToLayer(uniqueName, oldLayer); }
+                        catch (ArgumentException) { CurrentWindow.SendToBack(uniqueName); }
                         break;
                     case ELayerDirection.Back:
-                        try { receiver.MoveToLayer(uniqueName, oldLayer); }
-                        catch (ArgumentException) { receiver.BringToFront(uniqueName); }
+                        try { CurrentWindow.MoveToLayer(uniqueName, oldLayer); }
+                        catch (ArgumentException) { CurrentWindow.BringToFront(uniqueName); }
                         break;
                 }
             }

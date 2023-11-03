@@ -25,8 +25,6 @@ namespace SpecialTask.Drawing.Shapes
             uniqueName = GetNextUniqueName();
 
             ATTRS_TO_EDIT = new() { { "points", "Points" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
-
-            WindowManager.Instance.DisplayOnCurrentWindow(this);
         }
 
         public Polygon(Polygon old) : this(old.points, old.lineThickness, old.color) { }
