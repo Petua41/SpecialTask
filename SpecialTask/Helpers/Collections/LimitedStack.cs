@@ -95,7 +95,7 @@ namespace SpecialTask.Helpers
             {
                 for (int i = 0; i < Count; i++)
                 {
-                    if (this[i] == null && other[i] == null) return true;
+                    if (this[i] is null && other[i] is null) return true;
                     if (!this[i]?.Equals(other[i]) ?? false) return false;
                 }
                 return true;

@@ -80,7 +80,7 @@ namespace SpecialTask.Drawing.Shapes
         {
             get
             {
-                if (base.wpfShape != null) return base.wpfShape;
+                if (base.wpfShape is not null) return base.wpfShape;
 
                 System.Windows.Shapes.Shape wpfShape = new WPFText
                 {
@@ -121,7 +121,7 @@ namespace SpecialTask.Drawing.Shapes
         {
             get
             {
-                if (wpfShape == null) return (0, 0);
+                if (wpfShape is null) return (0, 0);
                 return (LeftTopX + (int)(wpfShape.Width / 2), LeftTopY + (int)(wpfShape.Height / 2));
             }
         }

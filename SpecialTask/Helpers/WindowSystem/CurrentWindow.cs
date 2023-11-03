@@ -28,7 +28,7 @@ namespace SpecialTask.Helpers
 
         public static int SendBackward(string uniqueName)
         {
-            return Window.SendBackward(uniqueName);
+            return Window.SendBackwards(uniqueName);
         }
 
         public static int BringForward(string uniqueName)
@@ -54,8 +54,8 @@ namespace SpecialTask.Helpers
         /// <summary>
         /// Gets <see cref="BitmapSource"/>, containing an image of current canvas` state
         /// </summary>
-        // I could return Canvas, but this method guarantees, that Canvas won`t be used for evil
         public static BitmapSource CanvasBitmapSource
+        // I could return Canvas, but this method guarantees, that Canvas won`t be used for evil
         {
             get
             {

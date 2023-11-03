@@ -91,7 +91,7 @@ namespace SpecialTask.Drawing.Shapes
         {
             get
             {
-                if (base.wpfShape != null) return base.wpfShape;
+                if (base.wpfShape is not null) return base.wpfShape;
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Rectangle
                 {

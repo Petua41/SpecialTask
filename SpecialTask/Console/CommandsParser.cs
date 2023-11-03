@@ -149,7 +149,7 @@ namespace SpecialTask.Console
 
             object? defaultValue = null;
             string? defValueString = elem.Attribute("defaultValue")?.Value;
-            if (defValueString != null) defaultValue = type.ParseValue(defValueString);     // we leave defaultValue null, if there`s no such attribute
+            if (defValueString is not null) defaultValue = type.ParseValue(defValueString);     // we leave defaultValue null, if there`s no such attribute
 
             return new ConsoleCommandArgument
             {
@@ -186,7 +186,7 @@ namespace SpecialTask.Console
                         MiddleConsole.HighConsole.DisplayError($"Missing required argument {argument.LongArgument}. Try {consoleCommand.neededUserInput} --help");
                         throw new ArgumentParsingError();
                     }
-                    else if (argument.DefaultValue != null)
+                    else if (argument.DefaultValue is not null)
                     {
                         arguments.Add(argument.CommandParameterName, argument.DefaultValue);
                     }
@@ -231,7 +231,7 @@ namespace SpecialTask.Console
         private static void DisplayHelp(ConsoleCommand command)
         {
             string? help = command.help;
-            if (help == null) MiddleConsole.HighConsole.DisplayError($"Help for {command.neededUserInput} not found");
+            if (help is null) MiddleConsole.HighConsole.DisplayError($"Help for {command.neededUserInput} not found");
             else MiddleConsole.HighConsole.Display(help);
         }
 

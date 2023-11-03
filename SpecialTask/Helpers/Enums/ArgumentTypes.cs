@@ -18,7 +18,7 @@ namespace SpecialTask.Helpers
 
         public static EArgumentType ParseType(string? str)
         {
-            if (str == null) return EArgumentType.PseudoBool;
+            if (str is null) return EArgumentType.PseudoBool;
 
             try { return stringToType[str.ToLower()]; }
             catch (KeyNotFoundException) { return EArgumentType.PseudoBool; }       // all that cannot be recognized is bool

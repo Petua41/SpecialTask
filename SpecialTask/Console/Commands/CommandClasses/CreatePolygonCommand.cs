@@ -43,7 +43,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Unexecute()
         {
-            if (receiver == null) throw new InvalidOperationException();
+            if (receiver is null) throw new InvalidOperationException();
             receiver.Destroy();
         }
     }

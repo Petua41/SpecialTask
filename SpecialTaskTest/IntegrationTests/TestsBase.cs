@@ -83,7 +83,7 @@ namespace SpecialTaskTest.IntegrationTests
 
         private static bool CompareBitmaps(Bitmap bmp1, Bitmap bmp2)
         {
-            if (bmp1 == null || bmp2 == null)
+            if (bmp1 is null || bmp2 is null)
                 return false;
             if (Equals(bmp1, bmp2))
                 return true;

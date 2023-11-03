@@ -242,7 +242,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Unexecute()
         {
-            if (receiver == null)
+            if (receiver is null)
             {
                 Logger.Instance.Warning("Edit command unexecute before execute. Maybe execute was interrupted by keyboard or invalid input");
             }

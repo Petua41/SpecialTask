@@ -245,10 +245,10 @@ namespace SpecialTaskConverter
 			string? streakColor = inElem.Attribute("streakColor")?.Value;
 			string? streakTexture = inElem.Attribute("streakTexture")?.Value;
 
-			if (streakColor == null || streakTexture == null) return;
+			if (streakColor is null || streakTexture is null) return;
 
 			XAttribute? streak = ConvertTexture(streakColor, streakTexture);
-			if (streak != null) outElem.Add(streak);
+			if (streak is not null) outElem.Add(streak);
 		}
 
 		private XAttribute? ConvertTexture(string color, string texture)

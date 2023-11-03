@@ -30,9 +30,9 @@ namespace SpecialTask.Helpers.Iterators
         {
             int IComparer<Shape>.Compare(Shape? x, Shape? y)
             {
-                if (x == null && y == null) return 0;
-                if (x == null) return -1;
-                if (y == null) return 1;
+                if (x is null && y is null) return 0;
+                if (x is null) return -1;
+                if (y is null) return 1;
 
                 (int firstX, int firstY) = x.Center;
                 (int secondX, int secondY) = y.Center;

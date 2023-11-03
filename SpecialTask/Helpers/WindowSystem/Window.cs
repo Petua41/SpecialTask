@@ -54,83 +54,70 @@ namespace SpecialTask.Helpers.WindowSystem
             }
         }
 
-        // TODO: this and further methods MUST be rewritten using .FindIndex
-        public int SendBackward(string uniqueName)
+        public int SendBackwards(string uniqueName)
         {
             if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
-            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
-            {
-                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
-                {
-                    if (i == 0) throw new InvalidOperationException();
+            int idx = allShapesOnThisWindow.FindIndex(sh => sh.UniqueName == uniqueName);
 
-                    (zOrder[i], zOrder[i - 1]) = (zOrder[i - 1], zOrder[i]);
+            if (idx < 0) throw new ShapeNotFoundException();
 
-                    int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i].WPFShape);
-                    int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i - 1].WPFShape);
+            if (idx == 0) throw new InvalidOperationException();        // shape is already on back
 
-                    Panel.SetZIndex(allShapesOnThisWindow[i].WPFShape, secondCanvasZ);
-                    Panel.SetZIndex(allShapesOnThisWindow[i - 1].WPFShape, firstCanvasZ);
+            (zOrder[idx], zOrder[idx - 1]) = (zOrder[idx - 1], zOrder[idx]);
 
-                    return i;
-                }
-            }
-            throw new ShapeNotFoundException();
+            int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[idx].WPFShape);
+            int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[idx - 1].WPFShape);
+
+            Panel.SetZIndex(allShapesOnThisWindow[idx].WPFShape, secondCanvasZ);
+            Panel.SetZIndex(allShapesOnThisWindow[idx - 1].WPFShape, firstCanvasZ);
+
+            return idx;
         }
 
-        public int BringForward(string uniqueName)
+        public int BringForward(string uniqueName) 
         {
             if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
-            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
-            {
-                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
-                {
-                    if (i == allShapesOnThisWindow.Count - 1) throw new InvalidOperationException();
+            int idx = allShapesOnThisWindow.FindIndex(sh => sh.UniqueName == uniqueName);
 
-                    (zOrder[i], zOrder[i + 1]) = (zOrder[i + 1], zOrder[i]);
+            if (idx < 0) throw new ShapeNotFoundException();
 
-                    int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i].WPFShape);
-                    int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i + 1].WPFShape);
+            if (idx == allShapesOnThisWindow.Count - 1) throw new InvalidOperationException();        // shape is already on top
 
-                    Panel.SetZIndex(allShapesOnThisWindow[i].WPFShape, secondCanvasZ);
-                    Panel.SetZIndex(allShapesOnThisWindow[i + 1].WPFShape, firstCanvasZ);
+            (zOrder[idx], zOrder[idx + 1]) = (zOrder[idx + 1], zOrder[idx]);
 
-                    return i;
-                }
-            }
-            throw new ShapeNotFoundException();
+            int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[idx].WPFShape);
+            int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[idx + 1].WPFShape);
+
+            Panel.SetZIndex(allShapesOnThisWindow[idx].WPFShape, secondCanvasZ);
+            Panel.SetZIndex(allShapesOnThisWindow[idx + 1].WPFShape, firstCanvasZ);
+
+            return idx;
         }
 
         public int SendToBack(string uniqueName)
         {
             if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
-            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
-            {
-                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
-                {
-                    for (int j = i; j > 0; j--) SendBackward(allShapesOnThisWindow[j].UniqueName);
-                    return i;
-                }
-            }
-            throw new ShapeNotFoundException();
+            int idx = allShapesOnThisWindow.FindIndex(sh => sh.UniqueName == uniqueName);
+
+            if (idx < 0) throw new ShapeNotFoundException();
+
+            for (int j = idx; j > 0; j--) SendBackwards(allShapesOnThisWindow[j].UniqueName);
+            return idx;
         }
 
         public int BringToFront(string uniqueName)
         {
             if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 
-            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
-            {
-                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
-                {
-                    for (int j = i; j < allShapesOnThisWindow.Count - 1; j++) BringForward(allShapesOnThisWindow[j].UniqueName);
-                    return i;
-                }
-            }
-            throw new ShapeNotFoundException();
+            int idx = allShapesOnThisWindow.FindIndex(sh => sh.UniqueName == uniqueName);
+
+            if (idx < 0) throw new ShapeNotFoundException();
+
+            for (int j = idx; j < allShapesOnThisWindow.Count - 1; j++) BringForward(allShapesOnThisWindow[j].UniqueName);
+            return idx;
         }
 
         public void MoveToLayer(string uniqueName, int newLayer)
@@ -139,35 +126,25 @@ namespace SpecialTask.Helpers.WindowSystem
 
             if (newLayer < 0 || newLayer > allShapesOnThisWindow.Count) throw new InvalidOperationException();
 
-            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
-            {
-                if (uniqueName == allShapesOnThisWindow[i].UniqueName)
-                {
-                    (zOrder[i], zOrder[newLayer]) = (zOrder[newLayer], zOrder[i]);
+            int idx = allShapesOnThisWindow.FindIndex(sh => sh.UniqueName == uniqueName);
 
-                    int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[i].WPFShape);
-                    int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[newLayer].WPFShape);
+            if (idx < 0) throw new ShapeNotFoundException();
 
-                    Panel.SetZIndex(allShapesOnThisWindow[i].WPFShape, secondCanvasZ);
-                    Panel.SetZIndex(allShapesOnThisWindow[newLayer].WPFShape, firstCanvasZ);
+            (zOrder[idx], zOrder[newLayer]) = (zOrder[newLayer], zOrder[idx]);
 
-                    return;
-                }
-            }
-            throw new ShapeNotFoundException();
+            int firstCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[idx].WPFShape);
+            int secondCanvasZ = Panel.GetZIndex(allShapesOnThisWindow[newLayer].WPFShape);
+
+            Panel.SetZIndex(allShapesOnThisWindow[idx].WPFShape, secondCanvasZ);
+            Panel.SetZIndex(allShapesOnThisWindow[newLayer].WPFShape, firstCanvasZ);
+
+            return;
         }
 
         private void RemoveShapeFromLists(string uniqueName)
         {
-            int index = -1;
-            for (int i = 0; i < allShapesOnThisWindow.Count; i++)
-            {
-                if (allShapesOnThisWindow[i].UniqueName == uniqueName)
-                {
-                    index = i;
-                    break;
-                }
-            }
+            int index = allShapesOnThisWindow.FindIndex(sh => sh.UniqueName == uniqueName);
+
             if (index >= 0)             // if cannot find, no problem
             {
                 allShapesOnThisWindow.RemoveAt(index);
