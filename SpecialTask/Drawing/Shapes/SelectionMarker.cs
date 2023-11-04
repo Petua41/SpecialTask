@@ -1,8 +1,5 @@
 ﻿using SpecialTask.Drawing.BrushPrototypes;
 using SpecialTask.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace SpecialTask.Drawing.Shapes

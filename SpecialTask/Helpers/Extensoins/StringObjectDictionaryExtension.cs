@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SpecialTask.Helpers.Extensoins
+﻿namespace SpecialTask.Helpers.Extensoins
 {
     static class StringKeysDictionaryExtension
     {

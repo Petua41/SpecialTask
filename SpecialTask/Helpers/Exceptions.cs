@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpecialTask.Exceptions
+﻿namespace SpecialTask.Exceptions
 {
     /// <summary>
     /// Возникает, когда при редактировании фигуры невозможно привести переданное значение к нужному типу

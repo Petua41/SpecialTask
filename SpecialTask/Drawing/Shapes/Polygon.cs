@@ -1,8 +1,5 @@
 ﻿using SpecialTask.Exceptions;
 using SpecialTask.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static SpecialTask.Helpers.Extensoins.PointListExtensions;

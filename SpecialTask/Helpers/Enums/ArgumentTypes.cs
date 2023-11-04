@@ -1,7 +1,4 @@
-﻿using SpecialTask.Drawing;
-using SpecialTask.Helpers.Extensoins;
-using System;
-using System.Collections.Generic;
+﻿using SpecialTask.Helpers.Extensoins;
 
 namespace SpecialTask.Helpers
 {

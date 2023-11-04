@@ -1,13 +1,9 @@
-﻿using SpecialTask.Drawing.Shapes;
+﻿using SpecialTask.Drawing;
+using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
-using SpecialTask.Drawing;
-using SpecialTask.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SpecialTask.Exceptions;
 using System.Xml.Linq;
 using static SpecialTask.Helpers.Extensoins.PointListExtensions;
-using SpecialTask.Exceptions;
 
 namespace SpecialTask.Helpers.CommandHelpers.SaveLoad
 {
@@ -123,7 +119,7 @@ namespace SpecialTask.Helpers.CommandHelpers.SaveLoad
                 string leftTopX = shapeAttrubutes["leftTopX"].ToString() ?? "0";
                 string leftTopY = shapeAttrubutes["leftTopY"].ToString() ?? "0";
                 string fontSize = shapeAttrubutes["fontSize"].ToString() ?? "0";
-                string textValue = shapeAttrubutes["textValue"].ToString() ?? "";
+                string textValue = shapeAttrubutes["textValue"].ToString() ?? string.Empty;
                 string color = shapeAttrubutes["color"].ToString() ?? "none";
 
                 return GenerateXML("text", new()

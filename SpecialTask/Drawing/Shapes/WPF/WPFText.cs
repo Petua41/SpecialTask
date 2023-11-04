@@ -9,7 +9,7 @@ namespace SpecialTask.Drawing.Shapes.WPF
         private int leftTopX = 0;
         private int leftTopY = 0;
         private int fontSize = 0;
-        private string textValue = "";
+        private string textValue = string.Empty;
         private Brush brush = Brushes.Transparent;
 
         private readonly Typeface typeface = new("Calibri");

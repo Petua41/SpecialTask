@@ -264,7 +264,7 @@ namespace SpecialTaskConverter
                 "HorizontalTransparentToColorGradient" => $"url('#{AddLinearTransparencyGradient(color)}')",
 				"HorizontalRainbow" => $"url('#{AddHorizontalRainbowGradient()}')",
                 "Water" => $"url('#{AddWaterTexture()}')",
-                _ => ""			// other values are not currently supported
+                _ =>string.Empty			// other values are not currently supported
             };
 
 			if (fill.Length > 0) return new("fill", fill);

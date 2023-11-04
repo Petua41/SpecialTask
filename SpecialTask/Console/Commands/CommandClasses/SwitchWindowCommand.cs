@@ -1,6 +1,4 @@
-﻿using System;
-using SpecialTask.Console;
-using SpecialTask.Helpers;
+﻿using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -25,7 +23,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (ArgumentException)
             {
                 Logger.Instance.Error($"Trying to switch to window {numberOfWindow}, but window {numberOfWindow} doesn`t exist");
-                MiddleConsole.HighConsole.DisplayError($"Window {numberOfWindow} doesn`t exist!");
+                HighConsole.DisplayError($"Window {numberOfWindow} doesn`t exist!");
             }
         }
 

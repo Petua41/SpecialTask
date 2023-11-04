@@ -1,8 +1,5 @@
-﻿using System;
-using SpecialTask.Console;
+﻿using SpecialTask.Exceptions;
 using SpecialTask.Helpers;
-using SpecialTask.Drawing.Shapes.Decorators;
-using SpecialTask.Exceptions;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -66,7 +63,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
                         catch (InvalidOperationException)
                         {
                             Logger.Instance.Error($"[undo] Cannot send {uniqueName} backward: already on back");
-                            MiddleConsole.HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on back");
+                            HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on back");
                         }
                         break;
                     case ELayerDirection.Backward:
@@ -74,7 +71,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
                         catch (InvalidOperationException)
                         {
                             Logger.Instance.Error($"[undo] Cannot bring {uniqueName} forward: already on top");
-                            MiddleConsole.HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on top");
+                            HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on top");
                         }
                         break;
                     case ELayerDirection.Front:

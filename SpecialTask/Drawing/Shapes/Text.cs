@@ -1,8 +1,6 @@
 ﻿using SpecialTask.Drawing.Shapes.WPF;
 using SpecialTask.Exceptions;
 using SpecialTask.Helpers;
-using System;
-using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using SpecialTask.Console;
-using SpecialTask.Drawing;
+﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes.Decorators;
-using SpecialTask.Helpers;
-using SpecialTask.Drawing.Shapes;
 using SpecialTask.Exceptions;
+using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -21,8 +14,8 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         private readonly ESortingOrder sortingOrder;
 
-        private List<Shape> listOfShapes = new();
-        private string interString = "";
+        private IReadOnlyList<Shape> listOfShapes = new List<Shape>();
+        private string interString = string.Empty;
         private int selectedNumber = -1;
         private bool hasStreak = false;
 
@@ -36,14 +29,14 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
             IteratorsFacade.SetConcreteIterator(sortingOrder);
 
-            MiddleConsole.HighConsole.SomethingTranferred += OnStringTransferred;
-            MiddleConsole.HighConsole.CtrlCTransferred += OnCtrlCTransferred;
+            HighConsole.SomethingTranferred += OnStringTransferred;
+            HighConsole.CtrlCTransferred += OnCtrlCTransferred;
         }
 
         // TODO: this method is TOO long
         public async void Execute()
         {
-            MiddleConsole.HighConsole.TransferringInput = true;
+            HighConsole.TransferringInput = true;
 
             try
             {
@@ -51,13 +44,13 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
                 if (listOfShapes.Count == 0)
                 {
-                    MiddleConsole.HighConsole.DisplayWarning("Nothing to edit");
+                    HighConsole.DisplayWarning("Nothing to edit");
                     return;
                 }
 
                 DisplayShapeSelectionPrompt((from shape in listOfShapes select shape.UniqueName).ToList());
 
-                await GetSelectedNumber();
+                await GetSelectedNumber();      // maybe pass "limiting" predicate to this method?
 
                 if (selectedNumber >= listOfShapes.Count) throw new InvalidInputException();
 
@@ -104,7 +97,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
                         DisplayNewAttributePrompt(kvp.Value);
 
-                        interString = "";
+                        interString = string.Empty;
 
                         await GetInterString();
 
@@ -140,18 +133,18 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (InvalidInputException)
             {
                 Logger.Instance.Error("Edit: invalid input");
-                MiddleConsole.HighConsole.DisplayError("Invalid input");
+                HighConsole.DisplayError("Invalid input");
             }
             catch (KeyboardInterruptException)
             {
                 Logger.Instance.Error("Edit: keyboard interrupt");
-                MiddleConsole.HighConsole.DisplayError("Kyboard interrupt");
+                HighConsole.DisplayError("Kyboard interrupt");
             }
             finally
             {
-                MiddleConsole.HighConsole.TransferringInput = false;
-                MiddleConsole.HighConsole.NewLine();
-                MiddleConsole.HighConsole.DisplayPrompt();
+                HighConsole.TransferringInput = false;
+                HighConsole.NewLine();
+                HighConsole.DisplayPrompt();
             }
         }
 
@@ -171,54 +164,54 @@ namespace SpecialTask.Console.Commands.CommandClasses
             try { await task; }
             catch (TaskCanceledException) { /* continue */  }
 
-            MiddleConsole.HighConsole.NewLine();
+            HighConsole.NewLine();
             if (ctrlCPressed) throw new KeyboardInterruptException();
         }
 
-        private static void DisplayShapeSelectionPrompt(List<string> lst)
+        private static void DisplayShapeSelectionPrompt(IReadOnlyList<string> lst)
         {
-            MiddleConsole.HighConsole.NewLine();
-            MiddleConsole.HighConsole.Display("Select figure to edit: ");
-            MiddleConsole.HighConsole.NewLine();
+            HighConsole.NewLine();
+            HighConsole.Display("Select figure to edit: ");
+            HighConsole.NewLine();
             for (int i = 0; i < lst.Count - 1; i++)
             {
-                MiddleConsole.HighConsole.Display($"{i}. {lst[i]}");
-                MiddleConsole.HighConsole.NewLine();
+                HighConsole.Display($"{i}. {lst[i]}");      // I could use string.Join, but we need numbers
+                HighConsole.NewLine();
             }
-            MiddleConsole.HighConsole.Display($"{lst.Count - 1}. {lst[^1]}");		// so that there`s no spare NewLine
+            HighConsole.Display($"{lst.Count - 1}. {lst[^1]}");		// so that there`s no spare NewLine
         }
 
         private static void DisplayWhatToEditSelectionPrompt(bool hasDecorator)
         {
-            MiddleConsole.HighConsole.Display("Select what to edit: ");
-            MiddleConsole.HighConsole.NewLine();
-            MiddleConsole.HighConsole.Display($"0. Layer{Environment.NewLine}1. Figure attributes{Environment.NewLine}2. Remove shape");
-            if (!hasDecorator) MiddleConsole.HighConsole.Display($"{Environment.NewLine}3. Add streak");
+            HighConsole.Display("Select what to edit: ");
+            HighConsole.NewLine();
+            HighConsole.Display($"0. Layer{Environment.NewLine}1. Figure attributes{Environment.NewLine}2. Remove shape");
+            if (!hasDecorator) HighConsole.Display($"{Environment.NewLine}3. Add streak");
         }
 
         private static void DisplayLayerOperationSelectionPrompt(string uniqueName)
         {
-            MiddleConsole.HighConsole.Display($"Select what to do with [color:green]{uniqueName}[color]: ");
-            MiddleConsole.HighConsole.NewLine();
-            MiddleConsole.HighConsole.Display(
+            HighConsole.Display($"Select what to do with [color:green]{uniqueName}[color]: ");
+            HighConsole.NewLine();
+            HighConsole.Display(
                 $"0. Send backwards{Environment.NewLine}1. Bring forward{Environment.NewLine}2. Send to back{Environment.NewLine}3. Bring to front");
         }
 
-        private static void DisplayAttributeSelectionPrompt(string uniqueName, List<string> names)
+        private static void DisplayAttributeSelectionPrompt(string uniqueName, IReadOnlyList<string> names)
         {
-            MiddleConsole.HighConsole.Display($"Availible attributes for [color:green]{uniqueName}[color]: ");
-            MiddleConsole.HighConsole.NewLine();
+            HighConsole.Display($"Availible attributes for [color:green]{uniqueName}[color]: ");
+            HighConsole.NewLine();
             for (int i = 0; i < names.Count - 1; i++)
             {
-                MiddleConsole.HighConsole.Display($"{i}. {names[i]}");
-                MiddleConsole.HighConsole.NewLine();
+                HighConsole.Display($"{i}. {names[i]}");
+                HighConsole.NewLine();
             }
-            if (names.Count > 0) MiddleConsole.HighConsole.Display($"{names.Count - 1}. {names[^1]}");				// here too
+            if (names.Count > 0) HighConsole.Display($"{names.Count - 1}. {names[^1]}");				// here too
         }
 
         private static void DisplayNewAttributePrompt(string attrName)
         {
-            MiddleConsole.HighConsole.DisplayQuestion($"Enter new value for {attrName}:");
+            HighConsole.DisplayQuestion($"Enter new value for {attrName}:");
         }
 
         private void OnCtrlCTransferred(object? sender, EventArgs e)

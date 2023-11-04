@@ -1,7 +1,5 @@
 ﻿using SpecialTask.Exceptions;
 using SpecialTask.Helpers;
-using System;
-using System.Collections.Generic;
 
 namespace SpecialTask.Drawing.Shapes.Decorators
 {
@@ -151,7 +149,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
         {
             get
             {
-                if (decoratedShape is null) return "";
+                if (decoratedShape is null) returnstring.Empty;
                 return $"Filled_{decoratedShape.UniqueName}";
             }
         }

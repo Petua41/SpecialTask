@@ -1,5 +1,4 @@
 ﻿using SpecialTask.Helpers;
-using System.Collections.Generic;
 
 namespace SpecialTask.Drawing
 {
@@ -7,7 +6,7 @@ namespace SpecialTask.Drawing
     {
         private static int firstAvailibleUniqueNumber = 0;
         protected System.Windows.Shapes.Shape? wpfShape;
-        protected string uniqueName = "";
+        protected string uniqueName = string.Empty;
         protected MyMap<string, string> ATTRS_TO_EDIT = new();
 
         public static string GetNextUniqueName()

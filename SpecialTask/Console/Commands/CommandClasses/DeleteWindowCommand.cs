@@ -1,6 +1,4 @@
-﻿using System;
-using SpecialTask.Console;
-using SpecialTask.Helpers;
+﻿using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -22,17 +20,17 @@ namespace SpecialTask.Console.Commands.CommandClasses
         public void Execute()
         {
             try
-			{
-				receiver.DestroyWindow(number);
-			}
-			catch (ArgumentException)
+            {
+                receiver.DestroyWindow(number);
+            }
+            catch (ArgumentException)
             {
                 Logger.Instance.Error($"Trying to delete window {number}, but window {number} doesn`t exist");
-                MiddleConsole.HighConsole.DisplayError($"[color:red]Window {number} doesn`t exist![color]");
+                HighConsole.DisplayError($"[color:red]Window {number} doesn`t exist![color]");
             }
-		}
+        }
 
-		public void Unexecute()
+        public void Unexecute()
         {
             Logger.Instance.Warning("Unexecution of window command");
         }

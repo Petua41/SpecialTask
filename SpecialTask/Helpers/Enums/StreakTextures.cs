@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SpecialTask.Drawing.BrushPrototypes;
 using System.Windows;
 using System.Windows.Media;
-using SpecialTask.Drawing.BrushPrototypes;
 
 namespace SpecialTask.Helpers
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using SpecialTask.Console;
-using SpecialTask.Helpers;
-
-namespace SpecialTask.Console.Commands.CommandClasses
+﻿namespace SpecialTask.Console.Commands.CommandClasses
 {
     /// <summary>
 	/// Command to redo undone commands
@@ -14,8 +9,8 @@ namespace SpecialTask.Console.Commands.CommandClasses
         private readonly int number;
 
         public RedoCommand(object[] args)
-        { 
-            number = (int)args[0]; 
+        {
+            number = (int)args[0];
         }
 
         public void Execute()
@@ -24,7 +19,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (InvalidOperationException)
             {
                 Logger.Instance.Warning("Nothing to redo");
-                MiddleConsole.HighConsole.DisplayWarning("Nothing to redo!");
+                HighConsole.DisplayWarning("Nothing to redo!");
             }
         }
 

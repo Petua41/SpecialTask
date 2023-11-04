@@ -1,7 +1,5 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SpecialTask.Helpers.Iterators
 {
@@ -20,7 +18,7 @@ namespace SpecialTask.Helpers.Iterators
             }
         }
 
-        public List<Shape> GetCompleteResult()
+        public IReadOnlyList<Shape> GetCompleteResult()
         {
             List<Shape> rawList = CurrentWindow.Shapes;
             return rawList.OrderBy(sh => sh, new CoordinatesComparer()).Where(sh => sh is not SelectionMarker).ToList();    // Наверное, делать это вручную было бы эффективнее

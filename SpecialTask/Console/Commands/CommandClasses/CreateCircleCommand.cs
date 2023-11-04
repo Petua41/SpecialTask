@@ -1,8 +1,7 @@
-﻿using System;
-using SpecialTask.Drawing;
+﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes;
-using SpecialTask.Helpers;
 using SpecialTask.Drawing.Shapes.Decorators;
+using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {

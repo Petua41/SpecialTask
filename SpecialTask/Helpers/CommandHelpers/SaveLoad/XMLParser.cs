@@ -1,12 +1,8 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
-using SpecialTask.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using SpecialTask.Exceptions;
+using System.Xml.Linq;
 
 namespace SpecialTask.Helpers.CommandHelpers.SaveLoad
 {

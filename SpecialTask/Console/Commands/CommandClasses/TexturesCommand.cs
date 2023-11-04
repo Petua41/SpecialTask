@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SpecialTask.Console;
-using SpecialTask.Drawing;
-using SpecialTask.Helpers;
+﻿using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -16,7 +11,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public TexturesCommand()
         {
-            receiver = MiddleConsole.HighConsole;
+            receiver = HighConsole;
         }
 
         public void Execute()

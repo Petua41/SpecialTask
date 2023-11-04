@@ -1,9 +1,6 @@
-﻿using SpecialTask.Console;
-using SpecialTask.Helpers.CommandHelpers;
+﻿using SpecialTask.Helpers.CommandHelpers;
 using SpecialTaskConverter;
-using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -14,7 +11,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
     {
         private readonly STConverter receiver;
 
-        private readonly string inFilename = "";
+        private readonly string inFilename = string.Empty;
         private readonly string outFilename;
 
         public ExportPDFCommand(object[] args)
@@ -40,7 +37,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (IOException)
             {
                 Logger.Instance.Error($"Cannot export PDF: cannot open {correctedFilename} for writing");
-                MiddleConsole.HighConsole.DisplayError($"Cannot open {correctedFilename} for writing");
+                HighConsole.DisplayError($"Cannot open {correctedFilename} for writing");
             }
         }
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpecialTask.Helpers
+﻿namespace SpecialTask.Helpers
 {
     public class WindowSwitchedEventArgs : EventArgs
     {

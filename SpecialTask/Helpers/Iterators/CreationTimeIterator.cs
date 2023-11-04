@@ -1,7 +1,5 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SpecialTask.Helpers.Iterators
 {
@@ -20,7 +18,7 @@ namespace SpecialTask.Helpers.Iterators
             }
         }
 
-        public List<Shape> GetCompleteResult()
+        public IReadOnlyList<Shape> GetCompleteResult()
         {
             return CurrentWindow.Shapes.Where(sh => sh is not SelectionMarker).ToList();	// TODO: это костыль
         }

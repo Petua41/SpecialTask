@@ -1,5 +1,4 @@
 ﻿using SpecialTask.Drawing;
-using System.Collections.Generic;
 using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses

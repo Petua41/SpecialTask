@@ -1,7 +1,5 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Exceptions;
-using System;
-using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace SpecialTask.Helpers.WindowSystem
@@ -75,7 +73,7 @@ namespace SpecialTask.Helpers.WindowSystem
             return idx;
         }
 
-        public int BringForward(string uniqueName) 
+        public int BringForward(string uniqueName)
         {
             if (allShapesOnThisWindow.Count <= 1) throw new InvalidOperationException();
 

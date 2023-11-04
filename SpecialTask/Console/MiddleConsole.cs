@@ -1,7 +1,6 @@
 ﻿using SpecialTask.Console.Commands;
+using SpecialTask.Console.CommandsParser;
 using SpecialTask.Helpers;
-using System;
-using System.Collections.Generic;
 using System.Windows;
 using static SpecialTask.Helpers.Extensoins.StringExtensions;
 
@@ -48,7 +47,7 @@ namespace SpecialTask.Console
 
         public string Autocomplete(string currentInput)
         {
-            return CommandsParser.Autocomplete(currentInput);
+            return ConsoleCommandsParser.Autocomplete(currentInput);
         }
 
         public void ChangeUndoStackDepth(int depth)
@@ -78,7 +77,7 @@ namespace SpecialTask.Console
 
         public void DisplayGlobalHelp()
         {
-            Display(CommandsParser.globalHelp);
+            Display(XMLCommandsParser.GlobalHelp);
         }
 
         public void DisplayPrompt()
@@ -106,25 +105,25 @@ namespace SpecialTask.Console
                 prevCommands.Add(input);
                 pointer = 0;
 
-                CommandsParser.ParseCommand(input);
+                ConsoleCommandsParser.ParseCommand(input);
             }
         }
 
         public string ProcessDownArrow()
         {
-            if (TransferringInput) return "";
+            if (TransferringInput) returnstring.Empty;
 
             if (pointer > 0) pointer--;
-            else return "";
+            else returnstring.Empty;
 
             return prevCommands[^(pointer + 1)];
         }
 
         public string ProcessUpArrow()
         {
-            if (TransferringInput) return "";
+            if (TransferringInput) returnstring.Empty;
 
-            if (prevCommands.Count == 0) return "";
+            if (prevCommands.Count == 0) returnstring.Empty;
 
             string command = prevCommands[^(pointer + 1)];
             if (pointer + 1 < prevCommands.Count) pointer++;

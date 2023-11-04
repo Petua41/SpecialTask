@@ -1,7 +1,4 @@
-﻿using System;
-using SpecialTask.Console;
-using SpecialTask.Drawing;
-using SpecialTask.Helpers;
+﻿using SpecialTask.Drawing;
 using SpecialTask.Exceptions;
 
 namespace SpecialTask.Console.Commands.CommandClasses
@@ -31,12 +28,12 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (ArgumentException)
             {
                 Logger.Instance.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid attribute");
-                MiddleConsole.HighConsole.DisplayError($"{receiver.UniqueName} has no attribute {attribute}");
+                HighConsole.DisplayError($"{receiver.UniqueName} has no attribute {attribute}");
             }
             catch (ShapeAttributeCastException)
             {
                 Logger.Instance.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid cast");
-                MiddleConsole.HighConsole.DisplayError($"Invalid value for {attribute}: {newValue}");
+                HighConsole.DisplayError($"Invalid value for {attribute}: {newValue}");
             }
         }
 

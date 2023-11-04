@@ -1,6 +1,4 @@
 ﻿using SpecialTask.Exceptions;
-using System;
-using System.Collections.Generic;
 using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands
@@ -30,7 +28,7 @@ namespace SpecialTask.Console.Commands
         public static void Execute(ICommand command)
         {
             try { command.Execute(); }
-            catch (KeyboardInterruptException) { MiddleConsole.HighConsole.DisplayError("Keyboar interrupt"); }
+            catch (KeyboardInterruptException) { HighConsole.DisplayError("Keyboar interrupt"); }
         }
 
         public static void UndoCommands(int numberOfCommands = 1)

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using SpecialTask.Console;
-using SpecialTask.Helpers;
-using SpecialTask.Helpers.CommandHelpers;
+﻿using SpecialTask.Helpers.CommandHelpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -21,7 +17,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (InvalidOperationException)
             {
                 Logger.Instance.Warning("Nothing to save");
-                MiddleConsole.HighConsole.DisplayWarning("File is already saved");
+                HighConsole.DisplayWarning("File is already saved");
             }
         }
 

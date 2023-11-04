@@ -1,9 +1,5 @@
-﻿using System;
+﻿using SpecialTask.Helpers.CommandHelpers;
 using System.IO;
-using SpecialTask.Console;
-using SpecialTask.Helpers;
-using SpecialTask.Exceptions;
-using SpecialTask.Helpers.CommandHelpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -32,18 +28,18 @@ namespace SpecialTask.Console.Commands.CommandClasses
                 if (Directory.Exists(dir))
                 {
                     Logger.Instance.Error($"Cannot save to {filename}: invalid characters");
-                    MiddleConsole.HighConsole.DisplayError($"Filename cannot contain theese characters: {string.Join(string.Empty, Path.GetInvalidFileNameChars())}");
+                    HighConsole.DisplayError($"Filename cannot contain theese characters: {string.Join(string.Empty, Path.GetInvalidFileNameChars())}");
                 }
                 else
                 {
                     Logger.Instance.Error($"Cannot save to {filename}: directory {dir} doesn`t exists");
-                    MiddleConsole.HighConsole.DisplayError($"Directory {dir} doesn`t exist");
+                    HighConsole.DisplayError($"Directory {dir} doesn`t exist");
                 }
             }
             catch (UnauthorizedAccessException)
             {
                 Logger.Instance.Error($"Cannot save to: {filename}: no permissions");
-                MiddleConsole.HighConsole.DisplayError($"you have no permission to write to {filename}. This incident will be reported");
+                HighConsole.DisplayError($"you have no permission to write to {filename}. This incident will be reported");
             }
         }
 

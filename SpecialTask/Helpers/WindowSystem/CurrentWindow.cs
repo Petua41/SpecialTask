@@ -1,8 +1,6 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Helpers.CommandHelpers;
 using SpecialTask.Helpers.WindowSystem;
-using System;
-using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -66,7 +64,7 @@ namespace SpecialTask.Helpers
 
                 RenderTargetBitmap bmp = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
                 bmp.Render(canvas);
-                
+
                 return bmp;
             }
         }

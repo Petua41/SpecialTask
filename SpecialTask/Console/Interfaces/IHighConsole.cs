@@ -1,5 +1,4 @@
-﻿using System;
-using SpecialTask.Helpers;
+﻿using SpecialTask.Helpers;
 
 namespace SpecialTask.Console
 {

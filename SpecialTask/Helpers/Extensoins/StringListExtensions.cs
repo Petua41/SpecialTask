@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace SpecialTask.Helpers.Extensoins
+﻿namespace SpecialTask.Helpers.Extensoins
 {
     /// <summary>
     /// Provides some extensions to <see cref="IList{T}"/> of <see cref="string"/>s
@@ -23,7 +20,7 @@ namespace SpecialTask.Helpers.Extensoins
         {
             if (collection.Count == 0) return string.Empty;
 
-            string lastPrefix = "";
+            string lastPrefix = string.Empty;
             for (int i = 0; i < collection.ShortestLength(); i++)
             {
                 string commonPrefix = collection[0][..(i + 1)];

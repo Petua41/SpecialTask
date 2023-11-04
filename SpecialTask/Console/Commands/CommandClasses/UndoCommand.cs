@@ -1,8 +1,4 @@
-﻿using System;
-using SpecialTask.Console;
-using SpecialTask.Helpers;
-
-namespace SpecialTask.Console.Commands.CommandClasses
+﻿namespace SpecialTask.Console.Commands.CommandClasses
 {
     /// <summary>
     /// Command to undo commands
@@ -23,7 +19,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (InvalidOperationException)
             {
                 Logger.Instance.Error("Noting to undo!");
-                MiddleConsole.HighConsole.DisplayWarning("Nothung to undo!");
+                HighConsole.DisplayWarning("Nothung to undo!");
             }
         }
 

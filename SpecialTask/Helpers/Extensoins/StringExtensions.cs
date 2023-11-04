@@ -17,7 +17,7 @@
                 if (indexOfNextColorChange == -1)
                 {
                     messageSplittedByColors.Add(message, lastColor);
-                    message = "";
+                    message = string.Empty;
                 }
                 else if (indexOfNextColorChange == 0)
                 {

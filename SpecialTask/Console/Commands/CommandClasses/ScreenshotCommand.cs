@@ -1,5 +1,4 @@
 ﻿using SpecialTask.Helpers;
-using System;
 using System.IO;
 using System.Windows.Media.Imaging;
 

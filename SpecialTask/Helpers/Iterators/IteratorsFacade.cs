@@ -1,5 +1,4 @@
 ﻿using SpecialTask.Drawing;
-using System.Collections.Generic;
 using SpecialTask.Helpers.Iterators;
 
 namespace SpecialTask.Helpers
@@ -15,7 +14,7 @@ namespace SpecialTask.Helpers
             concreteIterator = CreationTimeIterator.Instance;    // По-умолчанию CreationTimeIterator
         }
 
-        public static List<Shape> GetCompleteResult()
+        public static IReadOnlyList<Shape> GetCompleteResult()
         {
             return concreteIterator.GetCompleteResult();
         }
@@ -32,6 +31,6 @@ namespace SpecialTask.Helpers
 
     interface IIterator
     {
-        public List<Shape> GetCompleteResult();
+        public IReadOnlyList<Shape> GetCompleteResult();
     }
 }

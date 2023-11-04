@@ -1,8 +1,5 @@
 ﻿using SpecialTask.Helpers;
 using SpecialTask.Helpers.CommandHelpers;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -23,8 +20,8 @@ namespace SpecialTask.Console.Commands.CommandClasses
         {
             receiver = System.Windows.Application.Current;
 
-            MiddleConsole.HighConsole.SomethingTranferred += OnSomethingTransferred;
-            MiddleConsole.HighConsole.CtrlCTransferred += OnCtrlCTransferred;
+            HighConsole.SomethingTranferred += OnSomethingTransferred;
+            HighConsole.CtrlCTransferred += OnCtrlCTransferred;
 
             tokenSource = new();
             task = new Task(EmptyTask, tokenSource.Token);
@@ -34,8 +31,8 @@ namespace SpecialTask.Console.Commands.CommandClasses
         {
             if (SaveLoadFacade.Instance.NeedsSave)
             {
-                MiddleConsole.HighConsole.TransferringInput = true;
-                MiddleConsole.HighConsole.DisplayQuestion("File is not saved. Exit? [y, s, n] (default=n)");
+                HighConsole.TransferringInput = true;
+                HighConsole.DisplayQuestion("File is not saved. Exit? [y, s, n] (default=n)");
 
                 GetInputIfNotSaved();
             }
@@ -52,7 +49,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             try { await task; }
             catch (TaskCanceledException) { /* continue */ }
 
-            MiddleConsole.HighConsole.TransferringInput = false;
+            HighConsole.TransferringInput = false;
 
             switch (answer)
             {
@@ -60,11 +57,11 @@ namespace SpecialTask.Console.Commands.CommandClasses
                     receiver.Shutdown();
                     break;
                 case EYesNoSaveAnswer.No:
-                    MiddleConsole.HighConsole.NewLine();
-                    MiddleConsole.HighConsole.DisplayPrompt();
+                    HighConsole.NewLine();
+                    HighConsole.DisplayPrompt();
                     break;
                 case EYesNoSaveAnswer.Save:
-                    MiddleConsole.HighConsole.Display("saving...");
+                    HighConsole.Display("saving...");
                     CommandsFacade.Execute(new SaveCommand());		// We don`t need to check anything here. SaveLoadFacade will do
                     receiver.Shutdown();
                     break;

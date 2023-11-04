@@ -1,7 +1,5 @@
-﻿using SpecialTask.Console;
-using SpecialTask.Helpers.CommandHelpers;
+﻿using SpecialTask.Helpers.CommandHelpers;
 using SpecialTaskConverter;
-using System;
 using System.IO;
 
 namespace SpecialTask.Console.Commands.CommandClasses
@@ -13,7 +11,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
     {
         private readonly STConverter? receiver;
 
-        private readonly string inFilename = "";
+        private readonly string inFilename = string.Empty;
         private readonly string outFilename;
 
         private readonly bool createdTempFile = false;
@@ -35,7 +33,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (FileNotFoundException)
             {
                 Logger.Instance.Error($"Cannot export SVG: File {inFilename} not found");
-                MiddleConsole.HighConsole.DisplayError($"File {inFilename} not found");
+                HighConsole.DisplayError($"File {inFilename} not found");
             }
         }
 

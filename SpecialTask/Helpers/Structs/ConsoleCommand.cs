@@ -1,9 +1,5 @@
-﻿using SpecialTask.Console;
+﻿using SpecialTask.Exceptions;
 using SpecialTask.Helpers.Extensoins;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SpecialTask.Exceptions;
 
 namespace SpecialTask.Helpers
 {
@@ -33,7 +29,7 @@ namespace SpecialTask.Helpers
             {
                 if (argument.StartsWith(arg.LongArgument) || argument.StartsWith(arg.ShortArgument))
                 {
-                    string rawValue = argument.Replace(arg.LongArgument, "").Replace(arg.ShortArgument, "").Trim();
+                    string rawValue = argument.Replace(arg.LongArgument, string.Empty).Replace(arg.ShortArgument, string.Empty).Trim();
 
                     try
                     {
@@ -44,14 +40,14 @@ namespace SpecialTask.Helpers
                     catch (FormatException)     // Error casting string
                     {
                         string argType = arg.Type.ToString();
-                        MiddleConsole.HighConsole.DisplayError(
+                        HighConsole.DisplayError(
                             $"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}. Try {neededUserInput} --help");
 
                         throw new ArgumentParsingError();
                     }
                 }
             }
-            MiddleConsole.HighConsole.DisplayError($"Unknown argument: {argument}. Try {neededUserInput} -- help");
+            HighConsole.DisplayError($"Unknown argument: {argument}. Try {neededUserInput} -- help");
             throw new ArgumentParsingError();
         }
 
@@ -60,7 +56,7 @@ namespace SpecialTask.Helpers
             int indexOfLastSingleMinus = input.LastIndexOf("-");
             int indexOfLastDoubleMinus = input.LastIndexOf("--");
 
-            if (indexOfLastSingleMinus > indexOfLastDoubleMinus + 1 || indexOfLastDoubleMinus < 0) return "";
+            if (indexOfLastSingleMinus > indexOfLastDoubleMinus + 1 || indexOfLastDoubleMinus < 0) returnstring.Empty;
 
             return input[indexOfLastDoubleMinus..];
         }

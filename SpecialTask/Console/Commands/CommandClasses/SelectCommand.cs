@@ -1,5 +1,5 @@
-﻿using SpecialTask.Helpers;
-using SpecialTask.Drawing.Shapes;
+﻿using SpecialTask.Drawing.Shapes;
+using SpecialTask.Helpers;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {

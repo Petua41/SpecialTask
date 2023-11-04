@@ -1,8 +1,6 @@
-﻿using System.IO;
-using SpecialTask.Console;
+﻿using SpecialTask.Exceptions;
 using SpecialTask.Helpers.CommandHelpers;
-using SpecialTask.Helpers;
-using SpecialTask.Exceptions;
+using System.IO;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -35,12 +33,12 @@ namespace SpecialTask.Console.Commands.CommandClasses
             catch (LoadXMLError)
             {
                 Logger.Instance.Error($"Cannot load {filename}: invalid file format");
-                MiddleConsole.HighConsole.DisplayError("Invalid file format");
+                HighConsole.DisplayError("Invalid file format");
             }
             catch (FileNotFoundException)
             {
                 Logger.Instance.Error($"Cannot load {filename}: file not found");
-                MiddleConsole.HighConsole.DisplayError("File not found");
+                HighConsole.DisplayError("File not found");
             }
         }
 

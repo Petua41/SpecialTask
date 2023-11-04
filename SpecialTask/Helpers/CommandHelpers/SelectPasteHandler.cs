@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SpecialTask.Drawing;
+﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes;
 
 namespace SpecialTask.Helpers

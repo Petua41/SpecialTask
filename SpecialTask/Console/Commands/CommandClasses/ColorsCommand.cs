@@ -1,5 +1,4 @@
 ﻿using SpecialTask.Helpers;
-using System.Linq;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -12,7 +11,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public ColorsCommand()
         {
-            receiver = MiddleConsole.HighConsole;
+            receiver = HighConsole;
         }
 
         public void Execute()

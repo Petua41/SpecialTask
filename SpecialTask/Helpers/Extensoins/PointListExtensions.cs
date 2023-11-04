@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SpecialTask.Helpers;
-
-namespace SpecialTask.Helpers.Extensoins
+﻿namespace SpecialTask.Helpers.Extensoins
 {
     /// <summary>
     /// Provides some extensions to <see cref="List{T}"/> of <see cref="Point"/>s
