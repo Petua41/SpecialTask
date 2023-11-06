@@ -1,4 +1,4 @@
-﻿using SpecialTask.Helpers.CommandHelpers;
+﻿using SpecialTask.Infrastructure.CommandInfrastructure;
 using System.IO;
 
 namespace SpecialTask.Console.Commands.CommandClasses
@@ -27,25 +27,25 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
                 if (Directory.Exists(dir))
                 {
-                    Logger.Instance.Error($"Cannot save to {filename}: invalid characters");
+                    Logger.Error($"Cannot save to {filename}: invalid characters");
                     HighConsole.DisplayError($"Filename cannot contain theese characters: {string.Join(string.Empty, Path.GetInvalidFileNameChars())}");
                 }
                 else
                 {
-                    Logger.Instance.Error($"Cannot save to {filename}: directory {dir} doesn`t exists");
+                    Logger.Error($"Cannot save to {filename}: directory {dir} doesn`t exists");
                     HighConsole.DisplayError($"Directory {dir} doesn`t exist");
                 }
             }
             catch (UnauthorizedAccessException)
             {
-                Logger.Instance.Error($"Cannot save to: {filename}: no permissions");
+                Logger.Error($"Cannot save to: {filename}: no permissions");
                 HighConsole.DisplayError($"you have no permission to write to {filename}. This incident will be reported");
             }
         }
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of save_as command");
+            Logger.Warning("Unexecution of save_as command");
         }
     }
 }

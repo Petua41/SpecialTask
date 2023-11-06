@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Exceptions;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 
 namespace SpecialTask.Drawing.Shapes.Decorators
 {
@@ -26,7 +26,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
 
             if (decoratedShape is null)
             {
-                Logger.Instance.Warning("Trying to edit hanging decorator");
+                Logger.Warning("Trying to edit hanging decorator");
                 return new();
             }
 
@@ -86,7 +86,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             {
                 if (decoratedShape is null)
                 {
-                    Logger.Instance.Error("Trying to get center of hanging decorator");
+                    Logger.Error("Trying to get center of hanging decorator");
                     return (0, 0);
                 }
                 return decoratedShape.Center;
@@ -101,7 +101,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
 
                 if (decoratedShape is null)
                 {
-                    Logger.Instance.Error("Trying to get WPFShape of hanging decorator");
+                    Logger.Error("Trying to get WPFShape of hanging decorator");
                     throw new InvalidOperationException("Hanging decorator!");
                 }
 
@@ -149,7 +149,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
         {
             get
             {
-                if (decoratedShape is null) returnstring.Empty;
+                if (decoratedShape is null) return string.Empty;
                 return $"Filled_{decoratedShape.UniqueName}";
             }
         }

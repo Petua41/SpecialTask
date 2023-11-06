@@ -1,4 +1,5 @@
-﻿using SpecialTask.Helpers.CommandHelpers;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.CommandInfrastructure;
 using SpecialTaskConverter;
 using System.IO;
 
@@ -7,7 +8,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
     /// <summary>
 	/// Export SVG
 	/// </summary>
-	class ExportSVGCommand : ICommand
+	internal class ExportSVGCommand : ICommand
     {
         private readonly STConverter? receiver;
 
@@ -23,23 +24,23 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
             if (inFilename.Length == 0)
             {
-                inFilename = SaveLoadFacade.CorrectFilename(DateTime.Now.ToString().Replace(':', '.'));
+                inFilename = PathsController.CorrectFilename(PathsController.DateTimeFilename, PathsController.DefaultSaveDirectory, ".std");
                 CommandsFacade.Execute(new SaveAsCommand(inFilename));
                 createdTempFile = true;
             }
-            else inFilename = SaveLoadFacade.CorrectFilename(inFilename);
+            else inFilename = PathsController.CorrectFilename(inFilename, PathsController.DefaultSaveDirectory, ".std");
 
             try { receiver = new(inFilename); }
             catch (FileNotFoundException)
             {
-                Logger.Instance.Error($"Cannot export SVG: File {inFilename} not found");
+                Logger.Error($"Cannot export SVG: File {inFilename} not found");
                 HighConsole.DisplayError($"File {inFilename} not found");
             }
         }
 
         public void Execute()
         {
-            receiver?.ToSVG(SaveLoadFacade.CorrectFilename(outFilename, ".svg"));
+            receiver?.ToSVG(PathsController.CorrectFilename(outFilename, PathsController.DefaultSaveDirectory, ".svg"));
 
             if (createdTempFile)        // FIXME: Stream не успевает закрыться до этого момента
             {
@@ -50,7 +51,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of export SVG command");
+            Logger.Warning("Unexecution of export SVG command");
         }
     }
 }

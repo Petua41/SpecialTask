@@ -27,19 +27,19 @@ namespace SpecialTask.Console.Commands.CommandClasses
             try { oldValue = receiver.Edit(attribute, newValue); }
             catch (ArgumentException)
             {
-                Logger.Instance.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid attribute");
+                Logger.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid attribute");
                 HighConsole.DisplayError($"{receiver.UniqueName} has no attribute {attribute}");
             }
             catch (ShapeAttributeCastException)
             {
-                Logger.Instance.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid cast");
+                Logger.Error($"Cannot change {receiver.UniqueName}`s attribute {attribute}: invalid cast");
                 HighConsole.DisplayError($"Invalid value for {attribute}: {newValue}");
             }
         }
 
         public void Unexecute()
         {
-            if (oldValue is null) Logger.Instance.Warning("EditShapeAttributesCommand unexecute before execute. Maybe execute exitted with error.");
+            if (oldValue is null) Logger.Warning("EditShapeAttributesCommand unexecute before execute. Maybe execute exitted with error.");
             else receiver.Edit(attribute, newValue);
         }
     }

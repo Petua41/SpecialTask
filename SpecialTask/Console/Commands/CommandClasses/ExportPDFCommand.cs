@@ -1,4 +1,5 @@
-﻿using SpecialTask.Helpers.CommandHelpers;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.CommandInfrastructure;
 using SpecialTaskConverter;
 using System.IO;
 
@@ -7,7 +8,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
     /// <summary>
     /// Export PDF
     /// </summary>
-    class ExportPDFCommand : ICommand
+    internal class ExportPDFCommand : ICommand
     {
         private readonly STConverter receiver;
 
@@ -21,29 +22,29 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
             if (inFilename.Length == 0)
             {
-                inFilename = SaveLoadFacade.CorrectFilename(DateTime.Now.ToString().Replace(':', '.'));
+                inFilename = PathsController.CorrectFilename(PathsController.DateTimeFilename, PathsController.DefaultSaveDirectory, ".std");
                 CommandsFacade.Execute(new SaveAsCommand(inFilename));
             }
-            else inFilename = SaveLoadFacade.CorrectFilename(inFilename);
+            else inFilename = PathsController.CorrectFilename(inFilename, PathsController.DefaultSaveDirectory, ".std");
 
             receiver = new(inFilename);
         }
 
         public async void Execute()
         {
-            string correctedFilename = SaveLoadFacade.CorrectFilename(outFilename, ".pdf");
+            string correctedFilename = PathsController.CorrectFilename(outFilename, PathsController.DefaultSaveDirectory, ".pdf");
 
             try { await Task.Run(() => { receiver.ToPDF(correctedFilename); }); }
             catch (IOException)
             {
-                Logger.Instance.Error($"Cannot export PDF: cannot open {correctedFilename} for writing");
+                Logger.Error($"Cannot export PDF: cannot open {correctedFilename} for writing");
                 HighConsole.DisplayError($"Cannot open {correctedFilename} for writing");
             }
         }
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of export PDF command");
+            Logger.Warning("Unexecution of export PDF command");
         }
     }
 }

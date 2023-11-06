@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Exceptions;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -46,7 +46,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             }
             catch (ShapeNotFoundException)
             {
-                Logger.Instance.Error($"Shape {uniqueName} not found, while changing layer");
+                Logger.Error($"Shape {uniqueName} not found, while changing layer");
                 throw;
             }
         }
@@ -62,7 +62,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
                         try { CurrentWindow.SendBackward(uniqueName); }
                         catch (InvalidOperationException)
                         {
-                            Logger.Instance.Error($"[undo] Cannot send {uniqueName} backward: already on back");
+                            Logger.Error($"[undo] Cannot send {uniqueName} backward: already on back");
                             HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on back");
                         }
                         break;
@@ -70,7 +70,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
                         try { CurrentWindow.BringForward(uniqueName); }
                         catch (InvalidOperationException)
                         {
-                            Logger.Instance.Error($"[undo] Cannot bring {uniqueName} forward: already on top");
+                            Logger.Error($"[undo] Cannot bring {uniqueName} forward: already on top");
                             HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on top");
                         }
                         break;
@@ -86,7 +86,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
             }
             catch (ShapeNotFoundException)
             {
-                Logger.Instance.Error($"Shape {uniqueName} not found, while changing layer");
+                Logger.Error($"Shape {uniqueName} not found, while changing layer");
                 throw;
             }
         }

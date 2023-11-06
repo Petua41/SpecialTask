@@ -1,4 +1,4 @@
-﻿using SpecialTask.Helpers.CommandHelpers;
+﻿using SpecialTask.Infrastructure.CommandInfrastructure;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -16,14 +16,14 @@ namespace SpecialTask.Console.Commands.CommandClasses
             try { SaveLoadFacade.Instance.Save(); }
             catch (InvalidOperationException)
             {
-                Logger.Instance.Warning("Nothing to save");
+                Logger.Warning("Nothing to save");
                 HighConsole.DisplayWarning("File is already saved");
             }
         }
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of save command");
+            Logger.Warning("Unexecution of save command");
         }
     }
 }

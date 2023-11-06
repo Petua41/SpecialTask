@@ -1,6 +1,6 @@
 ﻿using SpecialTask;
-using SpecialTask.Helpers;
-using static SpecialTask.Helpers.Extensoins.PointListExtensions;
+using SpecialTask.Infrastructure;
+using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
 
 namespace SpecialTaskTest
 {

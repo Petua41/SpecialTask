@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Exceptions;
-using SpecialTask.Helpers.CommandHelpers;
+using SpecialTask.Infrastructure.CommandInfrastructure;
 using System.IO;
 
 namespace SpecialTask.Console.Commands.CommandClasses
@@ -32,19 +32,19 @@ namespace SpecialTask.Console.Commands.CommandClasses
             try { SaveLoadFacade.Instance.Load(filename); }
             catch (LoadXMLError)
             {
-                Logger.Instance.Error($"Cannot load {filename}: invalid file format");
+                Logger.Error($"Cannot load {filename}: invalid file format");
                 HighConsole.DisplayError("Invalid file format");
             }
             catch (FileNotFoundException)
             {
-                Logger.Instance.Error($"Cannot load {filename}: file not found");
+                Logger.Error($"Cannot load {filename}: file not found");
                 HighConsole.DisplayError("File not found");
             }
         }
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of load command");
+            Logger.Warning("Unexecution of load command");
         }
     }
 }

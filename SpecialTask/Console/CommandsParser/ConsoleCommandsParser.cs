@@ -1,8 +1,8 @@
 ﻿using SpecialTask.Console.Commands;
 using SpecialTask.Exceptions;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 using static SpecialTask.Console.CommandsParser.XMLCommandsParser;
-using static SpecialTask.Helpers.Extensoins.StringListExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringListExtensions;
 
 namespace SpecialTask.Console
 {
@@ -24,7 +24,7 @@ namespace SpecialTask.Console
             }
             catch (InvalidResourceFileException)
             {
-                Logger.Instance.Fatal($"Invalid XML file with commands!{Environment.NewLine}Please, contact us");
+                Logger.Fatal($"Invalid XML file with commands!{Environment.NewLine}Please, contact us");
             }
         }
 
@@ -63,7 +63,7 @@ namespace SpecialTask.Console
             }
             catch (InvalidOperationException)
             {
-                Logger.Instance.Warning($"Call of the fictional command {consoleCommand.neededUserInput}");
+                Logger.Warning($"Call of the fictional command {consoleCommand.neededUserInput}");
                 HighConsole.DisplayError(
                     $"You cannot call {consoleCommand.neededUserInput} without \"second-level command\". Try {consoleCommand.neededUserInput} --help");
             }
@@ -72,7 +72,7 @@ namespace SpecialTask.Console
 
         public static string Autocomplete(string input)
         {
-            if (input.Length == 0) returnstring.Empty;       // empty input => nothing happened
+            if (input.Length == 0) return string.Empty;       // empty input => nothing happened
 
             (string commandName, string argumentsStr) = input.SplitToCommandAndArgs();
 

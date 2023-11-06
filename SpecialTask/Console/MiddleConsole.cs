@@ -1,8 +1,8 @@
 ﻿using SpecialTask.Console.Commands;
 using SpecialTask.Console.CommandsParser;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 using System.Windows;
-using static SpecialTask.Helpers.Extensoins.StringExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Console
 {
@@ -22,7 +22,7 @@ namespace SpecialTask.Console
             try { mainWindowInstance = (MainWindow)Application.Current.MainWindow; }
             catch (NullReferenceException ex)
             {
-                Logger.Instance.Error($"{ex.GetType()} exception while trying to get MainWindow instance!");
+                Logger.Error($"{ex.GetType()} exception while trying to get MainWindow instance!");
                 throw;
             }
         }
@@ -111,19 +111,19 @@ namespace SpecialTask.Console
 
         public string ProcessDownArrow()
         {
-            if (TransferringInput) returnstring.Empty;
+            if (TransferringInput) return string.Empty;
 
             if (pointer > 0) pointer--;
-            else returnstring.Empty;
+            else return string.Empty;
 
             return prevCommands[^(pointer + 1)];
         }
 
         public string ProcessUpArrow()
         {
-            if (TransferringInput) returnstring.Empty;
+            if (TransferringInput) return string.Empty;
 
-            if (prevCommands.Count == 0) returnstring.Empty;
+            if (prevCommands.Count == 0) return string.Empty;
 
             string command = prevCommands[^(pointer + 1)];
             if (pointer + 1 < prevCommands.Count) pointer++;

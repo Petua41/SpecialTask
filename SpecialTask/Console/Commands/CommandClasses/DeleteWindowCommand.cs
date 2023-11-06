@@ -1,4 +1,4 @@
-﻿using SpecialTask.Helpers;
+﻿using SpecialTask.Infrastructure;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -25,14 +25,14 @@ namespace SpecialTask.Console.Commands.CommandClasses
             }
             catch (ArgumentException)
             {
-                Logger.Instance.Error($"Trying to delete window {number}, but window {number} doesn`t exist");
+                Logger.Error($"Trying to delete window {number}, but window {number} doesn`t exist");
                 HighConsole.DisplayError($"[color:red]Window {number} doesn`t exist![color]");
             }
         }
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of window command");
+            Logger.Warning("Unexecution of window command");
         }
     }
 }

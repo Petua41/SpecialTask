@@ -1,4 +1,4 @@
-﻿using SpecialTask.Helpers;
+﻿using SpecialTask.Infrastructure;
 using System.IO;
 using System.Windows.Media.Imaging;
 
@@ -33,7 +33,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of screenshot command");
+            Logger.Warning("Unexecution of screenshot command");
         }
     }
 }

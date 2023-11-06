@@ -1,4 +1,4 @@
-﻿using SpecialTask.Helpers;
+﻿using SpecialTask.Infrastructure;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -22,14 +22,14 @@ namespace SpecialTask.Console.Commands.CommandClasses
             try { receiver.SwitchToWindow(numberOfWindow); }
             catch (ArgumentException)
             {
-                Logger.Instance.Error($"Trying to switch to window {numberOfWindow}, but window {numberOfWindow} doesn`t exist");
+                Logger.Error($"Trying to switch to window {numberOfWindow}, but window {numberOfWindow} doesn`t exist");
                 HighConsole.DisplayError($"Window {numberOfWindow} doesn`t exist!");
             }
         }
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of window command");
+            Logger.Warning("Unexecution of window command");
         }
     }
 }

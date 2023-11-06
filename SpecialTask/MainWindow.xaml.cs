@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Console;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace SpecialTask
 {
-    public enum ESpecialKeyCombinations { None, Enter, Backspace, CtrlC }
+    public enum SpecialKeyCombinations { None, Enter, Backspace, CtrlC }
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -16,14 +16,14 @@ namespace SpecialTask
     {
         private readonly ILowConsole lowConsole;
         private readonly Brush defaultForegroundBrush = new SolidColorBrush(EColor.White.GetWPFColor());
-        private readonly Logger logger;
         private readonly WindowManager windowManager;
 
         public MainWindow()
         {
             InitializeComponent();
+            PathsController.InitPaths();                    // we must call it before any other calls. It`s not good
+            InitializeLogger(ConcreteLoggers.SimpleLogger); // so that it gets right creation time
 
-            logger = Logger.Instance;                   // so that Logger gets right creation time
             lowConsole = LowConsole;
 
             ParseCommandLineArguments();
@@ -60,7 +60,7 @@ namespace SpecialTask
         {
             windowManager.CloseAll();
 
-            logger.Dispose();
+            Logger.Dispose();
         }
 
         private void ParseCommandLineArguments()
@@ -73,7 +73,7 @@ namespace SpecialTask
             }
             catch (FormatException)
             {
-                logger.Error($"{args[2]} is not valid undo stack depth");
+                Logger.Error($"{args[2]} is not valid undo stack depth");
                 Display($"{args[2]} is not valid undo stack depth. Setting to default (15){Environment.NewLine}", Colors.Red);
             }
         }

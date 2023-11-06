@@ -1,6 +1,6 @@
 ﻿using SpecialTask.Console.Commands;
 using SpecialTask.Exceptions;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 using System.Xml.Linq;
 
 namespace SpecialTask.Console.CommandsParser
@@ -45,7 +45,7 @@ namespace SpecialTask.Console.CommandsParser
                     string helpCandidate = elem.Value;
                     if (helpCandidate != string.Empty) globalHelp = helpCandidate + Environment.NewLine;
                 }
-                else Logger.Instance.Warning($"Unexpected XML tag inside the root element: {elem.Name}");
+                else Logger.Warning($"Unexpected XML tag inside the root element: {elem.Name}");
             }
 
             return commands;
@@ -89,7 +89,7 @@ namespace SpecialTask.Console.CommandsParser
             foreach (XElement child in elem.Elements())
             {
                 if (child.Name == ARGUMENT) arguments.Add(ParseArgumentElement(child));
-                else Logger.Instance.Warning($"Unexpected XML tag inside {neededUserInput} command: {child.Name}");
+                else Logger.Warning($"Unexpected XML tag inside {neededUserInput} command: {child.Name}");
             }
 
             return new ConsoleCommand

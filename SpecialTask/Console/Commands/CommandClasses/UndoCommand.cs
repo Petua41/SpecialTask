@@ -18,14 +18,14 @@
             try { CommandsFacade.UndoCommands(number); }
             catch (InvalidOperationException)
             {
-                Logger.Instance.Error("Noting to undo!");
+                Logger.Error("Noting to undo!");
                 HighConsole.DisplayWarning("Nothung to undo!");
             }
         }
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of undo command");
+            Logger.Warning("Unexecution of undo command");
         }
     }
 }

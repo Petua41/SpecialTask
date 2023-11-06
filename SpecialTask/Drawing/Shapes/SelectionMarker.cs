@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Drawing.BrushPrototypes;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 using System.Windows.Media;
 
 namespace SpecialTask.Drawing.Shapes

@@ -1,8 +1,8 @@
 ﻿using SpecialTask.Exceptions;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static SpecialTask.Helpers.Extensoins.PointListExtensions;
+using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
 
 namespace SpecialTask.Drawing.Shapes
 {

@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Drawing.Shapes;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -31,7 +31,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of select command");
+            Logger.Warning("Unexecution of select command");
         }
     }
 }

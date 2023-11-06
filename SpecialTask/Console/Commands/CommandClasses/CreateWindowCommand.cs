@@ -1,4 +1,4 @@
-﻿using SpecialTask.Helpers;
+﻿using SpecialTask.Infrastructure;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -21,7 +21,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of window command");
+            Logger.Warning("Unexecution of window command");
         }
     }
 }

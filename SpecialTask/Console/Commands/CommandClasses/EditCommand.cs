@@ -1,7 +1,7 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes.Decorators;
 using SpecialTask.Exceptions;
-using SpecialTask.Helpers;
+using SpecialTask.Infrastructure;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -132,12 +132,12 @@ namespace SpecialTask.Console.Commands.CommandClasses
             }
             catch (InvalidInputException)
             {
-                Logger.Instance.Error("Edit: invalid input");
+                Logger.Error("Edit: invalid input");
                 HighConsole.DisplayError("Invalid input");
             }
             catch (KeyboardInterruptException)
             {
-                Logger.Instance.Error("Edit: keyboard interrupt");
+                Logger.Error("Edit: keyboard interrupt");
                 HighConsole.DisplayError("Kyboard interrupt");
             }
             finally
@@ -237,7 +237,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
         {
             if (receiver is null)
             {
-                Logger.Instance.Warning("Edit command unexecute before execute. Maybe execute was interrupted by keyboard or invalid input");
+                Logger.Warning("Edit command unexecute before execute. Maybe execute was interrupted by keyboard or invalid input");
             }
             else receiver.Unexecute();
         }

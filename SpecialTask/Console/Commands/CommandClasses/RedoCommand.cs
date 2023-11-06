@@ -18,14 +18,14 @@
             try { CommandsFacade.RedoCommands(number); }
             catch (InvalidOperationException)
             {
-                Logger.Instance.Warning("Nothing to redo");
+                Logger.Warning("Nothing to redo");
                 HighConsole.DisplayWarning("Nothing to redo!");
             }
         }
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of redo command");
+            Logger.Warning("Unexecution of redo command");
         }
     }
 }

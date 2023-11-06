@@ -1,7 +1,7 @@
 using SpecialTask;
 using SpecialTask.Console;
-using SpecialTask.Helpers;
-using static SpecialTask.Helpers.Extensoins.StringExtensions;
+using SpecialTask.Infrastructure;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTaskTest
 {

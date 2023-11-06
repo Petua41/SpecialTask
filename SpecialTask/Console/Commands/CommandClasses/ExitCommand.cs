@@ -1,5 +1,5 @@
-﻿using SpecialTask.Helpers;
-using SpecialTask.Helpers.CommandHelpers;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.CommandInfrastructure;
 
 namespace SpecialTask.Console.Commands.CommandClasses
 {
@@ -41,7 +41,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
 
         public void Unexecute()
         {
-            Logger.Instance.Warning("Unexecution of exit command.");
+            Logger.Warning("Unexecution of exit command.");
         }
 
         private async void GetInputIfNotSaved()
@@ -66,7 +66,7 @@ namespace SpecialTask.Console.Commands.CommandClasses
                     receiver.Shutdown();
                     break;
                 default:
-                    Logger.Instance.Error("None answer in exit command");
+                    Logger.Error("None answer in exit command");
                     return;
             }
         }
