@@ -5,7 +5,9 @@ namespace SpecialTask.Infrastructure.Iterators
 {
     internal class CreationTimeIterator : IIterator
     {
-        private static CreationTimeIterator? singleton;
+
+        private static readonly object syncLock = new();
+        private static volatile CreationTimeIterator? singleton;
 
         private CreationTimeIterator() { }
 
@@ -13,7 +15,12 @@ namespace SpecialTask.Infrastructure.Iterators
         {
             get
             {
-                singleton ??= new CreationTimeIterator();
+                if (singleton is not null) return singleton;
+
+                lock (syncLock)
+                {
+                    singleton ??= new();
+                }
                 return singleton;
             }
         }

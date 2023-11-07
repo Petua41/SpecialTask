@@ -2,38 +2,38 @@
 
 namespace SpecialTask.Infrastructure.Collections
 {
-    internal class LimitedStackEnumerator<T> : IEnumerator<T>
+    internal class PairsEnumerator<K, V> : IEnumerator<KeyValuePair<K, V>>
     {
+        private readonly Pairs<K, V> map;
         private int pointer = -1;
-        private readonly LimitedStack<T> deque;
 
-        public LimitedStackEnumerator(LimitedStack<T> deque)
+        public PairsEnumerator(Pairs<K, V> map)
         {
-            this.deque = deque;
+            this.map = map;
         }
 
-        public T Current
+        public KeyValuePair<K, V> Current
         {
             get
             {
-                try { return deque[pointer]; }
+                try { return map[pointer]; }
                 catch (IndexOutOfRangeException) { throw new InvalidOperationException(); }
             }
         }
 
-        object? IEnumerator.Current => Current;
+        object IEnumerator.Current => Current;
+
+        public void Dispose() { }
 
         public bool MoveNext()
         {
             pointer++;
-            return pointer < deque?.Count;
+            return pointer < map.Count;
         }
 
         public void Reset()
         {
             pointer = -1;
         }
-
-        public void Dispose() { }
     }
 }

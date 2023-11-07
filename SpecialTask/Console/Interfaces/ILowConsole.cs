@@ -13,7 +13,5 @@
         void ProcessInputString(string input);
         void NewLine();
         void ProcessCtrlC();
-
-        static ILowConsole? LowConsole { get; }
     }
 }

@@ -47,7 +47,7 @@ namespace SpecialTask.Infrastructure.Collections
 
         public new IEnumerator<KeyValuePair<K, V>> GetEnumerator()
         {
-            return new MyMapEnumerator<K, V>(this);
+            return new PairsEnumerator<K, V>(this);
         }
 
         public List<K> Keys => map.Select(kvp => kvp.Key).ToList();

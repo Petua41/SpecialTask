@@ -31,7 +31,7 @@ namespace SpecialTask.Console.CommandsParser
         public static IReadOnlyList<ConsoleCommand> ParseCommandsXML(string xmlContent)
         {
             XDocument commandsFile = XDocument.Parse(xmlContent);
-            XElement xmlRoot = commandsFile.Root ?? throw new InvalidResourceFileException();
+            XElement xmlRoot = commandsFile.Root ?? throw new FatalError();
 
             List<ConsoleCommand> commands = new();
 

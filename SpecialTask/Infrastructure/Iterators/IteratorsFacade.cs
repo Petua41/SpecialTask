@@ -27,9 +27,4 @@ namespace SpecialTask.Infrastructure.Iterators
             };
         }
     }
-
-    internal interface IIterator
-    {
-        public IReadOnlyList<Shape> GetCompleteResult();
-    }
 }

@@ -5,7 +5,10 @@ namespace SpecialTask.Infrastructure.Loggers
 {
     internal class SimpleLogger : ILogger
     {
-        private static SimpleLogger? singleton;
+
+        private static readonly object syncLock = new();
+        private static volatile SimpleLogger? singleton;
+        private static bool isDisposed = false;
 
         private readonly string logFilename;
         private readonly StreamWriter writer;
@@ -28,7 +31,12 @@ namespace SpecialTask.Infrastructure.Loggers
         {
             get
             {
-                singleton ??= new();
+                if (singleton is not null) return singleton;
+
+                lock (syncLock)
+                {
+                    singleton ??= new();
+                }
                 return singleton;
             }
         }
@@ -37,6 +45,10 @@ namespace SpecialTask.Infrastructure.Loggers
         {
             writer.Close();
             singleton = null;
+
+            GC.SuppressFinalize(this);      // finalizer won`t do anything once disposed. So we tell GC not to call finalizer
+
+            isDisposed = true;
         }
 
         public void Info(string message)
@@ -61,8 +73,6 @@ namespace SpecialTask.Infrastructure.Loggers
             MessageBoxImage icon = MessageBoxImage.Error;
             MessageBoxButton button = MessageBoxButton.OK;
             _ = MessageBox.Show(message, "Fatal error", button, icon);
-
-            Application.Current.Shutdown();
         }
 
         public void Greetings()
@@ -93,6 +103,11 @@ namespace SpecialTask.Infrastructure.Loggers
             if (level < logLevel) { return; }
 
             writer.WriteLine($"{level}[{DateTime.Now}]: {message}");
+        }
+
+        ~SimpleLogger()
+        {
+            if (!isDisposed) Dispose();
         }
     }
 }

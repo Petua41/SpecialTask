@@ -11,7 +11,9 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
         private bool isSaved = true;
         private const string defaultFilename = "SpecialTaskDrawing";
 
-        private static SaveLoadFacade? singleton;
+
+        private static readonly object syncLock = new();
+        private static volatile SaveLoadFacade? singleton;
 
         private SaveLoadFacade()
         {
@@ -24,7 +26,12 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
         {
             get
             {
-                singleton ??= new SaveLoadFacade();
+                if (singleton is not null) return singleton;
+
+                lock (syncLock)
+                {
+                    singleton ??= new();
+                }
                 return singleton;
             }
         }
@@ -76,13 +83,12 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
         {
             XDocument doc = XMLGeneratorVisitor.GenerateXML(CurrentWindow.Shapes);
 
-            StreamWriter writer = new(filename);
+            using StreamWriter writer = new(filename);
             // Pass on:
             //      IOException: filename contains invalid characters
             //      UnaothorizedAcessException: no permissions
 
             doc.Save(writer);
-            writer.Close();
         }
     }
 }

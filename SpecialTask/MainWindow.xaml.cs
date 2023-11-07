@@ -1,4 +1,5 @@
-﻿using SpecialTask.Console.Interfaces;
+﻿using SpecialTask.Console.CommandsParser;
+using SpecialTask.Console.Interfaces;
 using SpecialTask.Infrastructure;
 using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Loggers;
@@ -26,6 +27,15 @@ namespace SpecialTask
             InitializeComponent();
             PathsController.InitPaths();                    // we must call it before any other calls. It`s not good
             InitializeLogger(ConcreteLoggers.SimpleLogger); // so that it gets right creation time
+            try
+            {
+                ConsoleCommandsParser.InitializeCommands();
+            }
+            catch (FatalError)
+            {
+                Logger.Fatal($"Invalid XML file with commands!{Environment.NewLine}Please, contact us");
+                Application.Current.Shutdown();
+            }
 
             lowConsole = LowConsole;
 

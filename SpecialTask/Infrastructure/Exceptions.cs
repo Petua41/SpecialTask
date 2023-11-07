@@ -44,4 +44,9 @@
     /// Raised, when edit command meets invalid input
     /// </summary>
     internal class InvalidInputException : Exception { }
+
+    /// <summary>
+    /// Raised, when application must be closed
+    /// </summary>
+    internal class FatalError : Exception { }
 }

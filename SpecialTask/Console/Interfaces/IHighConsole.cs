@@ -16,7 +16,6 @@ namespace SpecialTask.Console.Interfaces
         void DisplayPrompt();
 
         bool TransferringInput { get; set; }
-        static IHighConsole? HighConsole { get; }
 
         event TransferringEventHandler? SomethingTranferred;
         event EventHandler? CtrlCTransferred;

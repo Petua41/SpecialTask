@@ -12,20 +12,13 @@ namespace SpecialTask.Console.CommandsParser
     /// </summary>
     internal static class ConsoleCommandsParser
     {
-        private static readonly List<ConsoleCommand> consoleCommands = new();
+        private static List<ConsoleCommand> consoleCommands = new();
 
-        static ConsoleCommandsParser()
+        public static void InitializeCommands()
         {
             string xmlContents = Properties.Resources.ConsoleCommands;
 
-            try
-            {
-                consoleCommands = new (ParseCommandsXML(xmlContents));
-            }
-            catch (InvalidResourceFileException)
-            {
-                Logger.Fatal($"Invalid XML file with commands!{Environment.NewLine}Please, contact us");
-            }
+            consoleCommands = new(ParseCommandsXML(xmlContents));
         }
 
         // This method is like facade: only calls other methods in the right order and handles exceptions

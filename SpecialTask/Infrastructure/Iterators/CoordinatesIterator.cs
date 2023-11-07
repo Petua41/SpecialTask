@@ -5,7 +5,9 @@ namespace SpecialTask.Infrastructure.Iterators
 {
     internal class CoordinatesIterator : IIterator
     {
-        private static CoordinatesIterator? singleton;
+
+        private static readonly object syncLock = new();
+        private static volatile CoordinatesIterator? singleton;
 
         private CoordinatesIterator() { }
 
@@ -13,7 +15,12 @@ namespace SpecialTask.Infrastructure.Iterators
         {
             get
             {
-                singleton ??= new CoordinatesIterator();
+                if (singleton is not null) return singleton;
+
+                lock (syncLock)
+                {
+                    singleton ??= new();
+                }
                 return singleton;
             }
         }

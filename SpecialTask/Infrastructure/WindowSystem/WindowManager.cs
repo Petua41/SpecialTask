@@ -7,7 +7,9 @@ namespace SpecialTask.Infrastructure.WindowSystem
     /// </summary>
     internal class WindowManager
     {
-        private static WindowManager? singleton;
+
+        private static readonly object syncLock = new();
+        private static volatile WindowManager? singleton;
         private readonly List<Window> existingWindows;
 
         private WindowManager()
@@ -22,7 +24,12 @@ namespace SpecialTask.Infrastructure.WindowSystem
         {
             get
             {
-                singleton ??= new WindowManager();
+                if (singleton is not null) return singleton;
+
+                lock (syncLock)
+                {
+                    singleton ??= new();
+                }
                 return singleton;
             }
         }

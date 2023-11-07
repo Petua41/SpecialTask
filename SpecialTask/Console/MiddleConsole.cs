@@ -14,7 +14,8 @@ namespace SpecialTask.Console
     /// </summary>
     public class MiddleConsole : IHighConsole, ILowConsole          // double-singleton
     {
-        private static MiddleConsole? singleton;
+        private static readonly object syncLock = new();
+        private static volatile MiddleConsole? singleton;
         private readonly MainWindow mainWindowInstance;
 
         private readonly List<string> prevCommands = new();
@@ -30,7 +31,12 @@ namespace SpecialTask.Console
         {
             get
             {
-                singleton ??= new();
+                if (singleton is not null) return singleton;
+
+                lock (syncLock)
+                {
+                    singleton ??= new();
+                }
                 return singleton;
             }
         }
@@ -39,7 +45,12 @@ namespace SpecialTask.Console
         {
             get
             {
-                singleton ??= new();
+                if (singleton is not null) return singleton;
+
+                lock (syncLock)
+                {
+                    singleton ??= new();
+                }
                 return singleton;
             }
         }
