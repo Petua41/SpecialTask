@@ -117,11 +117,7 @@ namespace SpecialTask.Console.CommandsParser
                 }
                 pair = consoleCommand.CreateArgumentFromString(arg);
 
-                try { argumentPairs.Add(pair.Item1, pair.Item2); }
-                catch (ArgumentException)
-                {
-                    HighConsole.DisplayError($"Duplicated argument: {pair.Item1}");
-                }
+                if (!argumentPairs.TryAdd(pair.Item1, pair.Item2)) HighConsole.DisplayError($"Duplicated argument: {pair.Item1}");
             }
 
             return argumentPairs;

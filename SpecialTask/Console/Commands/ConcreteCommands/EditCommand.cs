@@ -166,8 +166,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         {
             await GetInterString();
 
-            try { selectedNumber = int.Parse(interString); }
-            catch (FormatException) { throw new InvalidInputException(); }
+            if (!int.TryParse(interString, out selectedNumber)) throw new InvalidInputException();
         }
 
         private async Task GetInterString()

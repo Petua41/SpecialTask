@@ -4,19 +4,19 @@ namespace SpecialTask.Infrastructure.Collections
 {
     internal class PairsEnumerator<K, V> : IEnumerator<KeyValuePair<K, V>>
     {
-        private readonly Pairs<K, V> map;
+        private readonly Pairs<K, V> pairs;
         private int pointer = -1;
 
         public PairsEnumerator(Pairs<K, V> map)
         {
-            this.map = map;
+            this.pairs = map;
         }
 
         public KeyValuePair<K, V> Current
         {
             get
             {
-                try { return map[pointer]; }
+                try { return pairs[pointer]; }
                 catch (IndexOutOfRangeException) { throw new InvalidOperationException(); }
             }
         }
@@ -28,7 +28,7 @@ namespace SpecialTask.Infrastructure.Collections
         public bool MoveNext()
         {
             pointer++;
-            return pointer < map.Count;
+            return pointer < pairs.Count;
         }
 
         public void Reset()

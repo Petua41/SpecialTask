@@ -84,17 +84,14 @@ namespace SpecialTask
                 return;
             }
 
-            try
+            if ((args[1] == "-d" || args[1] == "--undo_stack_depth") && args.Length > 2)
             {
-                if ((args[1] == "-d" || args[1] == "--undo_stack_depth") && args.Length > 2)
+                if (int.TryParse(args[2], out int newDepth)) lowConsole.ChangeUndoStackDepth(newDepth);
+                else
                 {
-                    lowConsole.ChangeUndoStackDepth(int.Parse(args[2]));
+                    Logger.Error($"{args[2]} is not valid undo stack depth");
+                    Display($"{args[2]} is not valid undo stack depth. Setting to default (15){Environment.NewLine}", Colors.Red);
                 }
-            }
-            catch (FormatException)
-            {
-                Logger.Error($"{args[2]} is not valid undo stack depth");
-                Display($"{args[2]} is not valid undo stack depth. Setting to default (15){Environment.NewLine}", Colors.Red);
             }
         }
 

@@ -45,15 +45,16 @@ namespace SpecialTask.Infrastructure.Enums
 
         public static Color GetWPFColor(this EColor color)
         {
-            try { return wpfColors[color]; }
-            catch (KeyNotFoundException) { return Colors.Transparent; }
+            if (wpfColors.TryGetValue(color, out Color result)) return result;
+            else return Colors.Transparent;
         }
 
         public static EColor Parse(string colorString)
         {
             colorString = colorString.Trim().ToLower();
-            try { return colorNames[colorString]; }
-            catch (KeyNotFoundException) { return EColor.None; }
+
+            if (colorNames.TryGetValue(colorString, out EColor result)) return result;
+            else return EColor.None;
         }
 
         public static IReadOnlyList<string> ColorsList => colorNames.Keys.ToList();
