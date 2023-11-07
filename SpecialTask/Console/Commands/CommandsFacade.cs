@@ -1,14 +1,14 @@
-﻿using SpecialTask.Exceptions;
-using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Collections;
+using SpecialTask.Infrastructure.Events;
+using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Console.Commands
 {
-    enum ELayerDirection { None, Forward, Backward, Front, Back }
-
     /// <summary>
     /// Controlls execution, undo and redo of all Commands
     /// </summary>
-    static class CommandsFacade         // Facade and Mediator at the same time.
+    internal static class CommandsFacade         // Facade and Mediator at the same time.
     {
         private static int undoStackDepth = 15;
         private static int currentWindowNumber = 0;
@@ -33,13 +33,23 @@ namespace SpecialTask.Console.Commands
 
         public static void UndoCommands(int numberOfCommands = 1)
         {
-            for (int i = 0; i < numberOfCommands; i++) Undo();
+            for (int i = 0; i < numberOfCommands; i++)
+            {
+                Undo();
+            }
         }
 
         public static void RedoCommands(int numberOfCommands = 1)
         {
-            if (numberOfCommands > UndoneStack.Count) throw new InvalidOperationException();
-            for (int i = 0; i < numberOfCommands; i++) Redo();
+            if (numberOfCommands > UndoneStack.Count)
+            {
+                throw new InvalidOperationException();
+            }
+
+            for (int i = 0; i < numberOfCommands; i++)
+            {
+                Redo();
+            }
         }
 
         public static void ChangeUndoStackDepth(int depth)
@@ -69,22 +79,27 @@ namespace SpecialTask.Console.Commands
         {
             get
             {
-                if (stacks.ContainsKey(currentWindowNumber)) return stacks[currentWindowNumber];
+                if (stacks.ContainsKey(currentWindowNumber))
+                {
+                    return stacks[currentWindowNumber];
+                }
+
                 LimitedStack<ICommand> newStack = new(undoStackDepth);
                 stacks.Add(currentWindowNumber, newStack);
                 return newStack;
             }
-            set
-            {
-                stacks[currentWindowNumber] = value;
-            }
+            set => stacks[currentWindowNumber] = value;
         }
 
         private static Stack<ICommand> UndoneStack
         {
             get
             {
-                if (undoneStacks.ContainsKey(currentWindowNumber)) return undoneStacks[currentWindowNumber];
+                if (undoneStacks.ContainsKey(currentWindowNumber))
+                {
+                    return undoneStacks[currentWindowNumber];
+                }
+
                 Stack<ICommand> newStack = new();
                 undoneStacks.Add(currentWindowNumber, newStack);
                 return newStack;
@@ -95,11 +110,5 @@ namespace SpecialTask.Console.Commands
         {
             currentWindowNumber = e.NewNumber;
         }
-    }
-
-    interface ICommand
-    {
-        void Execute();
-        void Unexecute();
     }
 }

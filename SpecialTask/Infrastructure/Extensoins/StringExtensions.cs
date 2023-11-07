@@ -1,13 +1,16 @@
-﻿namespace SpecialTask.Infrastructure.Extensoins
+﻿using SpecialTask.Infrastructure.Collections;
+using SpecialTask.Infrastructure.Enums;
+
+namespace SpecialTask.Infrastructure.Extensoins
 {
     public static class StringExtensions
     {
         private const EColor defaultColor = EColor.White;
 
         // This method is TOO LONG
-        public static MyMap<string, EColor> SplitByColors(this string message)        // This must be private, but I wanna test it
+        public static Pairs<string, EColor> SplitByColors(this string message)        // This must be private, but I wanna test it
         {
-            MyMap<string, EColor> messageSplittedByColors = new();
+            Pairs<string, EColor> messageSplittedByColors = new();
 
             EColor lastColor = defaultColor;
             do
@@ -23,7 +26,10 @@
                 {
                     int endOfColorSequence = message.IndexOf("]");
                     string colorSequence = message[..(endOfColorSequence + 1)];
-                    if (colorSequence == "[color]") lastColor = defaultColor;
+                    if (colorSequence == "[color]")
+                    {
+                        lastColor = defaultColor;
+                    }
                     else
                     {
                         string colorName = colorSequence[7..^1];

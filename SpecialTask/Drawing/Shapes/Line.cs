@@ -1,11 +1,11 @@
-﻿using SpecialTask.Exceptions;
-using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Enums;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace SpecialTask.Drawing.Shapes
 {
-    class Line : Shape
+    internal class Line : Shape
     {
         private int firstX;
         private int firstY;
@@ -84,7 +84,10 @@ namespace SpecialTask.Drawing.Shapes
         {
             get
             {
-                if (base.wpfShape is not null) return base.wpfShape;
+                if (base.wpfShape is not null)
+                {
+                    return base.wpfShape;
+                }
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Line
                 {
@@ -124,10 +127,7 @@ namespace SpecialTask.Drawing.Shapes
             SecondY += offset;
         }
 
-        public override Point Center
-        {
-            get => ((FirstX + SecondX) / 2, (FirstY + SecondY) / 2);
-        }
+        public override Point Center => ((FirstX + SecondX) / 2, (FirstY + SecondY) / 2);
 
         private int FirstX
         {

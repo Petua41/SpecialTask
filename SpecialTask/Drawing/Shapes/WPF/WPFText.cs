@@ -4,54 +4,28 @@ using System.Windows.Media;
 
 namespace SpecialTask.Drawing.Shapes.WPF
 {
-    class WPFText : System.Windows.Shapes.Shape
+    internal class WPFText : System.Windows.Shapes.Shape
     {
-        private int leftTopX = 0;
-        private int leftTopY = 0;
-        private int fontSize = 0;
-        private string textValue = string.Empty;
-        private Brush brush = Brushes.Transparent;
-
         private readonly Typeface typeface = new("Calibri");
         private readonly CultureInfo cultureInfo = CultureInfo.CurrentCulture;
         private readonly FlowDirection flowDirection = FlowDirection.LeftToRight;
-        private const int DIP = 1;		// idk, how to get this value, but 1 works good
+        private const int DIP = 1;		// idk how to get this value, but 1 works good
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            System.Windows.Point point = new(leftTopX, leftTopY);
+            System.Windows.Point point = new(Left, Top);
             drawingContext.DrawText(FormText, point);
         }
 
-        public int Left
-        {
-            get => leftTopX;
-            set => leftTopX = value;
-        }
+        public int Left { get; set; } = 0;
 
-        public int Top
-        {
-            get => leftTopY;
-            set => leftTopY = value;
-        }
+        public int Top { get; set; } = 0;
 
-        public int FontSize
-        {
-            get => fontSize;
-            set => fontSize = value;
-        }
+        public int FontSize { get; set; } = 0;
 
-        public string Text
-        {
-            get => textValue;
-            set => textValue = value;
-        }
+        public string Text { get; set; } = string.Empty;
 
-        public new Brush Stroke
-        {
-            get => brush;
-            set => brush = value;
-        }
+        public new Brush Stroke { get; set; } = Brushes.Transparent;
 
         protected override Geometry DefiningGeometry => FormText.BuildHighlightGeometry(new(Left, Top));
 

@@ -13,10 +13,18 @@ namespace SpecialTask.Infrastructure
             LogsDirectory = Path.GetFullPath(logsDirName);
         }
 
-        public static string CorrectFilename(string filename, string defaultFolder, string neededExtension)
+        public static string CorrectFilename(string filename, string defaultFolder, string desiredExtension)
         {
-            if (!Path.IsPathFullyQualified(filename)) filename = Path.Combine(defaultFolder, filename);
-            if (!Path.HasExtension(filename)) filename += neededExtension;
+            if (!Path.IsPathFullyQualified(filename))
+            {
+                filename = Path.Combine(defaultFolder, filename);
+            }
+
+            if (!Path.HasExtension(filename))
+            {
+                filename = Path.ChangeExtension(filename, desiredExtension);
+            }
+
             return filename;
         }
 
@@ -25,25 +33,21 @@ namespace SpecialTask.Infrastructure
         /// <exception cref="InvalidOperationException"></exception>
         public static string LogsDirectory
         {
-            get
-            {
-                if (logsDir is null) throw new InvalidOperationException("You should call InitPaths before you can get LogsDirectory");
-                return logsDir.FullName;
-            }
+            get => logsDir is null
+                    ? throw new InvalidOperationException("You should call InitPaths before you can get LogsDirectory")
+                    : logsDir.FullName;
             private set
             {
-                if (!Directory.Exists(value)) Directory.CreateDirectory(value);
+                if (!Directory.Exists(value))
+                {
+                    _ = Directory.CreateDirectory(value);
+                }
+
                 logsDir = new DirectoryInfo(value);
             }
         }
 
-        public static string DateTimeFilename
-        {
-            get
-            {
-                return DateTime.Now.ToString("dd.MM.yyy_HH.mm.ss");
-            }
-        }
+        public static string DateTimeFilename => DateTime.Now.ToString("dd.MM.yyy_HH.mm.ss");
 
         public static string DefaultSaveDirectory => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
     }

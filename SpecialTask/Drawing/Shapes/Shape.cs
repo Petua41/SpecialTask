@@ -1,13 +1,14 @@
-﻿using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure.Collections;
+using SpecialTask.Infrastructure.WindowSystem;
 
-namespace SpecialTask.Drawing
+namespace SpecialTask.Drawing.Shapes
 {
-    abstract class Shape
+    internal abstract class Shape
     {
         private static int firstAvailibleUniqueNumber = 0;
         protected System.Windows.Shapes.Shape? wpfShape;
         protected string uniqueName = string.Empty;
-        protected MyMap<string, string> ATTRS_TO_EDIT = new();
+        protected Pairs<string, string> ATTRS_TO_EDIT = new();
 
         public static string GetNextUniqueName()
         {
@@ -42,7 +43,7 @@ namespace SpecialTask.Drawing
 
         public abstract Shape Clone();
 
-        public virtual MyMap<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
+        public virtual Pairs<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
 
         public virtual string UniqueName => uniqueName;
 

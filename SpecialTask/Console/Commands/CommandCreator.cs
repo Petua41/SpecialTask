@@ -1,9 +1,9 @@
-﻿using SpecialTask.Console.Commands.CommandClasses;
+﻿using SpecialTask.Console.Commands.ConcreteCommands;
 using static SpecialTask.Infrastructure.Extensoins.StringKeysDictionaryExtension;
 
 namespace SpecialTask.Console.Commands
 {
-    static class CommandCreator
+    internal static class CommandCreator
     {
         private static readonly Dictionary<string, Func<Dictionary<string, object>, ICommand>> commandCreators = new()
         {
@@ -31,8 +31,9 @@ namespace SpecialTask.Console.Commands
         {
             name = name.Trim().ToLower();
 
-            if (commandCreators.TryGetValue(name, out Func<Dictionary<string, object>, ICommand>? creator)) return creator(dict);
-            else throw new ArgumentException($"Cannot create a command of type {name}");
+            return commandCreators.TryGetValue(name, out Func<Dictionary<string, object>, ICommand>? creator)
+                ? creator(dict)
+                : throw new ArgumentException($"Cannot create a command of type {name}");
         }
     }
 }

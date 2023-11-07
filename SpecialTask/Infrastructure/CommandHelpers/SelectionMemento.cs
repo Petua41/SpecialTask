@@ -1,9 +1,9 @@
-﻿using SpecialTask.Drawing;
-using SpecialTask.Drawing.Shapes;
+﻿using SpecialTask.Drawing.Shapes;
+using SpecialTask.Infrastructure.WindowSystem;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.CommandHelpers
 {
-    static class SelectionMemento
+    internal static class SelectionMemento
     {
         private static List<Shape> savedShapes = new();
         private static int savedLeftTopX = 0;

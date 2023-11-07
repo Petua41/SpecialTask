@@ -1,17 +1,16 @@
-﻿using SpecialTask.Drawing;
-using SpecialTask.Infrastructure.Iterators;
+﻿using SpecialTask.Drawing.Shapes;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.Iterators
 {
-    enum ESortingOrder { Coordinates, CreationTime }
+    internal enum ESortingOrder { Coordinates, CreationTime }
 
-    static class IteratorsFacade
+    internal static class IteratorsFacade
     {
         private static IIterator concreteIterator;      // Strategy
 
         static IteratorsFacade()
         {
-            concreteIterator = CreationTimeIterator.Instance;    // По-умолчанию CreationTimeIterator
+            concreteIterator = CreationTimeIterator.Instance;    // Default is CreationTimeIterator
         }
 
         public static IReadOnlyList<Shape> GetCompleteResult()
@@ -29,7 +28,7 @@ namespace SpecialTask.Infrastructure
         }
     }
 
-    interface IIterator
+    internal interface IIterator
     {
         public IReadOnlyList<Shape> GetCompleteResult();
     }

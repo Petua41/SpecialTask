@@ -25,7 +25,7 @@ namespace SpecialTaskTest.IntegrationTests
             app = Application.Launch(EXEC_NAME);
             automation = new();
 
-            Sleep(700);
+            Sleep(900);
 
             Window? win = Windows.Find(x => x.Title == "Console");
             Assert.That(win, Is.Not.Null);

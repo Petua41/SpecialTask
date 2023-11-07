@@ -1,9 +1,11 @@
-﻿using SpecialTask.Exceptions;
-using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Collections;
+using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Drawing.Shapes.Decorators
 {
-    class StreakDecorator : Shape
+    internal class StreakDecorator : Shape
     {
         private EColor streakColor;
         private EStreakTexture streakTexture;
@@ -97,7 +99,10 @@ namespace SpecialTask.Drawing.Shapes.Decorators
         {
             get
             {
-                if (wpfShape is not null) return wpfShape;
+                if (wpfShape is not null)
+                {
+                    return wpfShape;
+                }
 
                 if (decoratedShape is null)
                 {
@@ -135,23 +140,8 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             }
         }
 
-        public override MyMap<string, string> AttributesToEditWithNames
-        {
-            get
-            {
-                if (decoratedShape is null) return new();
+        public override Pairs<string, string> AttributesToEditWithNames => decoratedShape is null ? new() : decoratedShape.AttributesToEditWithNames + ATTRS_TO_EDIT;
 
-                return decoratedShape.AttributesToEditWithNames + ATTRS_TO_EDIT;
-            }
-        }
-
-        public override string UniqueName
-        {
-            get
-            {
-                if (decoratedShape is null) return string.Empty;
-                return $"Filled_{decoratedShape.UniqueName}";
-            }
-        }
+        public override string UniqueName => decoratedShape is null ? string.Empty : $"Filled_{decoratedShape.UniqueName}";
     }
 }

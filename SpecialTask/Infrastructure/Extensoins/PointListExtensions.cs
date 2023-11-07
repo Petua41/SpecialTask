@@ -1,4 +1,6 @@
-﻿namespace SpecialTask.Infrastructure.Extensoins
+﻿using SpecialTask.Drawing;
+
+namespace SpecialTask.Infrastructure.Extensoins
 {
     /// <summary>
     /// Provides some extensions to <see cref="List{T}"/> of <see cref="Point"/>s
@@ -7,22 +9,20 @@
     {
         public static string PointsToString(this List<Point> points)
         {
-            return string.Join(", ", from p in points select $"{p.X} {p.Y}");
+            return string.Join(", ", points.Select(p => $"{p.X} {p.Y}"));
         }
 
         public static List<Point> ParsePoints(this string value)
         {
-            List<string[]> prePoints = (from prePreP
-                                    in value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                                        select prePreP.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)).ToList();
+            StringSplitOptions op = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
-            return (from preP in prePoints select new Point(int.Parse(preP[0]), int.Parse(preP[1]))).ToList();
+            return value.Split(',', op).Select(p => p.Split(' ', op)).Select(pre => new Point(int.Parse(pre[0]), int.Parse(pre[1]))).ToList();
         }
 
         public static Point Center(this List<Point> points)
         {
-            int x = (int)(from p in points select p.X).Average();
-            int y = (int)(from p in points select p.Y).Average();
+            int x = (int)points.Select(p => p.X).Average();
+            int y = (int)points.Select(p => p.Y).Average();
             return new Point(x, y);
         }
     }

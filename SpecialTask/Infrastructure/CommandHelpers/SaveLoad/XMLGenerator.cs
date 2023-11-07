@@ -1,13 +1,12 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
-using SpecialTask.Exceptions;
 using System.Xml.Linq;
 using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
 
-namespace SpecialTask.Infrastructure.CommandInfrastructure.SaveLoad
+namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 {
-    static class XMLGeneratorVisitor
+    internal static class XMLGeneratorVisitor
     {
         public static XDocument GenerateXML(List<Shape> shapes)
         {
@@ -28,12 +27,30 @@ namespace SpecialTask.Infrastructure.CommandInfrastructure.SaveLoad
         {
             Dictionary<string, object> shapeAttributes = shape.Accept();
 
-            if (shape is Circle) return VisitCircle(shapeAttributes);
-            else if (shape is Square) return VisitSquare(shapeAttributes);
-            else if (shape is Line) return VisitLine(shapeAttributes);
-            else if (shape is StreakDecorator) return VisitStreakDecorator(shapeAttributes);
-            else if (shape is Text) return VisitText(shapeAttributes);
-            else if (shape is Polygon) return VisitPolygon(shapeAttributes);
+            if (shape is Circle)
+            {
+                return VisitCircle(shapeAttributes);
+            }
+            else if (shape is Square)
+            {
+                return VisitSquare(shapeAttributes);
+            }
+            else if (shape is Line)
+            {
+                return VisitLine(shapeAttributes);
+            }
+            else if (shape is StreakDecorator)
+            {
+                return VisitStreakDecorator(shapeAttributes);
+            }
+            else if (shape is Text)
+            {
+                return VisitText(shapeAttributes);
+            }
+            else if (shape is Polygon)
+            {
+                return VisitPolygon(shapeAttributes);
+            }
 
             throw new UnknownShapeException();
         }
@@ -146,7 +163,7 @@ namespace SpecialTask.Infrastructure.CommandInfrastructure.SaveLoad
             XName name = XName.Get(tag);
             XElement element = new(name);
 
-            element.Add((from kvp in nameValuePairs select new XAttribute(kvp.Key, kvp.Value)).ToArray());
+            element.Add(nameValuePairs.Select(kvp => new XAttribute(kvp.Key, kvp.Value)).ToArray());    // we call ToArray so that it will be passed as params but not as object
 
             return element;
         }

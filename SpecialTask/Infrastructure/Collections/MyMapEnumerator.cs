@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.Collections
 {
-    class MyMapEnumerator<K, V> : IEnumerator<KeyValuePair<K, V>>
+    internal class MyMapEnumerator<K, V> : IEnumerator<KeyValuePair<K, V>>
     {
-        private readonly MyMap<K, V> map;
+        private readonly Pairs<K, V> map;
         private int pointer = -1;
 
-        public MyMapEnumerator(MyMap<K, V> map)
+        public MyMapEnumerator(Pairs<K, V> map)
         {
             this.map = map;
         }

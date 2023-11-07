@@ -1,4 +1,4 @@
-﻿namespace SpecialTask.Infrastructure
+﻿namespace SpecialTask.Infrastructure.Loggers
 {
     internal enum LogLevels { Info, Warning, Error }
 

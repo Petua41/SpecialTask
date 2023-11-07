@@ -1,5 +1,8 @@
-﻿using SpecialTask.Console;
+﻿using SpecialTask.Console.Interfaces;
 using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Loggers;
+using SpecialTask.Infrastructure.WindowSystem;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -12,7 +15,7 @@ namespace SpecialTask
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         private readonly ILowConsole lowConsole;
         private readonly Brush defaultForegroundBrush = new SolidColorBrush(EColor.White.GetWPFColor());
@@ -66,10 +69,17 @@ namespace SpecialTask
         private void ParseCommandLineArguments()
         {
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 1) return;
+            if (args.Length == 1)
+            {
+                return;
+            }
+
             try
             {
-                if ((args[1] == "-d" || args[1] == "--undo_stack_depth") && args.Length > 2) lowConsole.ChangeUndoStackDepth(int.Parse(args[2]));
+                if ((args[1] == "-d" || args[1] == "--undo_stack_depth") && args.Length > 2)
+                {
+                    lowConsole.ChangeUndoStackDepth(int.Parse(args[2]));
+                }
             }
             catch (FormatException)
             {
@@ -80,7 +90,7 @@ namespace SpecialTask
 
         private void ConsoleWindowGotFocus(object sender, RoutedEventArgs e)
         {
-            ConsoleEntry.Focus();
+            _ = ConsoleEntry.Focus();
         }
 
         private void ConsoleEntryKeyDown(object sender, KeyEventArgs e)

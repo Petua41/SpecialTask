@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.Collections
 {
     /// <summary>
     /// It`s like <see cref="Stack{T}"/>, but number of it`s elements is never greater than capacity
@@ -67,14 +67,22 @@ namespace SpecialTask.Infrastructure
         /// </summary>
         public void Push(T item)
         {
-            while (list.Count >= capacity) PopBottom();
+            while (list.Count >= capacity)
+            {
+                _ = PopBottom();
+            }
+
             list.Add(item);
         }
 
         /// <exception cref="InvalidOperationException">Stack is empty (underflow)</exception>
         public T Pop()
         {
-            if (list.Count == 0) throw new InvalidOperationException();
+            if (list.Count == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
             T result = list[^1];
             list.RemoveAt(list.Count - 1);
             return result;
@@ -93,8 +101,15 @@ namespace SpecialTask.Infrastructure
             {
                 for (int i = 0; i < Count; i++)
                 {
-                    if (this[i] is null && other[i] is null) return true;
-                    if (!this[i]?.Equals(other[i]) ?? false) return false;
+                    if (this[i] is null && other[i] is null)
+                    {
+                        return true;
+                    }
+
+                    if (!this[i]?.Equals(other[i]) ?? false)
+                    {
+                        return false;
+                    }
                 }
                 return true;
             }

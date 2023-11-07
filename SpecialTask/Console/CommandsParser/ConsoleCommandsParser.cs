@@ -1,18 +1,18 @@
 ﻿using SpecialTask.Console.Commands;
-using SpecialTask.Exceptions;
+using SpecialTask.Console.Interfaces;
 using SpecialTask.Infrastructure;
 using static SpecialTask.Console.CommandsParser.XMLCommandsParser;
 using static SpecialTask.Infrastructure.Extensoins.StringListExtensions;
 
-namespace SpecialTask.Console
+namespace SpecialTask.Console.CommandsParser
 {
     /// <summary>
     /// Processes commands from <see cref="ILowConsole"/>.
     /// Gives <see cref="IHighConsole"/> and <see cref="ILowConsole"/> necessary information about availible commands
     /// </summary>
-    static class ConsoleCommandsParser
+    internal static class ConsoleCommandsParser
     {
-        static readonly List<ConsoleCommand> consoleCommands = new();
+        private static readonly List<ConsoleCommand> consoleCommands = new();
 
         static ConsoleCommandsParser()
         {
@@ -20,7 +20,7 @@ namespace SpecialTask.Console
 
             try
             {
-                consoleCommands = (List<ConsoleCommand>)ParseCommandsXML(xmlContents);
+                consoleCommands = new (ParseCommandsXML(xmlContents));
             }
             catch (InvalidResourceFileException)
             {
@@ -31,12 +31,15 @@ namespace SpecialTask.Console
         // This method is like facade: only calls other methods in the right order and handles exceptions
         public static void ParseCommand(string userInput)
         {
-            if (userInput.Length == 0) return;
+            if (userInput.Length == 0)
+            {
+                return;
+            }
 
             (string commandName, string arguments) = userInput.SplitToCommandAndArgs();
 
             int commandNumber = SelectCommand(commandName);
-            // Если команда не найдена, выводим глобальную помощь (help и ? тоже не будут найдены)
+            // If command not found, print global help
             if (commandNumber < 0)
             {
                 HighConsole.DisplayGlobalHelp();
@@ -57,7 +60,10 @@ namespace SpecialTask.Console
 
                 ICommand command = CreateCommand(consoleCommand, argumentValues);
 
-                if (consoleCommand.supportsUndo) CommandsFacade.Register(command);
+                if (consoleCommand.supportsUndo)
+                {
+                    CommandsFacade.Register(command);
+                }
 
                 CommandsFacade.Execute(command);
             }
@@ -72,22 +78,18 @@ namespace SpecialTask.Console
 
         public static string Autocomplete(string input)
         {
-            if (input.Length == 0) return string.Empty;       // empty input => nothing happened
+            if (input.Length == 0)
+            {
+                return string.Empty;       // empty input => nothing happened
+            }
 
             (string commandName, string argumentsStr) = input.SplitToCommandAndArgs();
 
 
             int idxOfCommand = SelectCommand(commandName);
-            if (idxOfCommand >= 0)
-            {                                                       // complete command => pass request on
-                return consoleCommands[idxOfCommand].AutocompleteArguments(argumentsStr);
-            }
-            else
-            {
-                return (from comm in consoleCommands
-                        where comm.neededUserInput.StartsWith(input)
-                        select comm.neededUserInput).ToList().RemovePrefix(input).LongestCommonPrefix();
-            }
+            return idxOfCommand >= 0
+                ? consoleCommands[idxOfCommand].AutocompleteArguments(argumentsStr)
+                : consoleCommands.Select(x => x.neededUserInput).Where(x => x.StartsWith(input)).ToList().RemovePrefix(input).LongestCommonPrefix();
         }
 
         /// <summary>
@@ -135,8 +137,14 @@ namespace SpecialTask.Console
         private static void DisplayHelp(ConsoleCommand command)
         {
             string? help = command.help;
-            if (help is null) HighConsole.DisplayError($"Help for {command.neededUserInput} not found");
-            else HighConsole.Display(help);
+            if (help is null)
+            {
+                HighConsole.DisplayError($"Help for {command.neededUserInput} not found");
+            }
+            else
+            {
+                HighConsole.Display(help);
+            }
         }
 
         private static (string, string) SplitToCommandAndArgs(this string input)
@@ -148,7 +156,11 @@ namespace SpecialTask.Console
 
             if (indexOfFirstMinus > 0)
             {
-                if (indexOfFirstMinus == 0) return (string.Empty, string.Empty);     // input starts with minus: there is no command
+                if (indexOfFirstMinus == 0)
+                {
+                    return (string.Empty, string.Empty);     // input starts with minus: there is no command
+                }
+
                 commandName = input[..(indexOfFirstMinus - 1)];
                 arguments = input[indexOfFirstMinus..];
             }

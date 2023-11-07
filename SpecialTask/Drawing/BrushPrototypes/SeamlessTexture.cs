@@ -8,7 +8,7 @@ namespace SpecialTask.Drawing.BrushPrototypes
     /// <summary>
     /// Fills figure with seamless texture. Color is ignored
     /// </summary>
-    class SeamlessTexture : IBrushPrototype
+    internal class SeamlessTexture : IBrushPrototype
     {
         private readonly ImageSource seamlessTexture;
 
@@ -27,7 +27,11 @@ namespace SpecialTask.Drawing.BrushPrototypes
         public Brush Brush(Color color)
         {
             Brush brush = new ImageBrush(seamlessTexture);
-            if (brush.CanFreeze) brush.Freeze();
+            if (brush.CanFreeze)
+            {
+                brush.Freeze();
+            }
+
             return brush;
         }
     }

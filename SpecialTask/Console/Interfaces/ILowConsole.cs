@@ -1,20 +1,19 @@
-﻿namespace SpecialTask.Console
+﻿namespace SpecialTask.Console.Interfaces
 {
     /// <summary>
     /// Low-level console interface for WPF classes
     /// </summary>
     public interface ILowConsole
     {
-        public static ILowConsole? LowConsole { get; }
+        void DisplayPrompt();
+        string Autocomplete(string currentInput);
+        string ProcessUpArrow();
+        string ProcessDownArrow();
+        void ChangeUndoStackDepth(int depth);
+        void ProcessInputString(string input);
+        void NewLine();
+        void ProcessCtrlC();
 
-        public void DisplayPrompt();
-        public string Autocomplete(string currentInput);
-        public string ProcessUpArrow();
-        public string ProcessDownArrow();
-        public void ChangeUndoStackDepth(int depth);
-        public void ProcessInputString(string input);
-        public void NewLine();
-        public void ProcessCtrlC();
-
+        static ILowConsole? LowConsole { get; }
     }
 }

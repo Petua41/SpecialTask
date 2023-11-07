@@ -1,11 +1,11 @@
 ﻿using SpecialTask.Console.Commands;
-using SpecialTask.Exceptions;
 using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Enums;
 using System.Xml.Linq;
 
 namespace SpecialTask.Console.CommandsParser
 {
-    static class XMLCommandsParser
+    internal static class XMLCommandsParser
     {
         // Tags:
         private const string COMMAND = "command";
@@ -28,8 +28,6 @@ namespace SpecialTask.Console.CommandsParser
         // Values:
         private const string FALSE = "false";
 
-        private static string globalHelp = "[color:purple]Global help not found![purple]";
-
         public static IReadOnlyList<ConsoleCommand> ParseCommandsXML(string xmlContent)
         {
             XDocument commandsFile = XDocument.Parse(xmlContent);
@@ -43,9 +41,15 @@ namespace SpecialTask.Console.CommandsParser
                 else if (elem.Name == HELP)
                 {
                     string helpCandidate = elem.Value;
-                    if (helpCandidate != string.Empty) globalHelp = helpCandidate + Environment.NewLine;
+                    if (helpCandidate != string.Empty)
+                    {
+                        GlobalHelp = helpCandidate + Environment.NewLine;
+                    }
                 }
-                else Logger.Warning($"Unexpected XML tag inside the root element: {elem.Name}");
+                else
+                {
+                    Logger.Warning($"Unexpected XML tag inside the root element: {elem.Name}");
+                }
             }
 
             return commands;
@@ -53,7 +57,10 @@ namespace SpecialTask.Console.CommandsParser
 
         public static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
         {
-            if (consoleCommand.fictional) throw new InvalidOperationException();
+            if (consoleCommand.fictional)
+            {
+                throw new InvalidOperationException();
+            }
 
             // Check that all necessary arguments are present
             foreach (ConsoleCommandArgument argument in consoleCommand.arguments)
@@ -84,12 +91,21 @@ namespace SpecialTask.Console.CommandsParser
             bool fictional = (elem.Attribute(FICTIONAL)?.Value ?? FALSE) != FALSE;
 
             string? help = elem.Value;
-            if (help == string.Empty) help = null;
+            if (help == string.Empty)
+            {
+                help = null;
+            }
 
             foreach (XElement child in elem.Elements())
             {
-                if (child.Name == ARGUMENT) arguments.Add(ParseArgumentElement(child));
-                else Logger.Warning($"Unexpected XML tag inside {neededUserInput} command: {child.Name}");
+                if (child.Name == ARGUMENT)
+                {
+                    arguments.Add(ParseArgumentElement(child));
+                }
+                else
+                {
+                    Logger.Warning($"Unexpected XML tag inside {neededUserInput} command: {child.Name}");
+                }
             }
 
             return new ConsoleCommand
@@ -109,7 +125,10 @@ namespace SpecialTask.Console.CommandsParser
 
             object? defaultValue = null;
             string? defValueString = elem.Attribute(DEFAULT_VALUE)?.Value;
-            if (defValueString is not null) defaultValue = type.ParseValue(defValueString);     // we leave defaultValue null, if there`s no such attribute
+            if (defValueString is not null)
+            {
+                defaultValue = type.ParseValue(defValueString);     // we leave defaultValue null, if there`s no such attribute
+            }
 
             return new ConsoleCommandArgument
             {
@@ -122,6 +141,6 @@ namespace SpecialTask.Console.CommandsParser
             };
         }
 
-        public static string GlobalHelp => globalHelp;
+        public static string GlobalHelp { get; private set; } = "[color:purple]Global help not found![purple]";
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace SpecialTask.Infrastructure.Extensoins
 {
-    static class StringKeysDictionaryExtension
+    internal static class StringKeysDictionaryExtension
     {
         /// <summary>
         /// Creates an array of values, that can be passed as params.
@@ -18,9 +18,15 @@
                 string key = keysOrder[i];
 
 #pragma warning disable CS8601
-                if (dict.TryGetValue(key, out T? value)) result[i] = value;     // value cannot be null, if TryGetValue is true
+                if (dict.TryGetValue(key, out T? value))
+                {
+                    result[i] = value;     // value cannot be null, if TryGetValue is true
+                }
 #pragma warning restore
-                else throw new KeyNotFoundException($"Key {key} not found in dictionary while unpacking it");
+                else
+                {
+                    throw new KeyNotFoundException($"Key {key} not found in dictionary while unpacking it");
+                }
             }
 
             return result;

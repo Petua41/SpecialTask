@@ -1,43 +1,47 @@
-﻿namespace SpecialTask.Exceptions
+﻿namespace SpecialTask.Infrastructure
 {
     /// <summary>
-    /// Возникает, когда при редактировании фигуры невозможно привести переданное значение к нужному типу
+    /// Raised when cannot cast parameter (while editing shape)
     /// </summary>
-    class ShapeAttributeCastException : InvalidCastException { }
+    internal class ShapeAttributeCastException : InvalidCastException { }
+
     /// <summary>
-    /// Возникает, когда файл ресурсов не найден или содержит недопсутимые значения
+    /// Raised when resource file contains invalid values
     /// </summary>
-    class InvalidResourceFileException : Exception { }
+    internal class InvalidResourceFileException : Exception { }
+
     /// <summary>
-    /// Возникает при ошибке распознавания аргумента, введённого в консоль
+    /// Raised when entered argument cannot be recognized
     /// </summary>
-    class ArgumentParsingError : ArgumentException { }
-    /// <summary>
-    /// Возникает, если класс ConcreteCommand не реализует ICommand, в том числе его необъявленную часть (не содержит нужного конструктора)
-    /// </summary>
-    class InvalidCommandClassException : Exception { }
+    internal class ArgumentParsingError : ArgumentException { }
+
     /// <summary>
     /// Raised, when Accept() returns wrong data
     /// </summary>
-    class VisitorInvalidAcceptError : Exception { }
+    internal class VisitorInvalidAcceptError : Exception { }
+
     /// <summary>
     /// Raised, when while loading/saving met element with unknown tag or subclass of Shape
     /// </summary>
-    class UnknownShapeException : Exception { }
+    internal class UnknownShapeException : Exception { }
+
     /// <summary>
     /// Raised, when cannot parse XML (while loading)
     /// </summary>
-    class LoadXMLError : Exception { }
+    internal class LoadXMLError : Exception { }
+
     /// <summary>
     /// Raised, when shape with specified unique name doesn`t exist on current window
     /// </summary>
-    class ShapeNotFoundException : ArgumentException { }
+    internal class ShapeNotFoundException : ArgumentException { }
+
     /// <summary>
     /// Keyboard interrupt
     /// </summary>
-    class KeyboardInterruptException : Exception { }
+    internal class KeyboardInterruptException : Exception { }
+
     /// <summary>
     /// Raised, when edit command meets invalid input
     /// </summary>
-    class InvalidInputException : Exception { }
+    internal class InvalidInputException : Exception { }
 }

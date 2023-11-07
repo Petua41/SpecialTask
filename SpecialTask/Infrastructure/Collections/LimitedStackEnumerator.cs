@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.Collections
 {
-    class LimitedStackEnumerator<T> : IEnumerator<T>
+    internal class LimitedStackEnumerator<T> : IEnumerator<T>
     {
         private int pointer = -1;
         private readonly LimitedStack<T> deque;

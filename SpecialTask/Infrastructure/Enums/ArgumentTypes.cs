@@ -1,6 +1,6 @@
 ﻿using SpecialTask.Infrastructure.Extensoins;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.Enums
 {
     public enum EArgumentType { Int, Color, PseudoBool, String, Texture, Points }
 
@@ -10,12 +10,18 @@ namespace SpecialTask.Infrastructure
 
         static ArgumentTypesConstroller()
         {
-            foreach (EArgumentType type in Enum.GetValues<EArgumentType>()) stringToType.Add(type.ToString().ToLower(), type);
+            foreach (EArgumentType type in Enum.GetValues<EArgumentType>())
+            {
+                stringToType.Add(type.ToString().ToLower(), type);
+            }
         }
 
         public static EArgumentType ParseType(string? str)
         {
-            if (str is null) return EArgumentType.PseudoBool;
+            if (str is null)
+            {
+                return EArgumentType.PseudoBool;
+            }
 
             try { return stringToType[str.ToLower()]; }
             catch (KeyNotFoundException) { return EArgumentType.PseudoBool; }       // all that cannot be recognized is bool

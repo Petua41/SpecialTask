@@ -1,46 +1,24 @@
-﻿using System.Collections;
-using System.Windows;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 
 namespace SpecialTask.Drawing.BrushPrototypes
 {
     /// <summary>
     /// Texture brush for linear gradients. Last color must be passed to Brush()
     /// </summary>
-    class LinearGradientTexture : IBrushPrototype, IEnumerable<GradientStop>
+    internal class LinearGradientTexture : GradientTexture
     {
-        private readonly List<GradientStop> gradientStops = new();
-        private Point startPoint;
-        private Point endPoint;
+        private System.Windows.Point startPoint;
+        private System.Windows.Point endPoint;
 
-        public LinearGradientTexture(Point startPoint, Point endPoint)
+        public LinearGradientTexture(System.Windows.Point startPoint, System.Windows.Point endPoint)
         {
             this.startPoint = startPoint;
             this.endPoint = endPoint;
         }
 
-        public void Add(Color color, double offset)
+        protected override GradientBrush GetGradBrush(GradientStopCollection grStops)
         {
-            gradientStops.Add(new(color, offset));
-        }
-
-        public Brush Brush(Color color)
-        {
-            Add(color, 1);
-            GradientStopCollection grStCollection = new(gradientStops);
-            Brush brush = new LinearGradientBrush(grStCollection, startPoint, endPoint);
-            if (brush.CanFreeze) brush.Freeze();
-            return brush;
-        }
-
-        public IEnumerator<GradientStop> GetEnumerator()
-        {
-            return gradientStops.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            return new LinearGradientBrush(grStops, startPoint, endPoint);
         }
     }
 }

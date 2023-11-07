@@ -50,7 +50,7 @@
     <Using Include="SpecialTask.Console.MiddleConsole">
       <Static>True</Static>
     </Using>
-    <Using Include="SpecialTask.Infrastructure.LoggerKeeper">
+    <Using Include="SpecialTask.Infrastructure.Loggers.LoggerKeeper">
       <Static>True</Static>
     </Using>
   </ItemGroup>

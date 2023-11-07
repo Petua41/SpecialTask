@@ -1,11 +1,11 @@
-﻿using SpecialTask.Exceptions;
-using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Enums;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace SpecialTask.Drawing.Shapes
 {
-    class Square : Shape
+    internal class Square : Shape
     {
         private int leftTopX;
         private int leftTopY;
@@ -38,10 +38,7 @@ namespace SpecialTask.Drawing.Shapes
             return $"Rectangle_{firstAvailibleUniqueNumber++}";
         }
 
-        public override Point Center
-        {
-            get => ((leftTopX + rightBottomX) / 2, (leftTopY + rightBottomY) / 2);
-        }
+        public override Point Center => ((leftTopX + rightBottomX) / 2, (leftTopY + rightBottomY) / 2);
 
         public override object Edit(string attribute, string value)
         {
@@ -89,7 +86,10 @@ namespace SpecialTask.Drawing.Shapes
         {
             get
             {
-                if (base.wpfShape is not null) return base.wpfShape;
+                if (base.wpfShape is not null)
+                {
+                    return base.wpfShape;
+                }
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Rectangle
                 {
@@ -127,15 +127,9 @@ namespace SpecialTask.Drawing.Shapes
             RightBottomY += offset;
         }
 
-        protected int Width
-        {
-            get => Math.Abs(RightBottomX - LeftTopX);
-        }
+        protected int Width => Math.Abs(RightBottomX - LeftTopX);
 
-        protected int Height
-        {
-            get => Math.Abs(RightBottomY - LeftTopY);
-        }
+        protected int Height => Math.Abs(RightBottomY - LeftTopY);
 
         protected int LeftTopX
         {

@@ -1,14 +1,14 @@
-﻿using SpecialTask.Exceptions;
-using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Enums;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
 
 namespace SpecialTask.Drawing.Shapes
 {
-    class Polygon : Shape
+    internal class Polygon : Shape
     {
-        List<Point> points;
+        private List<Point> points;
         private EColor color;
         private int lineThickness;
 
@@ -65,11 +65,14 @@ namespace SpecialTask.Drawing.Shapes
         {
             get
             {
-                if (base.wpfShape is not null) return base.wpfShape;
+                if (base.wpfShape is not null)
+                {
+                    return base.wpfShape;
+                }
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Polygon
                 {
-                    Points = new(from p in points select (System.Windows.Point)p),
+                    Points = new(points.Cast<System.Windows.Point>()),
                     StrokeThickness = LineThickness,
                     Stroke = new SolidColorBrush(Color.GetWPFColor())
                 };
@@ -88,21 +91,15 @@ namespace SpecialTask.Drawing.Shapes
 
         public override void MoveXBy(int offset)
         {
-            Points = (from p in Points select p + new Point(offset, 0)).ToList();
+            Points = Points.Select(p => p + (offset, 0)).ToList();
         }
 
         public override void MoveYBy(int offset)
         {
-            Points = (from p in Points select p + new Point(0, offset)).ToList();
+            Points = Points.Select(p => p + (0, offset)).ToList();
         }
 
-        public override Point Center
-        {
-            get
-            {
-                return Points.Center();
-            }
-        }
+        public override Point Center => Points.Center();
 
         private List<Point> Points
         {

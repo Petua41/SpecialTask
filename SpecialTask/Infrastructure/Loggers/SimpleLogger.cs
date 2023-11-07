@@ -60,7 +60,7 @@ namespace SpecialTask.Infrastructure.Loggers
 
             MessageBoxImage icon = MessageBoxImage.Error;
             MessageBoxButton button = MessageBoxButton.OK;
-            MessageBox.Show(message, "Fatal error", button, icon);
+            _ = MessageBox.Show(message, "Fatal error", button, icon);
 
             Application.Current.Shutdown();
         }

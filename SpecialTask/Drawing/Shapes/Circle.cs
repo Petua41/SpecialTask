@@ -1,11 +1,11 @@
-﻿using SpecialTask.Exceptions;
-using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Enums;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace SpecialTask.Drawing.Shapes
 {
-    class Circle : Shape
+    internal class Circle : Shape
     {
         private int radius;
         private int centerX;
@@ -73,16 +73,16 @@ namespace SpecialTask.Drawing.Shapes
             return oldValue;
         }
 
-        public override Point Center
-        {
-            get => (CenterX, CenterY);
-        }
+        public override Point Center => (CenterX, CenterY);
 
         public override System.Windows.Shapes.Shape WPFShape
         {
             get
             {
-                if (base.wpfShape is not null) return base.wpfShape;
+                if (base.wpfShape is not null)
+                {
+                    return base.wpfShape;
+                }
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Ellipse
                 {
@@ -122,15 +122,9 @@ namespace SpecialTask.Drawing.Shapes
             return new Circle(this);
         }
 
-        private int Top
-        {
-            get => CenterY - Radius;
-        }
+        private int Top => CenterY - Radius;
 
-        private int Left
-        {
-            get => CenterX - Radius;
-        }
+        private int Left => CenterX - Radius;
 
         private int CenterX
         {

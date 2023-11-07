@@ -1,6 +1,9 @@
 ﻿using SpecialTask.Console.Commands;
 using SpecialTask.Console.CommandsParser;
-using SpecialTask.Infrastructure;
+using SpecialTask.Console.Interfaces;
+using SpecialTask.Infrastructure.Collections;
+using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Events;
 using System.Windows;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
@@ -19,12 +22,8 @@ namespace SpecialTask.Console
 
         private MiddleConsole()
         {
-            try { mainWindowInstance = (MainWindow)Application.Current.MainWindow; }
-            catch (NullReferenceException ex)
-            {
-                Logger.Error($"{ex.GetType()} exception while trying to get MainWindow instance!");
-                throw;
-            }
+            if (Application.Current.MainWindow is not MainWindow mw) throw new NullReferenceException();
+            mainWindowInstance = mw;
         }
 
         public static IHighConsole HighConsole
@@ -63,7 +62,7 @@ namespace SpecialTask.Console
 
         public void Display(string message)
         {
-            MyMap<string, EColor> messageSplittedByColors = message.SplitByColors();
+            Pairs<string, EColor> messageSplittedByColors = message.SplitByColors();
             foreach (KeyValuePair<string, EColor> kvp in messageSplittedByColors)
             {
                 Display(kvp.Key, kvp.Value);
@@ -99,7 +98,10 @@ namespace SpecialTask.Console
 
         public void ProcessInputString(string input)
         {
-            if (TransferringInput) SomethingTranferred?.Invoke(this, new(input));
+            if (TransferringInput)
+            {
+                SomethingTranferred?.Invoke(this, new(input));
+            }
             else
             {
                 prevCommands.Add(input);
@@ -111,30 +113,54 @@ namespace SpecialTask.Console
 
         public string ProcessDownArrow()
         {
-            if (TransferringInput) return string.Empty;
+            if (TransferringInput)
+            {
+                return string.Empty;
+            }
 
-            if (pointer > 0) pointer--;
-            else return string.Empty;
+            if (pointer > 0)
+            {
+                pointer--;
+            }
+            else
+            {
+                return string.Empty;
+            }
 
             return prevCommands[^(pointer + 1)];
         }
 
         public string ProcessUpArrow()
         {
-            if (TransferringInput) return string.Empty;
+            if (TransferringInput)
+            {
+                return string.Empty;
+            }
 
-            if (prevCommands.Count == 0) return string.Empty;
+            if (prevCommands.Count == 0)
+            {
+                return string.Empty;
+            }
 
             string command = prevCommands[^(pointer + 1)];
-            if (pointer + 1 < prevCommands.Count) pointer++;
+            if (pointer + 1 < prevCommands.Count)
+            {
+                pointer++;
+            }
 
             return command;
         }
 
         public void ProcessCtrlC()
         {
-            if (TransferringInput) CtrlCTransferred?.Invoke(this, new());
-            else mainWindowInstance.DisplayAndProcessInputString("exit");
+            if (TransferringInput)
+            {
+                CtrlCTransferred?.Invoke(this, new());
+            }
+            else
+            {
+                mainWindowInstance.DisplayAndProcessInputString("exit");
+            }
         }
 
         public bool TransferringInput { get; set; }

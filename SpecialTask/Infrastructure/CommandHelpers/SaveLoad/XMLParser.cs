@@ -1,12 +1,12 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
-using SpecialTask.Exceptions;
+using SpecialTask.Infrastructure.Enums;
 using System.Xml.Linq;
 
-namespace SpecialTask.Infrastructure.CommandInfrastructure.SaveLoad
+namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 {
-    static class XMLParser
+    internal static class XMLParser
     {
         public static void Parse(XDocument doc)
         {
@@ -20,7 +20,7 @@ namespace SpecialTask.Infrastructure.CommandInfrastructure.SaveLoad
 
         private static void ParseElement(XElement elem)
         {
-            Dictionary<string, string> dict = new(from attr in elem.Attributes() select new KeyValuePair<string, string>(attr.Name.LocalName, attr.Value));
+            Dictionary<string, string> dict = new(elem.Attributes().Select(attr => new KeyValuePair<string, string>(attr.Name.LocalName, attr.Value)));
 
             ParseShape(dict, elem.Name.LocalName);
         }
@@ -39,7 +39,10 @@ namespace SpecialTask.Infrastructure.CommandInfrastructure.SaveLoad
                     _ => throw new UnknownShapeException()
                 };
 
-                if (dict.ContainsKey("streak") && dict["streak"] == "true") shape = ParseStreakDecorator(dict, shape);
+                if (dict.ContainsKey("streak") && dict["streak"] == "true")
+                {
+                    shape = ParseStreakDecorator(dict, shape);
+                }
 
                 shape.Display();
             }

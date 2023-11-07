@@ -1,13 +1,12 @@
-﻿using SpecialTask.Drawing;
-using SpecialTask.Infrastructure.CommandInfrastructure;
-using SpecialTask.Infrastructure.WindowSystem;
+﻿using SpecialTask.Drawing.Shapes;
+using SpecialTask.Infrastructure.CommandHelpers.SaveLoad;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.WindowSystem
 {
-    static class CurrentWindow
+    internal static class CurrentWindow
     {
         public static List<Shape> Shapes => Window.ShapesOnThisWindow;
 

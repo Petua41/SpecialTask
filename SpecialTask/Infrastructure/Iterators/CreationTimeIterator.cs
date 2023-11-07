@@ -1,9 +1,9 @@
-﻿using SpecialTask.Drawing;
-using SpecialTask.Drawing.Shapes;
+﻿using SpecialTask.Drawing.Shapes;
+using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Infrastructure.Iterators
 {
-    class CreationTimeIterator : IIterator
+    internal class CreationTimeIterator : IIterator
     {
         private static CreationTimeIterator? singleton;
 

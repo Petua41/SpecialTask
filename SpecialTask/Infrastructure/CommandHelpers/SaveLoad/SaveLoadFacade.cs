@@ -1,8 +1,8 @@
-﻿using SpecialTask.Infrastructure.CommandInfrastructure.SaveLoad;
+﻿using SpecialTask.Infrastructure.WindowSystem;
 using System.IO;
 using System.Xml.Linq;
 
-namespace SpecialTask.Infrastructure.CommandInfrastructure
+namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 {
     internal class SaveLoadFacade
     {
@@ -33,7 +33,10 @@ namespace SpecialTask.Infrastructure.CommandInfrastructure
 
         public void Save()
         {
-            if (!NeedsSave) throw new InvalidOperationException();
+            if (!NeedsSave)
+            {
+                throw new InvalidOperationException();
+            }
 
             SaveAs(currentFilename);
         }

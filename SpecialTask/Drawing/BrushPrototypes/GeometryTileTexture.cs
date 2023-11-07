@@ -6,7 +6,7 @@ namespace SpecialTask.Drawing.BrushPrototypes
     /// <summary>
     /// Texture Brush, that tiles figure with specified Geometry
     /// </summary>
-    class GeometryTileTexture : IBrushPrototype
+    internal class GeometryTileTexture : IBrushPrototype
     {
         private readonly Geometry geom;
 
@@ -31,7 +31,10 @@ namespace SpecialTask.Drawing.BrushPrototypes
                 TileMode = TileMode.Tile
             };
 
-            if (externalBrush.CanFreeze) externalBrush.Freeze();
+            if (externalBrush.CanFreeze)
+            {
+                externalBrush.Freeze();
+            }
 
             return externalBrush;
         }

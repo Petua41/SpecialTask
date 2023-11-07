@@ -1,12 +1,12 @@
 ﻿using SpecialTask.Drawing.Shapes.WPF;
-using SpecialTask.Exceptions;
 using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Enums;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace SpecialTask.Drawing.Shapes
 {
-    class Text : Shape
+    internal class Text : Shape
     {
         private int leftTopX;
         private int leftTopY;
@@ -78,7 +78,10 @@ namespace SpecialTask.Drawing.Shapes
         {
             get
             {
-                if (base.wpfShape is not null) return base.wpfShape;
+                if (base.wpfShape is not null)
+                {
+                    return base.wpfShape;
+                }
 
                 System.Windows.Shapes.Shape wpfShape = new WPFText
                 {
@@ -115,14 +118,7 @@ namespace SpecialTask.Drawing.Shapes
             LeftTopY += offset;
         }
 
-        public override Point Center
-        {
-            get
-            {
-                if (wpfShape is null) return (0, 0);
-                return (LeftTopX + (int)(wpfShape.Width / 2), LeftTopY + (int)(wpfShape.Height / 2));
-            }
-        }
+        public override Point Center => wpfShape is null ? (Point)(0, 0) : (Point)(LeftTopX + (int)(wpfShape.Width / 2), LeftTopY + (int)(wpfShape.Height / 2));
 
         private int LeftTopX
         {

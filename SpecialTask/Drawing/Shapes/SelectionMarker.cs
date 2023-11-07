@@ -1,10 +1,11 @@
 ﻿using SpecialTask.Drawing.BrushPrototypes;
-using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Collections;
+using SpecialTask.Infrastructure.Enums;
 using System.Windows.Media;
 
 namespace SpecialTask.Drawing.Shapes
 {
-    class SelectionMarker : Shape
+    internal class SelectionMarker : Shape
     {
         private readonly Brush brush = new GeometryTileTexture(new EllipseGeometry(new(5, 5), 5, 5)).Brush(Colors.Black);
         private readonly Square square;
@@ -50,7 +51,10 @@ namespace SpecialTask.Drawing.Shapes
         {
             get
             {
-                if (base.wpfShape is not null) return base.wpfShape;
+                if (base.wpfShape is not null)
+                {
+                    return base.wpfShape;
+                }
 
                 System.Windows.Shapes.Shape wpfShape = square.WPFShape;
                 wpfShape.Stroke = brush;
@@ -82,6 +86,6 @@ namespace SpecialTask.Drawing.Shapes
             throw new InvalidOperationException();
         }
 
-        public override MyMap<string, string> AttributesToEditWithNames => new();
+        public override Pairs<string, string> AttributesToEditWithNames => new();
     }
 }

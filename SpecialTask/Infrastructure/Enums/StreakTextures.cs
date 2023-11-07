@@ -2,9 +2,9 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.Enums
 {
-    enum EStreakTexture
+    internal enum EStreakTexture
     {
         None,
         SolidColor,
@@ -14,17 +14,8 @@ namespace SpecialTask.Infrastructure
         Water                                                                   // We can add seamless textures really endlessly
     }
 
-    static class TextureController
+    internal static class TextureController
     {
-        private static readonly Dictionary<string, string> textureDescriptions = new()
-        {
-            { "solid", "Solid color" }, { "horizontallines", "Horizontal lines" }, { "verticallines", "Vertical lines" },
-            { "horizontaltransparencygradient", "Horizontal gradient with transparent on the left and color on the right" },
-            { "rainbow", "Horizontal rainbow gradient. Color is ignored" },
-            { "radialtransparencygradient", "Radial gradient with color in center and transparency on the edge" },
-            { "water", "Water texture. Color is ignored" }, { "dots", "Dots" }, { "holes", "Solid color with transparent round \"holes\""}
-        };
-
         private static readonly IBrushPrototype horizontalLinesBrush;
         private static readonly IBrushPrototype verticalLinesBrush;
         private static readonly IBrushPrototype dotsBrush;
@@ -90,6 +81,13 @@ namespace SpecialTask.Infrastructure
             };
         }
 
-        public static Dictionary<string, string> TexturesWithDescriptions => textureDescriptions;
+        public static Dictionary<string, string> TexturesWithDescriptions { get; } = new()
+        {
+            { "solid", "Solid color" }, { "horizontallines", "Horizontal lines" }, { "verticallines", "Vertical lines" },
+            { "horizontaltransparencygradient", "Horizontal gradient with transparent on the left and color on the right" },
+            { "rainbow", "Horizontal rainbow gradient. Color is ignored" },
+            { "radialtransparencygradient", "Radial gradient with color in center and transparency on the edge" },
+            { "water", "Water texture. Color is ignored" }, { "dots", "Dots" }, { "holes", "Solid color with transparent round \"holes\""}
+        };
     }
 }

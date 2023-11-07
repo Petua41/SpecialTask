@@ -1,5 +1,7 @@
 ﻿using SpecialTask;
-using SpecialTask.Infrastructure;
+using SpecialTask.Drawing;
+using SpecialTask.Infrastructure.Collections;
+using SpecialTask.Infrastructure.Enums;
 using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
 
 namespace SpecialTaskTest
@@ -10,25 +12,25 @@ namespace SpecialTaskTest
         public void MyMapConstructorTest()
         {
             List<KeyValuePair<string, int>> lst = new() { new("one", 1), new("two", 2) };
-            MyMap<string, int> expected = new() { { "one", 1 }, { "two", 2 } };
-            MyMap<string, int> actual = new(lst);
+            Pairs<string, int> expected = new() { { "one", 1 }, { "two", 2 } };
+            Pairs<string, int> actual = new(lst);
             Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
         public void MyMapCloneTest()
         {
-            MyMap<string, int> expected = new() { { "one", 1 }, { "two", 2 } };
+            Pairs<string, int> expected = new() { { "one", 1 }, { "two", 2 } };
             Assert.That(expected.Clone(), Is.EqualTo(expected));
         }
         
         [Test]
         public void MyMapAdditionTest()
         {
-            MyMap<string, int> firstMap = new() { { "one", 1 }, { "two", 2 } };
-            MyMap<string, int> secondMap = new() { { "three", 3 }, { "one", 1 } };
-            MyMap<string, int> expected = new() { { "one", 1 }, { "two", 2 }, { "three", 3 }, { "one", 1 } };
-            MyMap<string, int> actual = firstMap + secondMap;
+            Pairs<string, int> firstMap = new() { { "one", 1 }, { "two", 2 } };
+            Pairs<string, int> secondMap = new() { { "three", 3 }, { "one", 1 } };
+            Pairs<string, int> expected = new() { { "one", 1 }, { "two", 2 }, { "three", 3 }, { "one", 1 } };
+            Pairs<string, int> actual = firstMap + secondMap;
             Assert.That(actual, Is.EqualTo(expected));
         }
 

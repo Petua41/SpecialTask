@@ -1,4 +1,4 @@
-﻿namespace SpecialTask.Infrastructure
+﻿namespace SpecialTask.Infrastructure.Events
 {
     public class WindowSwitchedEventArgs : EventArgs
     {

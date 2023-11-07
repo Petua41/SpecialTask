@@ -1,21 +1,21 @@
-﻿using SpecialTask.Infrastructure.WindowSystem;
+﻿using SpecialTask.Infrastructure.Events;
 
-namespace SpecialTask.Infrastructure
+namespace SpecialTask.Infrastructure.WindowSystem
 {
     /// <summary>
     /// Controls creation, deletion and switching windows
     /// </summary>
-    class WindowManager
+    internal class WindowManager
     {
         private static WindowManager? singleton;
-
-        private Window currentWindow;
         private readonly List<Window> existingWindows;
 
         private WindowManager()
         {
-            currentWindow = new(0);
-            existingWindows = new List<Window> { currentWindow };
+#pragma warning disable CS0618              // CurrentWindow is marked obsolete, because it`s cannot be used anywhere outside of this class
+            CurrentWindow = new(0);
+            existingWindows = new List<Window> { CurrentWindow };
+#pragma warning restore
         }
 
         public static WindowManager Instance
@@ -41,25 +41,32 @@ namespace SpecialTask.Infrastructure
             RemoveWindowFromLists(numberOfWindow);
         }
 
+        [Obsolete]
         public void SwitchToWindow(int numberOfWindow)
         {
             ValidateWindowNumber(numberOfWindow);                   // here we pass exception on
-            currentWindow = existingWindows[numberOfWindow];
+            CurrentWindow = existingWindows[numberOfWindow];
             WindowSwitchedEvent?.Invoke(this, new WindowSwitchedEventArgs(numberOfWindow));
         }
 
         public void CloseAll()
         {
-            for (int i = existingWindows.Count - 1; i >= 0; i--) DestroyWindow(i);
+            for (int i = existingWindows.Count - 1; i >= 0; i--)
+            {
+                DestroyWindow(i);
+            }
         }
 
         [Obsolete("Please don`t call WindowSystem.Window directly. Use CurrentWindow instead")]
-        public Window CurrentWindow => currentWindow;
+        public Window CurrentWindow { get; private set; }
 
         public void OnSomeAssotiatedWindowClosed(Window winToDraw)
         {
             int idx = existingWindows.IndexOf(winToDraw);
-            if (idx >= 0) RemoveWindowFromLists(existingWindows.IndexOf(winToDraw));
+            if (idx >= 0)
+            {
+                RemoveWindowFromLists(existingWindows.IndexOf(winToDraw));
+            }
         }
 
         private void RemoveWindowFromLists(int windowNumber)
@@ -77,7 +84,10 @@ namespace SpecialTask.Infrastructure
         /// <exception cref="ArgumentException"></exception>
         private void ValidateWindowNumber(int numberOfWindow)
         {
-            if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count) throw new ArgumentException($"Window {numberOfWindow} doesn`t exist");
+            if (numberOfWindow < 0 || numberOfWindow >= existingWindows.Count)
+            {
+                throw new ArgumentException($"Window {numberOfWindow} doesn`t exist");
+            }
         }
 
         public event WindowSwitchedEventHandler? WindowSwitchedEvent;

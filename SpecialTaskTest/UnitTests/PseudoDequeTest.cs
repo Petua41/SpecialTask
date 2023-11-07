@@ -1,4 +1,4 @@
-﻿using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure.Collections;
 
 namespace SpecialTaskTest
 {

@@ -1,24 +1,24 @@
-﻿using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure.Events;
 
-namespace SpecialTask.Console
+namespace SpecialTask.Console.Interfaces
 {
     /// <summary>
     /// High-level console interface for business classes
     /// </summary>
     public interface IHighConsole
     {
-        public static IHighConsole? HighConsole { get; }
+        void DisplayGlobalHelp();
+        void DisplayError(string message);
+        void DisplayWarning(string message);
+        void DisplayQuestion(string message);
+        void Display(string message);
+        void NewLine();
+        void DisplayPrompt();
 
-        public void DisplayGlobalHelp();
-        public void DisplayError(string message);
-        public void DisplayWarning(string message);
-        public void DisplayQuestion(string message);
-        public void Display(string message);
-        public void NewLine();
-        public void DisplayPrompt();
-        public bool TransferringInput { get; set; }
+        bool TransferringInput { get; set; }
+        static IHighConsole? HighConsole { get; }
 
-        public event TransferringEventHandler? SomethingTranferred;
-        public event EventHandler? CtrlCTransferred;
+        event TransferringEventHandler? SomethingTranferred;
+        event EventHandler? CtrlCTransferred;
     }
 }

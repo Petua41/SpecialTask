@@ -1,6 +1,4 @@
-﻿using SpecialTask.Infrastructure.Loggers;
-
-namespace SpecialTask.Infrastructure
+﻿namespace SpecialTask.Infrastructure.Loggers
 {
     internal enum ConcreteLoggers { SimpleLogger }
 
@@ -23,13 +21,6 @@ namespace SpecialTask.Infrastructure
             logger.Greetings();     // I think, it should be here, so that we won`t forget to log greetings when we initialize logger
         }
 
-        public static ILogger Logger
-        {
-            get
-            {
-                if (logger is null) throw new InvalidOperationException("You must call InitializeLogger before getting Logger");
-                return logger;
-            }
-        }
+        public static ILogger Logger => logger is null ? throw new InvalidOperationException("You must call InitializeLogger before getting Logger") : logger;
     }
 }
