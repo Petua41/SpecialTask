@@ -1,5 +1,5 @@
-﻿using SpecialTask.Infrastructure;
-using SpecialTask.Infrastructure.Enums;
+﻿using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
@@ -56,7 +56,7 @@ namespace SpecialTask.Drawing.Shapes
                         throw new ArgumentException($"Unknown attribute: {attribute}");
                 }
             }
-            catch (FormatException) { throw new ShapeAttributeCastException(); }
+            catch (FormatException) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", attribute, value); }
 
             return oldValue;
         }
@@ -72,7 +72,7 @@ namespace SpecialTask.Drawing.Shapes
 
                 System.Windows.Shapes.Shape wpfShape = new System.Windows.Shapes.Polygon
                 {
-                    Points = new(points.Cast<System.Windows.Point>()),
+                    Points = new(points.Select(p => (System.Windows.Point)p)),
                     StrokeThickness = LineThickness,
                     Stroke = new SolidColorBrush(Color.GetWPFColor())
                 };

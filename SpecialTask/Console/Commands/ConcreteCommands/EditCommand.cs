@@ -1,12 +1,11 @@
 ﻿using SpecialTask.Console.Commands.ConcreteCommands.Internal;
 using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
-using SpecialTask.Infrastructure;
 using SpecialTask.Infrastructure.Collections;
 using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Events;
+using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.Iterators;
-using System.Collections.Specialized;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands
 {
@@ -59,7 +58,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
                 if (selectedNumber >= listOfShapes.Count)
                 {
-                    throw new InvalidInputException();
+                    throw new InvalidInputException($"{interString} is not valid value for shape number", interString);
                 }
 
                 shapeToEdit = listOfShapes[selectedNumber];
@@ -87,7 +86,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
                             1 => ELayerDirection.Forward,
                             2 => ELayerDirection.Back,
                             3 => ELayerDirection.Front,
-                            _ => throw new InvalidInputException()
+                            _ => throw new InvalidInputException($"{interString} is not valid value for layer operation number", interString)
                         };
 
                         receiver = new EditLayerCommand(shapeToEdit.UniqueName, dir);
@@ -104,7 +103,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
                         if (selectedNumber >= attrsWithNames.Count)
                         {
-                            throw new InvalidInputException();
+                            throw new InvalidInputException($"{interString} is not valid value for attribute number", interString);
                         }
 
                         KeyValuePair<string, string> kvp = attrsWithNames[selectedNumber];
@@ -141,7 +140,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
                         break;
                     default:
-                        throw new InvalidInputException();
+                        throw new InvalidInputException($"{interString} is not valid value for \"what to do\" selection", interString);
                 }
             }
             catch (InvalidInputException)
@@ -166,7 +165,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         {
             await GetInterString();
 
-            if (!int.TryParse(interString, out selectedNumber)) throw new InvalidInputException();
+            if (!int.TryParse(interString, out selectedNumber)) throw new InvalidInputException($"{interString} is not integer", interString);
         }
 
         private async Task GetInterString()

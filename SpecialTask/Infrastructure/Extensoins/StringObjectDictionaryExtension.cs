@@ -41,7 +41,7 @@
         /// <exception cref="KeyNotFoundException"></exception>
         public static object[] Unpack<T>(this Dictionary<string, T> dict, string keysOrder)
         {
-            return dict.Unpack(keysOrder.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+            return dict.Unpack(keysOrder.SplitInsensitive(' '));
         }
     }
 }

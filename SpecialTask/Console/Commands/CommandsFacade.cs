@@ -1,6 +1,6 @@
-﻿using SpecialTask.Infrastructure;
-using SpecialTask.Infrastructure.Collections;
+﻿using SpecialTask.Infrastructure.Collections;
 using SpecialTask.Infrastructure.Events;
+using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Console.Commands

@@ -14,9 +14,7 @@ namespace SpecialTask.Infrastructure.Extensoins
 
         public static List<Point> ParsePoints(this string value)
         {
-            StringSplitOptions op = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
-
-            return value.Split(',', op).Select(p => p.Split(' ', op)).Select(pre => new Point(int.Parse(pre[0]), int.Parse(pre[1]))).ToList();
+            return value.SplitInsensitive(',').Select(st => st.SplitInsensitive(' ')).Select(arr => new Point(int.Parse(arr[0]), int.Parse(arr[1]))).ToList();
         }
 
         public static Point Center(this List<Point> points)

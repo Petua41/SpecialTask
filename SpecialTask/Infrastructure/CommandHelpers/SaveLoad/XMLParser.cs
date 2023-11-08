@@ -2,6 +2,7 @@
 using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
 using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
 using System.Xml.Linq;
 
 namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
@@ -10,11 +11,11 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
     {
         public static void Parse(XDocument doc)
         {
-            XElement root = doc.Root ?? throw new LoadXMLError();
+            XElement root = doc.Root ?? throw new LoadXMLException();
             foreach (XElement elem in root.Elements())
             {
                 try { ParseElement(elem); }
-                catch (UnknownShapeException) { /* Ignore unknown tags */ }
+                catch (UnknownShapeTagException) { /* Ignore unknown tags */ }
             }
         }
 
@@ -36,7 +37,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
                     "line" => ParseLine(dict),
                     "text" => ParseText(dict),
                     "polygon" => ParsePolygon(dict),
-                    _ => throw new UnknownShapeException()
+                    _ => throw new UnknownShapeTagException($"Unknown shape XML tag: {shapeType}", shapeType)
                 };
 
                 if (dict.ContainsKey("streak") && dict["streak"] == "true")
@@ -46,7 +47,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 
                 shape.Display();
             }
-            catch (Exception ex) when (ex is FormatException or KeyNotFoundException) { throw new LoadXMLError(); }
+            catch (Exception ex) when (ex is FormatException or KeyNotFoundException) { throw new LoadXMLException(); }
         }
 
         private static Circle ParseCircle(Dictionary<string, string> dict)
@@ -113,7 +114,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 
                 return new(shape, streakColor, streakTexture);
             }
-            catch (KeyNotFoundException) { throw new LoadXMLError(); }
+            catch (KeyNotFoundException) { throw new LoadXMLException(); }
         }
     }
 }

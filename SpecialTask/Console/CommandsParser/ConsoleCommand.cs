@@ -1,4 +1,4 @@
-﻿using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Extensoins;
 
@@ -47,12 +47,12 @@ namespace SpecialTask.Console.CommandsParser
                         HighConsole.DisplayError(
                             $"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}. Try {neededUserInput} --help");
 
-                        throw new ArgumentParsingError();
+                        throw new ArgumentParsingError($"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}.", arg.LongArgument);
                     }
                 }
             }
             HighConsole.DisplayError($"Unknown argument: {argument}. Try {neededUserInput} -- help");
-            throw new ArgumentParsingError();
+            throw new ArgumentParsingError($"Unknown argument: {argument}.", argument);
         }
 
         private static string SelectLastLongArgument(string input)

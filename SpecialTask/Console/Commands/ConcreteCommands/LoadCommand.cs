@@ -1,5 +1,5 @@
-﻿using SpecialTask.Infrastructure;
-using SpecialTask.Infrastructure.CommandHelpers.SaveLoad;
+﻿using SpecialTask.Infrastructure.CommandHelpers.SaveLoad;
+using SpecialTask.Infrastructure.Exceptions;
 using System.IO;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands
@@ -30,7 +30,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             }
 
             try { SaveLoadFacade.Instance.Load(filename); }
-            catch (LoadXMLError)
+            catch (LoadXMLException)
             {
                 Logger.Error($"Cannot load {filename}: invalid file format");
                 HighConsole.DisplayError("Invalid file format");

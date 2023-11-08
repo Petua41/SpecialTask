@@ -1,6 +1,6 @@
-﻿using SpecialTask.Infrastructure;
-using SpecialTask.Infrastructure.Collections;
+﻿using SpecialTask.Infrastructure.Collections;
 using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Drawing.Shapes.Decorators
@@ -49,7 +49,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
                         break;
                 }
             }
-            catch (FormatException) { throw new ShapeAttributeCastException(); }
+            catch (FormatException) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", attribute, value); }
 
             return oldValue;
         }

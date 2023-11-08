@@ -8,7 +8,7 @@ namespace SpecialTask.Infrastructure.Extensoins
         private const EColor defaultColor = EColor.White;
 
         // This method is TOO LONG
-        public static Pairs<string, EColor> SplitByColors(this string message)        // This must be private, but I wanna test it
+        public static Pairs<string, EColor> SplitByColors(this string message)
         {
             Pairs<string, EColor> messageSplittedByColors = new();
 
@@ -46,6 +46,11 @@ namespace SpecialTask.Infrastructure.Extensoins
             } while (message.Length > 0);
 
             return messageSplittedByColors;
+        }
+
+        public static string[] SplitInsensitive(this string str, char separator)
+        {
+            return str.Split(separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         }
     }
 }

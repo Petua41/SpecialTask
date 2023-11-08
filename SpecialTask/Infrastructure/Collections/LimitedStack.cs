@@ -14,6 +14,12 @@
             this.capacity = capacity;
         }
 
+        public LimitedStack(LimitedStack<T> old, int capacity)
+        {
+            list = old.list;
+            this.capacity = capacity;
+        }
+
         /// <summary>
         /// Add <paramref name="item"/> to the top of <see cref="LimitedStack{T}"/>
         /// If capacity reached, item on the bottom is removed.

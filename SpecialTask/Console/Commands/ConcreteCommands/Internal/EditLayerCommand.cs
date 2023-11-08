@@ -1,4 +1,4 @@
-﻿using SpecialTask.Infrastructure;
+﻿using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands.Internal

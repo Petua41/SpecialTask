@@ -1,5 +1,5 @@
-﻿using SpecialTask.Infrastructure;
-using SpecialTask.Infrastructure.Enums;
+﻿using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -77,7 +77,7 @@ namespace SpecialTask.Drawing.Shapes
                         throw new ArgumentException($"Unknown attribute: {attribute}");
                 }
             }
-            catch (FormatException) { throw new ShapeAttributeCastException(); }
+            catch (FormatException) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", attribute, value); }
 
             return oldValue;
         }

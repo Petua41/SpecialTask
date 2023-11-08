@@ -1,4 +1,5 @@
 ﻿using SpecialTask.Drawing.Shapes;
+using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 
 namespace SpecialTask.Infrastructure.WindowSystem
@@ -60,7 +61,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
             if (idx < 0)
             {
-                throw new ShapeNotFoundException();
+                throw new ShapeNotFoundException($"Shape \"{uniqueName}\" not found on current window", uniqueName);
             }
 
             if (idx == 0)
@@ -90,7 +91,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
             if (idx < 0)
             {
-                throw new ShapeNotFoundException();
+                throw new ShapeNotFoundException($"Shape \"{uniqueName}\" not found on current window", uniqueName);
             }
 
             if (idx == ShapesOnThisWindow.Count - 1)
@@ -120,7 +121,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
             if (idx < 0)
             {
-                throw new ShapeNotFoundException();
+                throw new ShapeNotFoundException($"Shape \"{uniqueName}\" not found on current window", uniqueName);
             }
 
             for (int j = idx; j > 0; j--)
@@ -142,7 +143,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
             if (idx < 0)
             {
-                throw new ShapeNotFoundException();
+                throw new ShapeNotFoundException($"Shape \"{uniqueName}\" not found on current window", uniqueName);
             }
 
             for (int j = idx; j < ShapesOnThisWindow.Count - 1; j++)
@@ -169,7 +170,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
             if (idx < 0)
             {
-                throw new ShapeNotFoundException();
+                throw new ShapeNotFoundException($"Shape \"{uniqueName}\" not found on current window", uniqueName);
             }
 
             (zOrder[idx], zOrder[newLayer]) = (zOrder[newLayer], zOrder[idx]);

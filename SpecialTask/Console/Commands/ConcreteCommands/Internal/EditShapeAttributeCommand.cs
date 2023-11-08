@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Drawing.Shapes;
-using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Exceptions;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
 {

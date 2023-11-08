@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Console.Commands;
-using SpecialTask.Infrastructure;
+using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.Enums;
 using System.Xml.Linq;
 
@@ -70,7 +70,7 @@ namespace SpecialTask.Console.CommandsParser
                     if (argument.IsNecessary)
                     {
                         HighConsole.DisplayError($"Missing required argument {argument.LongArgument}. Try {consoleCommand.neededUserInput} --help");
-                        throw new ArgumentParsingError();
+                        throw new ArgumentParsingError($"Missing required argument {argument.LongArgument}.", argument.LongArgument);
                     }
                     else if (argument.DefaultValue is not null)
                     {

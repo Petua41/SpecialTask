@@ -1,7 +1,7 @@
 ﻿using SpecialTask.Console.CommandsParser;
 using SpecialTask.Console.Interfaces;
 using SpecialTask.Infrastructure;
-using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.Loggers;
 using SpecialTask.Infrastructure.WindowSystem;
 using System.Windows;
@@ -19,7 +19,7 @@ namespace SpecialTask
     public partial class MainWindow : System.Windows.Window
     {
         private readonly ILowConsole lowConsole;
-        private readonly Brush defaultForegroundBrush = new SolidColorBrush(EColor.White.GetWPFColor());
+        private readonly Brush defaultForegroundBrush = new SolidColorBrush(Colors.White);
         private readonly WindowManager windowManager;
 
         public MainWindow()

@@ -1,6 +1,7 @@
 ﻿using SpecialTask.Drawing;
 using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
+using SpecialTask.Infrastructure.Exceptions;
 using System.Xml.Linq;
 using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
 
@@ -16,7 +17,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             foreach (Shape shape in shapes)
             {
                 try { parent.Add(Visit(shape)); }
-                catch (Exception ex) when (ex is UnknownShapeException or InvalidOperationException) { /* Ignore unknown shapes and hanging decorators */ }
+                catch (Exception ex) when (ex is UnknownShapeClassException or InvalidOperationException) { /* Ignore unknown shapes and hanging decorators */ }
             }
 
             document.Add(parent);
@@ -52,7 +53,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
                 return VisitPolygon(shapeAttributes);
             }
 
-            throw new UnknownShapeException();
+            throw new UnknownShapeClassException($"Unknown shape subclass: {typeof(Shape).Name}", typeof(Shape).Name);
         }
 
         private static XElement VisitCircle(Dictionary<string, object> shapeAttrubutes)
