@@ -14,7 +14,7 @@ namespace SpecialTask.Drawing.Shapes
 
         public SelectionMarker(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY)
         {
-            square = new(leftTopX, leftTopY, rightBottomX, rightBottomY, EColor.Black, 1);
+            square = new(leftTopX, leftTopY, rightBottomX, rightBottomY, STColor.Black, 1);
             uniqueName = GetNextUniqueName();
         }
 
@@ -30,7 +30,7 @@ namespace SpecialTask.Drawing.Shapes
             DestroyAfterDelay(5000);
         }
 
-        public override object Edit(string attribute, string value) { throw new InvalidOperationException(); }
+        public override string Edit(string attribute, string value) { throw new InvalidOperationException(); }
 
         public override Dictionary<string, object> Accept()
         {

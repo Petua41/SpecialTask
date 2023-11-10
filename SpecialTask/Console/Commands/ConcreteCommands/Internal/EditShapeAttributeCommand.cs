@@ -13,7 +13,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
         private readonly string attribute;
         private readonly string newValue;
 
-        private object? oldValue;
+        private string? oldValue;
 
         public EditShapeAttributesCommand(string attribute, Shape shape, string newValue)
         {
@@ -45,7 +45,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
             }
             else
             {
-                _ = receiver.Edit(attribute, newValue);
+                receiver.Edit(attribute, oldValue);
             }
         }
     }

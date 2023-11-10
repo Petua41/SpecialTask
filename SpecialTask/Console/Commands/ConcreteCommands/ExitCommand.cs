@@ -8,11 +8,11 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
     /// </summary>
     internal class ExitCommand : ICommand
     {
-        private enum EYesNoSaveAnswer { None, Yes, No, Save }
+        private enum YesNoSaveAnswer { None, Yes, No, Save }
 
         private readonly System.Windows.Application receiver;
 
-        private EYesNoSaveAnswer answer = EYesNoSaveAnswer.None;
+        private YesNoSaveAnswer answer = YesNoSaveAnswer.None;
         private readonly Task task;
         private readonly CancellationTokenSource tokenSource;
 
@@ -56,14 +56,14 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
             switch (answer)
             {
-                case EYesNoSaveAnswer.Yes:
+                case YesNoSaveAnswer.Yes:
                     receiver.Shutdown();
                     break;
-                case EYesNoSaveAnswer.No:
+                case YesNoSaveAnswer.No:
                     HighConsole.NewLine();
                     HighConsole.DisplayPrompt();
                     break;
-                case EYesNoSaveAnswer.Save:
+                case YesNoSaveAnswer.Save:
                     HighConsole.Display("saving...");
                     CommandsFacade.Execute(new SaveCommand());		// We don`t need to check anything here. SaveLoadFacade will do
                     receiver.Shutdown();
@@ -80,9 +80,9 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
             answer = trString.ToLower() switch
             {
-                "y" or "yes" => EYesNoSaveAnswer.Yes,
-                "s" or "save" => EYesNoSaveAnswer.Save,
-                _ => EYesNoSaveAnswer.No
+                "y" or "yes" => YesNoSaveAnswer.Yes,
+                "s" or "save" => YesNoSaveAnswer.Save,
+                _ => YesNoSaveAnswer.No
             };
 
             tokenSource.Cancel(true);
@@ -90,7 +90,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
         private void OnCtrlCTransferred(object? sender, EventArgs e)
         {
-            answer = EYesNoSaveAnswer.No;
+            answer = YesNoSaveAnswer.No;
             tokenSource.Cancel(true);
         }
 

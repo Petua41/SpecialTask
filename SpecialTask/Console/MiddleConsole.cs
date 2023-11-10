@@ -6,6 +6,7 @@ using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Events;
 using System.Windows;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
+using SpecialTask.Infrastructure.Exceptions;
 
 namespace SpecialTask.Console
 {
@@ -23,7 +24,12 @@ namespace SpecialTask.Console
 
         private MiddleConsole()
         {
-            if (Application.Current.MainWindow is not MainWindow mw) throw new NullReferenceException();
+            if (Application.Current.MainWindow is not MainWindow mw)
+            {
+                Logger.Fatal("Cannot get MainWindow");
+                Application.Current.Shutdown();                     // it`s bad idea. I should catch FatalError somewhere on the top of hierarchy
+                throw new FatalError("Cannot get MainWindow");
+            }
             mainWindowInstance = mw;
         }
 
@@ -68,13 +74,13 @@ namespace SpecialTask.Console
         public void DisplayError(string message)
         {
             NewLine();
-            Display(message, EColor.Red);
+            Display(message, STColor.Red);
         }
 
         public void Display(string message)
         {
-            Pairs<string, EColor> messageSplittedByColors = message.SplitByColors();
-            foreach (KeyValuePair<string, EColor> kvp in messageSplittedByColors)
+            Pairs<string, STColor> messageSplittedByColors = message.SplitByColors();
+            foreach (KeyValuePair<string, STColor> kvp in messageSplittedByColors)
             {
                 Display(kvp.Key, kvp.Value);
             }
@@ -82,7 +88,7 @@ namespace SpecialTask.Console
 
         public void NewLine()
         {
-            Display(Environment.NewLine, EColor.None);      // no matter, in which color we display \n
+            Display(Environment.NewLine, STColor.None);      // no matter, in which color we display \n
         }
 
         public void DisplayGlobalHelp()
@@ -92,19 +98,19 @@ namespace SpecialTask.Console
 
         public void DisplayPrompt()
         {
-            Display(">> ", EColor.Green);
+            Display(">> ", STColor.Green);
         }
 
         public void DisplayQuestion(string message)
         {
             NewLine();
-            Display(message, EColor.Yellow);
+            Display(message, STColor.Yellow);
         }
 
         public void DisplayWarning(string message)
         {
             NewLine();
-            Display(message, EColor.Purple);
+            Display(message, STColor.Purple);
         }
 
         public void ProcessInputString(string input)
@@ -176,7 +182,7 @@ namespace SpecialTask.Console
 
         public bool TransferringInput { get; set; }
 
-        private void Display(string message, EColor color = EColor.None)
+        private void Display(string message, STColor color = STColor.None)
         {
             mainWindowInstance.Display(message, color.GetWPFColor());
         }

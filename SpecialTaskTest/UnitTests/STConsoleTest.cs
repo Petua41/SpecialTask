@@ -12,14 +12,14 @@ namespace SpecialTaskTest
         public void SplitMessageByColorsTest()
         {
             string message = "none[color:Green]green[color:Magenta]magenta[color]none";
-            Pairs<string, EColor> expected = new()
+            Pairs<string, STColor> expected = new()
             {
-                { "none", EColor.None },
-                { "green", EColor.Green },
-                { "magenta", EColor.Magenta },
-                { "none", EColor.None }
+                { "none", STColor.None },
+                { "green", STColor.Green },
+                { "magenta", STColor.Magenta },
+                { "none", STColor.None }
             };
-            Pairs<string, EColor> actual = message.SplitByColors();
+            Pairs<string, STColor> actual = message.SplitByColors();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -27,11 +27,11 @@ namespace SpecialTaskTest
         public void SplitColorlessMessageByColorsTest()
         {
             string message = "this is a colorless message";
-            Pairs<string, EColor> expected = new()
+            Pairs<string, STColor> expected = new()
             {
-                { "this is a colorless message", EColor.None }
+                { "this is a colorless message", STColor.None }
             };
-            Pairs<string, EColor> actual = message.SplitByColors();
+            Pairs<string, STColor> actual = message.SplitByColors();
             Assert.That(actual, Is.EqualTo(expected));
         }
     }

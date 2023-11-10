@@ -40,10 +40,9 @@ namespace SpecialTask.Infrastructure
             {
                 if (!Directory.Exists(value))
                 {
-                    _ = Directory.CreateDirectory(value);
+                    logsDir = Directory.CreateDirectory(value);
                 }
-
-                logsDir = new DirectoryInfo(value);
+                else logsDir = new DirectoryInfo(value);
             }
         }
 

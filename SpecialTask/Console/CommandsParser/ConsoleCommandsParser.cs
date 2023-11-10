@@ -53,7 +53,7 @@ namespace SpecialTask.Console.CommandsParser
 
                 ICommand command = CreateCommand(consoleCommand, argumentValues);
 
-                if (consoleCommand.supportsUndo)
+                if (consoleCommand.SupportsUndo)
                 {
                     CommandsFacade.Register(command);
                 }
@@ -62,9 +62,9 @@ namespace SpecialTask.Console.CommandsParser
             }
             catch (InvalidOperationException)
             {
-                Logger.Warning($"Call of the fictional command {consoleCommand.neededUserInput}");
+                Logger.Warning($"Call of the fictional command {consoleCommand.NeededUserInput}");
                 HighConsole.DisplayError(
-                    $"You cannot call {consoleCommand.neededUserInput} without \"second-level command\". Try {consoleCommand.neededUserInput} --help");
+                    $"You cannot call {consoleCommand.NeededUserInput} without \"second-level command\". Try {consoleCommand.NeededUserInput} --help");
             }
             catch (ArgumentParsingError) { /* ignore */ }   // Some required argument is missing || Some extra argument is present || Error casting parameter
         }
@@ -82,7 +82,7 @@ namespace SpecialTask.Console.CommandsParser
             int idxOfCommand = SelectCommand(commandName);
             return idxOfCommand >= 0
                 ? consoleCommands[idxOfCommand].AutocompleteArguments(argumentsStr)
-                : consoleCommands.Select(x => x.neededUserInput).Where(x => x.StartsWith(input)).ToList().RemovePrefix(input).LongestCommonPrefix();
+                : consoleCommands.Select(x => x.NeededUserInput).Where(x => x.StartsWith(input)).ToList().RemovePrefix(input).LongestCommonPrefix();
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace SpecialTask.Console.CommandsParser
         private static int SelectCommand(string commandName)
         {
             commandName = commandName.Trim();
-            return consoleCommands.FindIndex(t => t.neededUserInput == commandName);        // ТАК НАДО ВЕЗДЕ		!!!!!!!!!!!!!!!!
+            return consoleCommands.FindIndex(t => t.NeededUserInput == commandName);        // ТАК НАДО ВЕЗДЕ		!!!!!!!!!!!!!!!!
         }
 
         private static Dictionary<string, object> ParseArguments(ConsoleCommand consoleCommand, string arguments)
@@ -125,10 +125,10 @@ namespace SpecialTask.Console.CommandsParser
 
         private static void DisplayHelp(ConsoleCommand command)
         {
-            string? help = command.help;
+            string? help = command.Help;
             if (help is null)
             {
-                HighConsole.DisplayError($"Help for {command.neededUserInput} not found");
+                HighConsole.DisplayError($"Help for {command.NeededUserInput} not found");
             }
             else
             {

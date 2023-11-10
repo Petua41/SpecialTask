@@ -6,18 +6,11 @@ namespace SpecialTask.Console.CommandsParser
 {
     internal struct ConsoleCommand
     {
-        public string neededUserInput;
-        public string? help;
-        public string commandType;
-        public List<ConsoleCommandArgument> arguments;
-        public bool supportsUndo;
-        public bool fictional;                                  // Only for --help
-
         public readonly string AutocompleteArguments(string argumentsInput)
         {
             string lastArgument = SelectLastLongArgument(argumentsInput).Trim();
 
-            return arguments.Select(x => x.LongArgument).Where(x => x.StartsWith(lastArgument)).ToList().RemovePrefix(lastArgument).LongestCommonPrefix();
+            return Arguments.Select(x => x.LongArgument).Where(x => x.StartsWith(lastArgument)).ToList().RemovePrefix(lastArgument).LongestCommonPrefix();
         }
 
         public readonly (string, object) CreateArgumentFromString(string argument)
@@ -29,7 +22,7 @@ namespace SpecialTask.Console.CommandsParser
                 return ("help", true);
             }
 
-            foreach (ConsoleCommandArgument arg in arguments)
+            foreach (ConsoleCommandArgument arg in Arguments)
             {
                 if (argument.StartsWith(arg.LongArgument) || argument.StartsWith(arg.ShortArgument))
                 {
@@ -41,17 +34,17 @@ namespace SpecialTask.Console.CommandsParser
                         string paramName = arg.CommandParameterName;
                         return (paramName, value);
                     }
-                    catch (FormatException)     // Error casting string
+                    catch (FormatException e)     // Error casting string
                     {
                         string argType = arg.Type.ToString();
                         HighConsole.DisplayError(
-                            $"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}. Try {neededUserInput} --help");
+                            $"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}. Try {NeededUserInput} --help");
 
-                        throw new ArgumentParsingError($"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}.", arg.LongArgument);
+                        throw new ArgumentParsingError($"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}.", e, arg.LongArgument);
                     }
                 }
             }
-            HighConsole.DisplayError($"Unknown argument: {argument}. Try {neededUserInput} -- help");
+            HighConsole.DisplayError($"Unknown argument: {argument}. Try {NeededUserInput} -- help");
             throw new ArgumentParsingError($"Unknown argument: {argument}.", argument);
         }
 
@@ -64,8 +57,20 @@ namespace SpecialTask.Console.CommandsParser
                 ? string.Empty
                 : input[indexOfLastDoubleMinus..];
         }
+
+        public string NeededUserInput { get; set; }
+
+        public string? Help { get; set; }
+        
+        public string CommandType { get; set; }
+
+        public List<ConsoleCommandArgument> Arguments { get; set; }
+
+        public bool SupportsUndo { get; set; }
+
+        public bool Fictional { get; set; }         // only for --help. Doesn`t support execution
     }
 
-    internal record struct ConsoleCommandArgument(string ShortArgument, string LongArgument, EArgumentType Type, bool IsNecessary,
+    internal record struct ConsoleCommandArgument(string ShortArgument, string LongArgument, ArgumentType Type, bool IsNecessary,
         string CommandParameterName, object? DefaultValue);
 }

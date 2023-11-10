@@ -15,10 +15,10 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         private readonly int leftTopY;
         private readonly int fontSize;
         private readonly string textValue;
-        private readonly EColor color;
+        private readonly STColor color;
         private readonly bool streak;
-        private readonly EColor streakColor;
-        private readonly EStreakTexture streakTexture;
+        private readonly STColor streakColor;
+        private readonly StreakTexture streakTexture;
 
         public CreateTextCommand(object[] args)
         {
@@ -26,10 +26,10 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             leftTopY = (int)args[1];
             fontSize = (int)args[2];
             textValue = (string)args[3];
-            color = (EColor)args[4];
+            color = (STColor)args[4];
             streak = (bool)args[5];
-            streakColor = (EColor)args[6];
-            streakTexture = (EStreakTexture)args[7];
+            streakColor = (STColor)args[6];
+            streakTexture = (StreakTexture)args[7];
         }
 
         public void Execute()

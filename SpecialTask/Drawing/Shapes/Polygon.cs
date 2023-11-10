@@ -9,12 +9,12 @@ namespace SpecialTask.Drawing.Shapes
     internal class Polygon : Shape
     {
         private List<Point> points;
-        private EColor color;
+        private STColor color;
         private int lineThickness;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Polygon(List<Point> points, int lineThickness, EColor color)
+        public Polygon(List<Point> points, int lineThickness, STColor color)
         {
             this.points = points;
             this.color = color;
@@ -31,32 +31,32 @@ namespace SpecialTask.Drawing.Shapes
             return $"Polygon_{firstAvailibleUniqueNumber++}";
         }
 
-        public override object Edit(string attribute, string value)
+        public override string Edit(string attribute, string value)
         {
             attribute = attribute.ToLower();
-            object oldValue;
+            string oldValue;
 
             try
             {
                 switch (attribute)
                 {
                     case "points":
-                        oldValue = Points;
+                        oldValue = Points.PointsToString();
                         Points = value.ParsePoints();
                         break;
                     case "lineThickness":
-                        oldValue = LineThickness;
+                        oldValue = LineThickness.ToString();
                         LineThickness = int.Parse(value);
                         break;
                     case "color":
-                        oldValue = Color;
+                        oldValue = Color.ToString();
                         Color = ColorsController.Parse(value);
                         break;
                     default:
                         throw new ArgumentException($"Unknown attribute: {attribute}");
                 }
             }
-            catch (FormatException) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", attribute, value); }
+            catch (FormatException e) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", e, attribute, value); }
 
             return oldValue;
         }
@@ -121,7 +121,7 @@ namespace SpecialTask.Drawing.Shapes
             }
         }
 
-        private EColor Color
+        private STColor Color
         {
             get => color;
             set

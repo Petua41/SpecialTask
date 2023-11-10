@@ -20,7 +20,7 @@
 #pragma warning disable CS8601
                 if (dict.TryGetValue(key, out T? value))
                 {
-                    result[i] = value;     // value cannot be null, if TryGetValue is true
+                    result[i] = value;     // value cannot be null, if TryGetValue is true. This warning shouldn`t appear, but it does
                 }
 #pragma warning restore
                 else

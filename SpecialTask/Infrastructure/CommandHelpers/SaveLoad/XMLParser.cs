@@ -47,7 +47,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 
                 shape.Display();
             }
-            catch (Exception ex) when (ex is FormatException or KeyNotFoundException) { throw new LoadXMLException(); }
+            catch (Exception ex) when (ex is FormatException or KeyNotFoundException) { throw new LoadXMLException($"Error while parsing {shapeType}", ex); }
         }
 
         private static Circle ParseCircle(Dictionary<string, string> dict)
@@ -55,7 +55,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             int radius = int.Parse(dict["radius"]);
             int centerX = int.Parse(dict["centerX"]);
             int centerY = int.Parse(dict["centerY"]);
-            EColor color = ColorsController.Parse(dict["color"]);
+            STColor color = ColorsController.Parse(dict["color"]);
             int lineThickness = int.Parse(dict["lineThickness"]);
 
             return new(centerX, centerY, color, radius, lineThickness);
@@ -67,7 +67,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             int leftTopY = int.Parse(dict["leftTopY"]);
             int rightBottomX = int.Parse(dict["rightBottomX"]);
             int rightBottomY = int.Parse(dict["rightBottomY"]);
-            EColor color = ColorsController.Parse(dict["color"]);
+            STColor color = ColorsController.Parse(dict["color"]);
             int lineThickness = int.Parse(dict["lineThickness"]);
 
             return new(leftTopX, leftTopY, rightBottomX, rightBottomY, color, lineThickness);
@@ -79,7 +79,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             int firstY = int.Parse(dict["firstY"]);
             int secondX = int.Parse(dict["secondX"]);
             int secondY = int.Parse(dict["secondY"]);
-            EColor color = ColorsController.Parse(dict["color"]);
+            STColor color = ColorsController.Parse(dict["color"]);
             int lineThickness = int.Parse(dict["lineThickness"]);
 
             return new(firstX, firstY, secondX, secondY, color, lineThickness);
@@ -91,16 +91,16 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             int leftTopY = int.Parse(dict["leftTopY"]);
             int fontSize = int.Parse(dict["fontSize"]);
             string textValue = dict["textValue"];
-            EColor color = ColorsController.Parse(dict["color"]);
+            STColor color = ColorsController.Parse(dict["color"]);
 
             return new(leftTopX, leftTopY, fontSize, textValue, color);
         }
 
         private static Polygon ParsePolygon(Dictionary<string, string> dict)
         {
-            List<Point> points = (List<Point>)EArgumentType.Points.ParseValue(dict["points"]);
+            List<Point> points = (List<Point>)ArgumentType.Points.ParseValue(dict["points"]);
             int lineThickness = int.Parse(dict["lineThickness"]);
-            EColor color = ColorsController.Parse(dict["color"]);
+            STColor color = ColorsController.Parse(dict["color"]);
 
             return new(points, lineThickness, color);
         }
@@ -109,12 +109,12 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
         {
             try
             {
-                EColor streakColor = ColorsController.Parse(dict["streakColor"]);
-                EStreakTexture streakTexture = TextureController.Parse(dict["streakTexture"]);
+                STColor streakColor = ColorsController.Parse(dict["streakColor"]);
+                StreakTexture streakTexture = TextureController.Parse(dict["streakTexture"]);
 
                 return new(shape, streakColor, streakTexture);
             }
-            catch (KeyNotFoundException) { throw new LoadXMLException(); }
+            catch (KeyNotFoundException e) { throw new LoadXMLException("Error while parsing StreakDecorator", e); }    // so that it have right message (StreakDecorator but not Shape subclass)
         }
     }
 }

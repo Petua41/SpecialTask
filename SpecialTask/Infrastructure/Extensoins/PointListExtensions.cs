@@ -7,7 +7,7 @@ namespace SpecialTask.Infrastructure.Extensoins
     /// </summary>
     public static class PointListExtensions
     {
-        public static string PointsToString(this List<Point> points)
+        public static string PointsToString(this List<Point> points)        // I cannot overwrite ToString() for List<Point>, so it will be named like that
         {
             return string.Join(", ", points.Select(p => $"{p.X} {p.Y}"));
         }

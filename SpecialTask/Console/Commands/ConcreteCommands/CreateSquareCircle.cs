@@ -15,11 +15,11 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         private readonly int leftTopY;
         private readonly int rightBottomX;
         private readonly int rightBottomY;
-        private readonly EColor color;
+        private readonly STColor color;
         private readonly int lineThickness;
         private readonly bool streak;
-        private readonly EColor streakColor;
-        private readonly EStreakTexture streakTexture;
+        private readonly STColor streakColor;
+        private readonly StreakTexture streakTexture;
 
         public CreateSquareCommand(object[] args)
         {
@@ -27,11 +27,11 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             leftTopY = (int)args[1];
             rightBottomX = (int)args[2];
             rightBottomY = (int)args[3];
-            color = (EColor)args[4];
+            color = (STColor)args[4];
             lineThickness = (int)args[5];
             streak = (bool)args[6];
-            streakColor = (EColor)args[7];
-            streakTexture = (EStreakTexture)args[8];
+            streakColor = (STColor)args[7];
+            streakTexture = (StreakTexture)args[8];
         }
 
         public void Execute()

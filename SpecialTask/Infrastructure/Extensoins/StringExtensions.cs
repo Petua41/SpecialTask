@@ -5,14 +5,14 @@ namespace SpecialTask.Infrastructure.Extensoins
 {
     public static class StringExtensions
     {
-        private const EColor defaultColor = EColor.White;
+        private const STColor defaultColor = STColor.White;
 
         // This method is TOO LONG
-        public static Pairs<string, EColor> SplitByColors(this string message)
+        public static Pairs<string, STColor> SplitByColors(this string message)
         {
-            Pairs<string, EColor> messageSplittedByColors = new();
+            Pairs<string, STColor> messageSplittedByColors = new();
 
-            EColor lastColor = defaultColor;
+            STColor lastColor = defaultColor;
             do
             {
                 int indexOfNextColorChange = message.IndexOf("[color");

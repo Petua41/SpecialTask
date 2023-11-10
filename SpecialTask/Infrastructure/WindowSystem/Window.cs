@@ -35,7 +35,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
             int z = ShapesOnThisWindow.Count;
 
             ShapesOnThisWindow.Add(shape);
-            _ = Canvas.Children.Add(wpfShape);
+            Canvas.Children.Add(wpfShape);
 
             zOrder.Add(z);
             Panel.SetZIndex(wpfShape, z);
@@ -126,7 +126,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
             for (int j = idx; j > 0; j--)
             {
-                _ = SendBackwards(ShapesOnThisWindow[j].UniqueName);
+                SendBackwards(ShapesOnThisWindow[j].UniqueName);
             }
 
             return idx;
@@ -148,7 +148,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
             for (int j = idx; j < ShapesOnThisWindow.Count - 1; j++)
             {
-                _ = BringForward(ShapesOnThisWindow[j].UniqueName);
+                BringForward(ShapesOnThisWindow[j].UniqueName);
             }
 
             return idx;
@@ -191,7 +191,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
             if (index >= 0)             // if cannot find, no problem
             {
                 ShapesOnThisWindow.RemoveAt(index);
-                _ = zOrder.Remove(index);
+                zOrder.Remove(index);
             }
         }
 

@@ -10,13 +10,13 @@ namespace SpecialTask.Drawing.Shapes
     {
         private int leftTopX;
         private int leftTopY;
-        private EColor color;
+        private STColor color;
         private int fontSize;
         private string textValue;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Text(int leftTopX, int leftTopY, int fontSize, string textValue, EColor color)
+        public Text(int leftTopX, int leftTopY, int fontSize, string textValue, STColor color)
         {
             this.leftTopX = leftTopX;
             this.leftTopY = leftTopY;
@@ -36,33 +36,33 @@ namespace SpecialTask.Drawing.Shapes
             return $"Text_{firstAvailibleUniqueNumber++}";
         }
 
-        public override object Edit(string attribute, string value)
+        public override string Edit(string attribute, string value)
         {
             attribute = attribute.ToLower();
-            object oldValue;
+            string oldValue;
 
             try
             {
                 switch (attribute)
                 {
                     case "lefttopx":
-                        oldValue = LeftTopX;
+                        oldValue = LeftTopX.ToString();
                         LeftTopX = int.Parse(value);
                         break;
                     case "lefttopy":
-                        oldValue = LeftTopY;
+                        oldValue = LeftTopY.ToString();
                         LeftTopY = int.Parse(value);
                         break;
                     case "fontSize":
-                        oldValue = FontSize;
+                        oldValue = FontSize.ToString();
                         FontSize = int.Parse(value);
                         break;
                     case "text":
-                        oldValue = TextValue;
+                        oldValue = TextValue.ToString();
                         TextValue = value;
                         break;
                     case "color":
-                        oldValue = Color;
+                        oldValue = Color.ToString();
                         Color = ColorsController.Parse(value);
                         break;
                     default:
@@ -160,7 +160,7 @@ namespace SpecialTask.Drawing.Shapes
             }
         }
 
-        private EColor Color
+        private STColor Color
         {
             get => color;
             set

@@ -8,7 +8,6 @@ namespace SpecialTask.Infrastructure.WindowSystem
 {
     internal static class CurrentWindow
     {
-        public static List<Shape> Shapes => Window.ShapesOnThisWindow;
 
         public static void AddShape(Shape shape)
         {
@@ -53,6 +52,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
         /// </summary>
         public static BitmapSource CanvasBitmapSource
         // I could return Canvas, but this method guarantees, that Canvas won`t be used for evil
+        // It`s still not perfect solution, but much better
         {
             get
             {
@@ -67,6 +67,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
                 return bmp;
             }
         }
+        public static List<Shape> Shapes => Window.ShapesOnThisWindow;
 
 #pragma warning disable CS0618
         private static Window Window => WindowManager.Instance.CurrentWindow;   // This method is marked obsolete, because it shouldn`t be used everywhere but here

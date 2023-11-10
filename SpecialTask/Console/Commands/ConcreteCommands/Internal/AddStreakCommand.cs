@@ -11,12 +11,12 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
     {
         private readonly Shape? receiver;
 
-        private readonly EColor streakColor;
-        private readonly EStreakTexture streakTexture;
+        private readonly STColor streakColor;
+        private readonly StreakTexture streakTexture;
 
         private StreakDecorator? decorator;
 
-        public AddStreakCommand(Shape shape, EColor streakColor, EStreakTexture streakTexture)
+        public AddStreakCommand(Shape shape, STColor streakColor, StreakTexture streakTexture)
         {
             receiver = shape;
             this.streakColor = streakColor;
@@ -30,7 +30,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
 
         public void Unexecute()
         {
-            decorator?.Destroy();
+            decorator?.Destroy();       // if there wasn`t execution, there won`t be unexecution. It`s not bad
             receiver?.Redraw();
         }
     }

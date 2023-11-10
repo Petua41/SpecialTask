@@ -2,7 +2,7 @@
 
 namespace SpecialTask.Infrastructure.Iterators
 {
-    internal enum ESortingOrder { Coordinates, CreationTime }
+    internal enum SortingOrder { Coordinates, CreationTime }
 
     internal static class IteratorsFacade
     {
@@ -18,11 +18,11 @@ namespace SpecialTask.Infrastructure.Iterators
             return concreteIterator.GetCompleteResult();
         }
 
-        public static void SetConcreteIterator(ESortingOrder iteratorType)
+        public static void SetConcreteIterator(SortingOrder iteratorType)
         {
             concreteIterator = iteratorType switch
             {
-                ESortingOrder.Coordinates => CoordinatesIterator.Instance,
+                SortingOrder.Coordinates => CoordinatesIterator.Instance,
                 _ => CreationTimeIterator.Instance
             };
         }

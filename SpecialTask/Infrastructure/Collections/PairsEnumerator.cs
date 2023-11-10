@@ -7,9 +7,9 @@ namespace SpecialTask.Infrastructure.Collections
         private readonly Pairs<K, V> pairs;
         private int pointer = -1;
 
-        public PairsEnumerator(Pairs<K, V> map)
+        public PairsEnumerator(Pairs<K, V> pairs)
         {
-            this.pairs = map;
+            this.pairs = pairs;
         }
 
         public KeyValuePair<K, V> Current
@@ -17,7 +17,8 @@ namespace SpecialTask.Infrastructure.Collections
             get
             {
                 try { return pairs[pointer]; }
-                catch (IndexOutOfRangeException) { throw new InvalidOperationException(); }
+                catch (IndexOutOfRangeException e) { throw new InvalidOperationException("Enumerate operation cannot happen: index out of range", e); }
+                // List throws InvalidOperationException with message "EnumOpCantHappen" in this situation, so we`ll do the same
             }
         }
 

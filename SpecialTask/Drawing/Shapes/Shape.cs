@@ -15,7 +15,8 @@ namespace SpecialTask.Drawing.Shapes
             return $"Unknown_Shape_{firstAvailibleUniqueNumber++}";
         }
 
-        public abstract object Edit(string attribute, string value);
+        /// <returns>Old value of attribute (as a string)</returns>
+        public abstract string Edit(string attribute, string value);            // we can return object, but Edit receive string, so it should return string too
 
         public virtual void Display()
         {

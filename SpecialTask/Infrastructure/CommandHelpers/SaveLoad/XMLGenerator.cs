@@ -69,7 +69,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
                 return GenerateXML("circle", new()
                     { { "radius", radius }, { "centerX", centerX }, { "centerY", centerY }, { "color", color }, { "lineThickness", lineThickness } });
             }
-            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError("Error visiting Circle", ex); }
         }
 
         private static XElement VisitSquare(Dictionary<string, object> shapeAttrubutes)
@@ -89,7 +89,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
                     { "color", color }, { "lineThickness", lineThickness }
                 });
             }
-            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError("Error visiting Square", ex); }
         }
 
         private static XElement VisitLine(Dictionary<string, object> shapeAttrubutes)
@@ -109,7 +109,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
                     { "lineThickness", lineThickness }
                 });
             }
-            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError("Error visiting Line", ex); }
         }
 
         private static XElement VisitStreakDecorator(Dictionary<string, object> shapeAttrubutes)
@@ -127,7 +127,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
                 elem.Add(newElem.Attributes().ToArray());
                 return elem;
             }
-            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError("Error visiting StreakDecorator", ex); }
         }
 
         private static XElement VisitText(Dictionary<string, object> shapeAttrubutes)
@@ -143,7 +143,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
                 return GenerateXML("text", new()
                     { { "leftTopX", leftTopX }, { "leftTopY", leftTopY }, { "fontSize", fontSize }, { "textValue", textValue }, { "color", color } });
             }
-            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError("Error visiting Text", ex); }
         }
 
         private static XElement VisitPolygon(Dictionary<string, object> shapeAttrubutes)
@@ -156,7 +156,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 
                 return GenerateXML("polygon", new() { { "points", points }, { "lineThickness", lineThickness }, { "color", color } });
             }
-            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError(); }
+            catch (Exception ex) when (ex is InvalidCastException or KeyNotFoundException) { throw new VisitorInvalidAcceptError("Error visiting Polygon", ex); }
         }
 
         private static XElement GenerateXML(string tag, Dictionary<string, string> nameValuePairs)

@@ -11,12 +11,12 @@ namespace SpecialTask.Drawing.Shapes
         private int firstY;
         private int secondX;
         private int secondY;
-        private EColor color;
+        private STColor color;
         private int lineThickness;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Line(int firstX, int firstY, int secondX, int secondY, EColor color, int lineThickness)
+        public Line(int firstX, int firstY, int secondX, int secondY, STColor color, int lineThickness)
         {
             this.firstX = firstX;
             this.firstY = firstY;
@@ -38,44 +38,44 @@ namespace SpecialTask.Drawing.Shapes
             return $"Line_{firstAvailibleUniqueNumber++}";
         }
 
-        public override object Edit(string attribute, string value)
+        public override string Edit(string attribute, string value)
         {
             attribute = attribute.ToLower();
-            object oldValue;
+            string oldValue;
 
             try
             {
                 switch (attribute)
                 {
                     case "firstx":
-                        oldValue = FirstX;
+                        oldValue = FirstX.ToString();
                         FirstX = int.Parse(value);
                         break;
                     case "firsty":
-                        oldValue = FirstY;
+                        oldValue = FirstY.ToString();
                         FirstY = int.Parse(value);
                         break;
                     case "secondx":
-                        oldValue = SecondX;
+                        oldValue = SecondX.ToString();
                         SecondX = int.Parse(value);
                         break;
                     case "secondy":
-                        oldValue = SecondY;
+                        oldValue = SecondY.ToString();
                         SecondY = int.Parse(value);
                         break;
                     case "color":
-                        oldValue = Color;
+                        oldValue = Color.ToString();
                         Color = ColorsController.Parse(value);
                         break;
                     case "linethickness":
-                        oldValue = LineThickness;
+                        oldValue = LineThickness.ToString();
                         LineThickness = int.Parse(value);
                         break;
                     default:
                         throw new ArgumentException($"Unknown attribute: {attribute}");
                 }
             }
-            catch (FormatException) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", attribute, value); }
+            catch (FormatException e) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", e, attribute, value); }
 
             return oldValue;
         }
@@ -127,6 +127,11 @@ namespace SpecialTask.Drawing.Shapes
             SecondY += offset;
         }
 
+        public override Shape Clone()
+        {
+            return new Line(this);
+        }
+
         public override Point Center => ((FirstX + SecondX) / 2, (FirstY + SecondY) / 2);
 
         private int FirstX
@@ -169,7 +174,7 @@ namespace SpecialTask.Drawing.Shapes
             }
         }
 
-        private EColor Color
+        private STColor Color
         {
             get => color;
             set
@@ -187,11 +192,6 @@ namespace SpecialTask.Drawing.Shapes
                 lineThickness = value;
                 base.Redraw();
             }
-        }
-
-        public override Shape Clone()
-        {
-            return new Line(this);
         }
     }
 }

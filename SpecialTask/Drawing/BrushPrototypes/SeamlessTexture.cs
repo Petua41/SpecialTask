@@ -20,7 +20,7 @@ namespace SpecialTask.Drawing.BrushPrototypes
 
         public SeamlessTexture(System.Drawing.Bitmap image)
         {
-            // looks scary, but it works:
+            // looks scary (because it works with unmanaged memory), but it works:
             seamlessTexture = Imaging.CreateBitmapSourceFromHBitmap(image.GetHbitmap(), nint.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
         }
 

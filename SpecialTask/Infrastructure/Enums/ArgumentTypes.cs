@@ -2,40 +2,40 @@
 
 namespace SpecialTask.Infrastructure.Enums
 {
-    public enum EArgumentType { Int, Color, PseudoBool, String, Texture, Points }
+    public enum ArgumentType { Int, Color, PseudoBool, String, Texture, Points }
 
     public static class ArgumentTypesConstroller
     {
-        private static readonly Dictionary<string, EArgumentType> stringToType = new();
+        private static readonly Dictionary<string, ArgumentType> stringToType = new();
 
         static ArgumentTypesConstroller()
         {
-            foreach (EArgumentType type in Enum.GetValues<EArgumentType>())
+            foreach (ArgumentType type in Enum.GetValues<ArgumentType>())
             {
                 stringToType.Add(type.ToString().ToLower(), type);
             }
         }
 
-        public static EArgumentType ParseType(string? str)
+        public static ArgumentType ParseType(string? str)
         {
             if (str is null)
             {
-                return EArgumentType.PseudoBool;
+                return ArgumentType.PseudoBool;
             }
 
             try { return stringToType[str.ToLower()]; }
-            catch (KeyNotFoundException) { return EArgumentType.PseudoBool; }       // all that cannot be recognized is bool
+            catch (KeyNotFoundException) { return ArgumentType.PseudoBool; }       // all that cannot be recognized is bool
         }
 
-        public static object ParseValue(this EArgumentType type, string value)
+        public static object ParseValue(this ArgumentType type, string value)
         {
             return type switch
             {
-                EArgumentType.Int => int.Parse(value),
-                EArgumentType.Color => ColorsController.Parse(value),
-                EArgumentType.String => value,
-                EArgumentType.Texture => TextureController.Parse(value),
-                EArgumentType.Points => value.ParsePoints(),
+                ArgumentType.Int => int.Parse(value),
+                ArgumentType.Color => ColorsController.Parse(value),
+                ArgumentType.String => value,
+                ArgumentType.Texture => TextureController.Parse(value),
+                ArgumentType.Points => value.ParsePoints(),
                 _ => value != "false"                   // all true, that not false
             };
         }

@@ -7,11 +7,11 @@ namespace SpecialTask.Drawing.Shapes.Decorators
 {
     internal class StreakDecorator : Shape
     {
-        private EColor streakColor;
-        private EStreakTexture streakTexture;
-        private readonly Shape? decoratedShape;
+        private STColor streakColor;
+        private StreakTexture streakTexture;
+        private readonly Shape decoratedShape;
 
-        public StreakDecorator(Shape? decoratedShape, EColor streakColor, EStreakTexture streakTexture)
+        public StreakDecorator(Shape decoratedShape, STColor streakColor, StreakTexture streakTexture)
         {
             this.decoratedShape = decoratedShape;
             this.streakColor = streakColor;
@@ -22,26 +22,20 @@ namespace SpecialTask.Drawing.Shapes.Decorators
 
         public StreakDecorator(StreakDecorator old) : this(old.DecoratedShape, old.StreakColor, old.StreakTexture) { }
 
-        public override object Edit(string attribute, string value)
+        public override string Edit(string attribute, string value)
         {
-            object oldValue;
-
-            if (decoratedShape is null)
-            {
-                Logger.Warning("Trying to edit hanging decorator");
-                return new();
-            }
+            string oldValue;
 
             try
             {
                 switch (attribute)
                 {
                     case "streakColor":
-                        oldValue = StreakColor;
+                        oldValue = StreakColor.ToString();
                         StreakColor = ColorsController.Parse(value);
                         break;
                     case "streakTexture":
-                        oldValue = StreakTexture;
+                        oldValue = StreakTexture.ToString();
                         StreakTexture = TextureController.Parse(value);
                         break;
                     default:
@@ -49,14 +43,14 @@ namespace SpecialTask.Drawing.Shapes.Decorators
                         break;
                 }
             }
-            catch (FormatException) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", attribute, value); }
+            catch (FormatException e) { throw new ShapeAttributeCastException($"Cannot cast {value} to value of {attribute}", e, attribute, value); }
 
             return oldValue;
         }
 
         public override void Destroy()
         {
-            decoratedShape?.Destroy();
+            decoratedShape.Destroy();
             CurrentWindow.RemoveShape(this);
         }
 
@@ -67,13 +61,13 @@ namespace SpecialTask.Drawing.Shapes.Decorators
 
         public override void MoveXBy(int offset)
         {
-            decoratedShape?.MoveXBy(offset);
+            decoratedShape.MoveXBy(offset);
             Redraw();
         }
 
         public override void MoveYBy(int offset)
         {
-            decoratedShape?.MoveYBy(offset);
+            decoratedShape.MoveYBy(offset);
             Redraw();
         }
 
@@ -82,18 +76,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             return new StreakDecorator(this);
         }
 
-        public override Point Center
-        {
-            get
-            {
-                if (decoratedShape is null)
-                {
-                    Logger.Error("Trying to get center of hanging decorator");
-                    return (0, 0);
-                }
-                return decoratedShape.Center;
-            }
-        }
+        public override Point Center => decoratedShape.Center;
 
         public override System.Windows.Shapes.Shape WPFShape
         {
@@ -104,12 +87,6 @@ namespace SpecialTask.Drawing.Shapes.Decorators
                     return wpfShape;
                 }
 
-                if (decoratedShape is null)
-                {
-                    Logger.Error("Trying to get WPFShape of hanging decorator");
-                    throw new InvalidOperationException("Hanging decorator!");
-                }
-
                 System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
                 shape.Fill = streakTexture.GetWPFTexture(streakColor);
 
@@ -118,9 +95,9 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             }
         }
 
-        private Shape DecoratedShape => decoratedShape ?? throw new InvalidOperationException("Hanging decorator!");
+        private Shape DecoratedShape => decoratedShape;
 
-        private EStreakTexture StreakTexture
+        private StreakTexture StreakTexture
         {
             get => streakTexture;
             set
@@ -130,7 +107,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             }
         }
 
-        private EColor StreakColor
+        private STColor StreakColor
         {
             get => streakColor;
             set
@@ -140,8 +117,8 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             }
         }
 
-        public override Pairs<string, string> AttributesToEditWithNames => decoratedShape is null ? new() : decoratedShape.AttributesToEditWithNames + ATTRS_TO_EDIT;
+        public override Pairs<string, string> AttributesToEditWithNames => decoratedShape.AttributesToEditWithNames + ATTRS_TO_EDIT;
 
-        public override string UniqueName => decoratedShape is null ? string.Empty : $"Filled_{decoratedShape.UniqueName}";
+        public override string UniqueName => $"Filled_{decoratedShape.UniqueName}";
     }
 }

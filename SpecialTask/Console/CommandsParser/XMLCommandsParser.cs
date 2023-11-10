@@ -57,19 +57,19 @@ namespace SpecialTask.Console.CommandsParser
 
         public static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
         {
-            if (consoleCommand.fictional)
+            if (consoleCommand.Fictional)
             {
                 throw new InvalidOperationException();
             }
 
             // Check that all necessary arguments are present
-            foreach (ConsoleCommandArgument argument in consoleCommand.arguments)
+            foreach (ConsoleCommandArgument argument in consoleCommand.Arguments)
             {
                 if (!arguments.ContainsKey(argument.CommandParameterName))
                 {
                     if (argument.IsNecessary)
                     {
-                        HighConsole.DisplayError($"Missing required argument {argument.LongArgument}. Try {consoleCommand.neededUserInput} --help");
+                        HighConsole.DisplayError($"Missing required argument {argument.LongArgument}. Try {consoleCommand.NeededUserInput} --help");
                         throw new ArgumentParsingError($"Missing required argument {argument.LongArgument}.", argument.LongArgument);
                     }
                     else if (argument.DefaultValue is not null)
@@ -79,7 +79,7 @@ namespace SpecialTask.Console.CommandsParser
                 }
             }
 
-            return CommandCreator.CreateCommand(consoleCommand.commandType, arguments);
+            return CommandCreator.CreateCommand(consoleCommand.CommandType, arguments);
         }
 
         private static ConsoleCommand ParseCommandElement(XElement elem)
@@ -110,18 +110,18 @@ namespace SpecialTask.Console.CommandsParser
 
             return new ConsoleCommand
             {
-                neededUserInput = neededUserInput,
-                help = help,
-                commandType = elem.Attribute(COMMAND_CLASS)?.Value ?? string.Empty,
-                supportsUndo = (elem.Attribute(SUPPORTS_UNDO)?.Value ?? FALSE) != FALSE,
-                fictional = fictional,
-                arguments = arguments
+                NeededUserInput = neededUserInput,
+                Help = help,
+                CommandType = elem.Attribute(COMMAND_CLASS)?.Value ?? string.Empty,
+                SupportsUndo = (elem.Attribute(SUPPORTS_UNDO)?.Value ?? FALSE) != FALSE,
+                Fictional = fictional,
+                Arguments = arguments
             };
         }
 
         private static ConsoleCommandArgument ParseArgumentElement(XElement elem)
         {
-            EArgumentType type = ArgumentTypesConstroller.ParseType(elem.Attribute("type")?.Value);
+            ArgumentType type = ArgumentTypesConstroller.ParseType(elem.Attribute("type")?.Value);
 
             object? defaultValue = null;
             string? defValueString = elem.Attribute(DEFAULT_VALUE)?.Value;
@@ -141,6 +141,6 @@ namespace SpecialTask.Console.CommandsParser
             };
         }
 
-        public static string GlobalHelp { get; private set; } = "[color:purple]Global help not found![purple]";
+        public static string GlobalHelp { get; private set; } = "[color:purple]Global help not found![color]";
     }
 }

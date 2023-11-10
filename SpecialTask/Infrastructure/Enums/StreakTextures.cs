@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace SpecialTask.Infrastructure.Enums
 {
-    internal enum EStreakTexture
+    internal enum StreakTexture
     {
         None,
         SolidColor,
@@ -46,37 +46,37 @@ namespace SpecialTask.Infrastructure.Enums
             waterSeamlessTexture = new SeamlessTexture(Properties.Resources.water_texture);
         }
 
-        public static EStreakTexture Parse(string textureName)
+        public static StreakTexture Parse(string textureName)
         {
             return textureName.ToLower() switch
             {
-                "solid" or "solidcolor" or "color" or "sc" => EStreakTexture.SolidColor,
-                "horizontallines" or "hl" => EStreakTexture.HorizontalLines,
-                "verticallines" or "vl" => EStreakTexture.VerticalLines,
-                "horizontaltransparencygradient" or "htg" or "horizontaltransparenttocolorgradient" => EStreakTexture.HorizontalTransparentToColorGradient,
-                "horizontalrainbow" or "rainbow" or "hrb" => EStreakTexture.HorizontalRainbow,
-                "radialtarnsparencygradient" or "rtg" or "radialcolortotransparentgradient" => EStreakTexture.RadialColorToTransparentGradient,
-                "watertexture" or "water" or "wt" => EStreakTexture.Water,
-                "dots" => EStreakTexture.Dots,
-                "holes" or "tc" or "transparentcircles" => EStreakTexture.TransparentCircles,
-                _ => EStreakTexture.None
+                "solid" or "solidcolor" or "color" or "sc" => StreakTexture.SolidColor,
+                "horizontallines" or "hl" => StreakTexture.HorizontalLines,
+                "verticallines" or "vl" => StreakTexture.VerticalLines,
+                "horizontaltransparencygradient" or "htg" or "horizontaltransparenttocolorgradient" => StreakTexture.HorizontalTransparentToColorGradient,
+                "horizontalrainbow" or "rainbow" or "hrb" => StreakTexture.HorizontalRainbow,
+                "radialtarnsparencygradient" or "rtg" or "radialcolortotransparentgradient" => StreakTexture.RadialColorToTransparentGradient,
+                "watertexture" or "water" or "wt" => StreakTexture.Water,
+                "dots" => StreakTexture.Dots,
+                "holes" or "tc" or "transparentcircles" => StreakTexture.TransparentCircles,
+                _ => StreakTexture.None
             };
         }
 
-        public static Brush GetWPFTexture(this EStreakTexture texture, EColor color)
+        public static Brush GetWPFTexture(this StreakTexture texture, STColor color)
         {
             Color wpfColor = color.GetWPFColor();
             return texture switch
             {
-                EStreakTexture.SolidColor => new SolidColorBrush(wpfColor),
-                EStreakTexture.HorizontalLines => horizontalLinesBrush.Brush(wpfColor),
-                EStreakTexture.VerticalLines => verticalLinesBrush.Brush(wpfColor),
-                EStreakTexture.HorizontalTransparentToColorGradient => horizTranspToColorGradientBrush.Brush(wpfColor),
-                EStreakTexture.HorizontalRainbow => horizontalRainbow.Brush(wpfColor),
-                EStreakTexture.RadialColorToTransparentGradient => radTranspToColorGradientBrush.Brush(wpfColor),
-                EStreakTexture.Water => waterSeamlessTexture.Brush(wpfColor),
-                EStreakTexture.Dots => dotsBrush.Brush(wpfColor),
-                EStreakTexture.TransparentCircles => transpCircles.Brush(wpfColor),
+                StreakTexture.SolidColor => new SolidColorBrush(wpfColor),
+                StreakTexture.HorizontalLines => horizontalLinesBrush.Brush(wpfColor),
+                StreakTexture.VerticalLines => verticalLinesBrush.Brush(wpfColor),
+                StreakTexture.HorizontalTransparentToColorGradient => horizTranspToColorGradientBrush.Brush(wpfColor),
+                StreakTexture.HorizontalRainbow => horizontalRainbow.Brush(wpfColor),
+                StreakTexture.RadialColorToTransparentGradient => radTranspToColorGradientBrush.Brush(wpfColor),
+                StreakTexture.Water => waterSeamlessTexture.Brush(wpfColor),
+                StreakTexture.Dots => dotsBrush.Brush(wpfColor),
+                StreakTexture.TransparentCircles => transpCircles.Brush(wpfColor),
                 _ => Brushes.Transparent
             };
         }

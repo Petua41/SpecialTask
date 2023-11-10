@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace SpecialTask
 {
-    public enum SpecialKeyCombinations { None, Enter, Backspace, CtrlC }
+    internal enum SpecialKeyCombinations { None, Enter, Backspace, CtrlC }
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -97,7 +97,7 @@ namespace SpecialTask
 
         private void ConsoleWindowGotFocus(object sender, RoutedEventArgs e)
         {
-            _ = ConsoleEntry.Focus();
+            ConsoleEntry.Focus();
         }
 
         private void ConsoleEntryKeyDown(object sender, KeyEventArgs e)

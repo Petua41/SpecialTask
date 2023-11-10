@@ -11,12 +11,12 @@ namespace SpecialTask.Drawing.Shapes
         private int leftTopY;
         private int rightBottomX;
         private int rightBottomY;
-        private EColor color;
+        private STColor color;
         private int lineThickness;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Square(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, EColor color, int lineThickness)
+        public Square(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, STColor color, int lineThickness)
         {
             this.leftTopX = leftTopX;
             this.leftTopY = leftTopY;
@@ -40,37 +40,37 @@ namespace SpecialTask.Drawing.Shapes
 
         public override Point Center => ((leftTopX + rightBottomX) / 2, (leftTopY + rightBottomY) / 2);
 
-        public override object Edit(string attribute, string value)
+        public override string Edit(string attribute, string value)
         {
             attribute = attribute.ToLower();
-            object oldValue;
+            string oldValue;
 
             try
             {
                 switch (attribute)
                 {
                     case "lefttopx":
-                        oldValue = LeftTopX;
+                        oldValue = LeftTopX.ToString();
                         LeftTopX = int.Parse(value);
                         break;
                     case "lefttopy":
-                        oldValue = LeftTopY;
+                        oldValue = LeftTopY.ToString();
                         LeftTopY = int.Parse(value);
                         break;
                     case "rightbottomx":
-                        oldValue = RightBottomX;
+                        oldValue = RightBottomX.ToString();
                         RightBottomX = int.Parse(value);
                         break;
                     case "rightbottomy":
-                        oldValue = RightBottomY;
+                        oldValue = RightBottomY.ToString();
                         RightBottomY = int.Parse(value);
                         break;
                     case "color":
-                        oldValue = Color;
+                        oldValue = Color.ToString();
                         Color = ColorsController.Parse(value);
                         break;
                     case "linethickness":
-                        oldValue = LineThickness;
+                        oldValue = LineThickness.ToString();
                         LineThickness = int.Parse(value);
                         break;
                     default:
@@ -171,7 +171,7 @@ namespace SpecialTask.Drawing.Shapes
             }
         }
 
-        protected EColor Color
+        protected STColor Color
         {
             get => color;
             set

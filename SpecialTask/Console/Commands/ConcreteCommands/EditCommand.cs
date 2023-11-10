@@ -16,7 +16,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
     {
         private ICommand? receiver = null;
 
-        private readonly ESortingOrder sortingOrder;
+        private readonly SortingOrder sortingOrder;
 
         private IReadOnlyList<Shape> listOfShapes = new List<Shape>();
         private string interString = string.Empty;
@@ -29,7 +29,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
         public EditCommand(object[] args)
         {
-            sortingOrder = (bool)args[0] ? ESortingOrder.Coordinates : ESortingOrder.CreationTime;
+            sortingOrder = (bool)args[0] ? SortingOrder.Coordinates : SortingOrder.CreationTime;
 
             IteratorsFacade.SetConcreteIterator(sortingOrder);
 
@@ -80,12 +80,12 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
                         await GetSelectedNumber();
 
-                        ELayerDirection dir = selectedNumber switch
+                        LayerDirection dir = selectedNumber switch
                         {
-                            0 => ELayerDirection.Backward,
-                            1 => ELayerDirection.Forward,
-                            2 => ELayerDirection.Back,
-                            3 => ELayerDirection.Front,
+                            0 => LayerDirection.Backward,
+                            1 => LayerDirection.Forward,
+                            2 => LayerDirection.Back,
+                            3 => LayerDirection.Front,
                             _ => throw new InvalidInputException($"{interString} is not valid value for layer operation number", interString)
                         };
 
@@ -128,12 +128,12 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
                         DisplayNewAttributePrompt("Streak color");
                         await GetInterString();
 
-                        EColor color = ColorsController.Parse(interString);
+                        STColor color = ColorsController.Parse(interString);
 
                         DisplayNewAttributePrompt("Streak texture");
                         await GetInterString();
 
-                        EStreakTexture texture = TextureController.Parse(interString);
+                        StreakTexture texture = TextureController.Parse(interString);
 
                         receiver = new AddStreakCommand(shapeToEdit, color, texture);
                         CommandsFacade.Execute(receiver);

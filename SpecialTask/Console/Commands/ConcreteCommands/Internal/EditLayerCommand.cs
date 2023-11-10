@@ -3,7 +3,7 @@ using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
 {
-    internal enum ELayerDirection { None, Forward, Backward, Front, Back }
+    internal enum LayerDirection { None, Forward, Backward, Front, Back }
 
     /// <summary>
     /// Command to move shapes up and down
@@ -11,12 +11,12 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
     internal class EditLayerCommand : ICommand
     {
         private readonly string uniqueName;
-        private readonly ELayerDirection direction;
+        private readonly LayerDirection direction;
 
         private int oldLayer = -1;
         private bool layerChanged = false;
 
-        public EditLayerCommand(string uniqueName, ELayerDirection direction)
+        public EditLayerCommand(string uniqueName, LayerDirection direction)
         {
             this.uniqueName = uniqueName;
             this.direction = direction;
@@ -28,19 +28,19 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
             {
                 switch (direction)
                 {
-                    case ELayerDirection.Forward:
+                    case LayerDirection.Forward:
                         oldLayer = CurrentWindow.BringForward(uniqueName);
                         layerChanged = true;
                         break;
-                    case ELayerDirection.Backward:
+                    case LayerDirection.Backward:
                         oldLayer = CurrentWindow.SendBackward(uniqueName);
                         layerChanged = true;
                         break;
-                    case ELayerDirection.Front:
+                    case LayerDirection.Front:
                         oldLayer = CurrentWindow.BringToFront(uniqueName);
                         layerChanged = true;
                         break;
-                    case ELayerDirection.Back:
+                    case LayerDirection.Back:
                         oldLayer = CurrentWindow.SendToBack(uniqueName);
                         layerChanged = true;
                         break;
@@ -49,7 +49,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
             catch (ShapeNotFoundException)
             {
                 Logger.Error($"Shape {uniqueName} not found, while changing layer");
-                throw;
+                HighConsole.DisplayError($"Shape {uniqueName} not found, while changing layer. Please contact us");
             }
         }
 
@@ -64,36 +64,36 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
             {
                 switch (direction)
                 {
-                    case ELayerDirection.Forward:
-                        try { _ = CurrentWindow.SendBackward(uniqueName); }
+                    case LayerDirection.Forward:
+                        try { CurrentWindow.SendBackward(uniqueName); }
                         catch (InvalidOperationException)
                         {
                             Logger.Error($"[undo] Cannot send {uniqueName} backward: already on back");
                             HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on back");
                         }
                         break;
-                    case ELayerDirection.Backward:
-                        try { _ = CurrentWindow.BringForward(uniqueName); }
+                    case LayerDirection.Backward:
+                        try { CurrentWindow.BringForward(uniqueName); }
                         catch (InvalidOperationException)
                         {
                             Logger.Error($"[undo] Cannot bring {uniqueName} forward: already on top");
                             HighConsole.DisplayError($"Cannot undo: {uniqueName} is already on top");
                         }
                         break;
-                    case ELayerDirection.Front:
+                    case LayerDirection.Front:
                         try { CurrentWindow.MoveToLayer(uniqueName, oldLayer); }
-                        catch (ArgumentException) { _ = CurrentWindow.SendToBack(uniqueName); }
+                        catch (ArgumentException) { CurrentWindow.SendToBack(uniqueName); }
                         break;
-                    case ELayerDirection.Back:
+                    case LayerDirection.Back:
                         try { CurrentWindow.MoveToLayer(uniqueName, oldLayer); }
-                        catch (ArgumentException) { _ = CurrentWindow.BringToFront(uniqueName); }
+                        catch (ArgumentException) { CurrentWindow.BringToFront(uniqueName); }
                         break;
                 }
             }
             catch (ShapeNotFoundException)
             {
                 Logger.Error($"Shape {uniqueName} not found, while changing layer");
-                throw;
+                HighConsole.DisplayError($"Shape {uniqueName} not found, while changing layer. Please contact us");
             }
         }
     }

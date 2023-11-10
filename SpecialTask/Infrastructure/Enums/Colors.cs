@@ -2,7 +2,7 @@
 
 namespace SpecialTask.Infrastructure.Enums
 {
-    public enum EColor : uint   // it`s standard ANSI colors (values are similar to ones in xterm) with None and Purple added
+    public enum STColor : uint   // it`s standard ANSI colors (values are similar to ones in xterm) with None and Purple added
     {
         None,
         Purple = 0x800080,
@@ -27,14 +27,14 @@ namespace SpecialTask.Infrastructure.Enums
 
     public static class ColorsController
     {
-        private static readonly Dictionary<string, EColor> colorNames = new();
-        private static readonly Dictionary<EColor, Color> wpfColors = new();
+        private static readonly Dictionary<string, STColor> colorNames = new();
+        private static readonly Dictionary<STColor, Color> wpfColors = new();
 
         static ColorsController()
         {
-            foreach (EColor color in Enum.GetValues<EColor>())
+            foreach (STColor color in Enum.GetValues<STColor>())
             {
-                if (color != EColor.None)                                   // we don`t add None to dictionaries for two reasons:
+                if (color != STColor.None)                                   // we don`t add None to dictionaries for two reasons:
                 {                                                           //		so that None won`t appear in ColorsList
                     colorNames.Add(color.ToString().ToLower(), color);      //		None isn`t actually a color. It`s absence of color
 
@@ -43,18 +43,18 @@ namespace SpecialTask.Infrastructure.Enums
             }
         }
 
-        public static Color GetWPFColor(this EColor color)
+        public static Color GetWPFColor(this STColor color)
         {
             if (wpfColors.TryGetValue(color, out Color result)) return result;
             else return Colors.Transparent;
         }
 
-        public static EColor Parse(string colorString)
+        public static STColor Parse(string colorString)
         {
             colorString = colorString.Trim().ToLower();
 
-            if (colorNames.TryGetValue(colorString, out EColor result)) return result;
-            else return EColor.None;
+            if (colorNames.TryGetValue(colorString, out STColor result)) return result;
+            else return STColor.None;
         }
 
         public static IReadOnlyList<string> ColorsList => colorNames.Keys.ToList();
