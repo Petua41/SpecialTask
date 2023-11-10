@@ -17,12 +17,10 @@
             {
                 string key = keysOrder[i];
 
-#pragma warning disable CS8601
                 if (dict.TryGetValue(key, out T? value))
                 {
-                    result[i] = value;     // value cannot be null, if TryGetValue is true. This warning shouldn`t appear, but it does
+                    result[i] = value!;     // value cannot be null, if TryGetValue is true. So we forgive null
                 }
-#pragma warning restore
                 else
                 {
                     throw new KeyNotFoundException($"Key {key} not found in dictionary while unpacking it");

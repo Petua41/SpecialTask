@@ -6,7 +6,7 @@ namespace SpecialTask.Infrastructure.Collections
     /// <summary>
     /// Ordered collection of key-value pairs, that doesn`t requires uniqueness of keys (not map, but collection of pairs)
     /// </summary>
-    public class Pairs<K, V> : List<KeyValuePair<K, V>>, ICloneable, IList
+    public class Pairs<K, V> : List<KeyValuePair<K, V>>
     {
         private readonly List<KeyValuePair<K, V>> map;
 
@@ -34,8 +34,6 @@ namespace SpecialTask.Infrastructure.Collections
         }
 
         public new int Count => map.Count;
-
-        int ICollection.Count => Count;
 
         public new int Capacity => map.Capacity;
 
