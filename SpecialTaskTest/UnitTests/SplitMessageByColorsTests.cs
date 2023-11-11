@@ -1,12 +1,10 @@
-using SpecialTask;
-using SpecialTask.Console;
 using SpecialTask.Infrastructure.Collections;
 using SpecialTask.Infrastructure.Enums;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTaskTest
 {
-    public class STConsoleTests
+    public class SplitMessageByColorsTests
     {
         [Test]
         public void SplitMessageByColorsTest()
