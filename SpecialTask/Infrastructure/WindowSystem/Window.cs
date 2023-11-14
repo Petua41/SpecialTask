@@ -12,7 +12,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
         public Window(int number)
         {
             assotiatedWindow = new();
-            assotiatedWindow.DrawingWindowClosedEvent += OnAssotiatedWindowClosed;
+            assotiatedWindow.Closed += OnAssotiatedWindowClosed;
             assotiatedWindow.Show();
             ChangeTitle(number);
         }

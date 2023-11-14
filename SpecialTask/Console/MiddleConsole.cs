@@ -176,7 +176,8 @@ namespace SpecialTask.Console
             }
             else
             {
-                mainWindowInstance.DisplayAndProcessInputString("exit");
+                mainWindowInstance.DisplayInputString("exit");
+                ProcessInputString("exit");
             }
         }
 

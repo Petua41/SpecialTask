@@ -28,7 +28,8 @@ namespace SpecialTask.Infrastructure.Iterators
         public IReadOnlyList<Shape> GetCompleteResult()
         {
             List<Shape> rawList = CurrentWindow.Shapes;
-            return rawList.OrderBy(sh => sh, new CoordinatesComparer()).Where(sh => sh is not SelectionMarker).ToList();    // Maybe do it manually will be more efficient
+            rawList.Sort(new CoordinatesComparer());
+            return rawList.Where(sh => sh is not SelectionMarker).ToList();    // Maybe do it manually will be more efficient
         }
 
         private class CoordinatesComparer : IComparer<Shape>

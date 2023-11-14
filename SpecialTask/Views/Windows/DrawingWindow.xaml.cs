@@ -16,12 +16,5 @@ namespace SpecialTask
         {
             Title = value;
         }
-
-        private void DrawingWindowClosed(object sender, EventArgs e)
-        {
-            DrawingWindowClosedEvent?.Invoke(this, e);
-        }
-
-        public event EventHandler? DrawingWindowClosedEvent;
     }
 }
