@@ -1,16 +1,11 @@
 ﻿using SpecialTask.Drawing.BrushPrototypes;
 using SpecialTask.Infrastructure.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
 namespace SpecialTask.Infrastructure.Extensoins
 {
-    internal static class StreakTextureExtensions
+    public static class StreakTextureExtensions
     {
         private static readonly IBrushPrototype horizontalLinesBrush;
         private static readonly IBrushPrototype verticalLinesBrush;

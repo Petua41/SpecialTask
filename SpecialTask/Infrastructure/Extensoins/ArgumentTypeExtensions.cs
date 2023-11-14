@@ -2,7 +2,7 @@
 
 namespace SpecialTask.Infrastructure.Extensoins
 {
-    internal static class ArgumentTypeExtensions
+    public static class ArgumentTypeExtensions
     {
         public static object ParseValue(this ArgumentType type, string value)
         {

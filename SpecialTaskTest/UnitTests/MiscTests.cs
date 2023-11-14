@@ -1,7 +1,6 @@
-﻿using SpecialTask;
-using SpecialTask.Drawing;
+﻿using SpecialTask.Drawing;
 using SpecialTask.Infrastructure.Collections;
-using SpecialTask.Infrastructure.Enums;
+using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
 using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
 
 namespace SpecialTaskTest
@@ -23,7 +22,7 @@ namespace SpecialTaskTest
             Pairs<string, int> expected = new() { { "one", 1 }, { "two", 2 } };
             Assert.That(expected.Clone(), Is.EqualTo(expected));
         }
-        
+
         [Test]
         public void PairsAdditionTest()
         {
@@ -48,7 +47,7 @@ namespace SpecialTaskTest
         {
             (byte, byte, byte) expected = (255, 0, 130);
             uint hex = 0xFF0082;
-            (byte, byte, byte) actual = ColorsController.SplitHexValue(hex);
+            (byte, byte, byte) actual = SplitHexValue(hex);
             Assert.That(actual, Is.EqualTo(expected));
         }
     }

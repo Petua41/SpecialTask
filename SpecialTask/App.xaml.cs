@@ -23,7 +23,17 @@ namespace SpecialTask
 
             mainWindow.Show();
 
-            PathsController.InitPaths();                    // we must call it before any other calls. It`s not good
+            try
+            {
+                PathsController.InitPaths();                    // we must call it before any other calls. It`s not good
+            }
+            catch (FatalError ex)
+            {
+                // Some directory doesn`t exist
+                Logger.Fatal(ex.Message);
+                Current.Shutdown();
+            }
+
             InitializeLogger(ConcreteLoggers.SimpleLogger); // so that it gets right creation time
             try
             {
@@ -44,16 +54,20 @@ namespace SpecialTask
 
         private static void ParseCommandLineArguments(string[] command_line_args)
         {
-            int undo_stack_depth = 15;
+            int undo_stack_depth = -1;
+            string defaultSaveDir = "";
 
             Mono.Options.OptionSet optionSet = new()
             {
-                { "d|undo_stack_depth", (int d) => undo_stack_depth = d }       // we don`t add descriptions to options, because we cannot show help
+                { "d|undo_stack_depth=", (int d) => undo_stack_depth = d },       // we don`t add descriptions to options, because we cannot show help
+                { "s|default_save_dir=", s =>  defaultSaveDir = s }
             };
 
             optionSet.Parse(command_line_args);
 
             if (undo_stack_depth > 0) LowConsole.ChangeUndoStackDepth(undo_stack_depth);
+
+            if (defaultSaveDir.Length > 0) PathsController.DefaultSaveDirectory = defaultSaveDir;
         }
     }
 }

@@ -102,7 +102,10 @@ namespace SpecialTask.Infrastructure.Extensoins
 
         public static ArgumentType ParseArgumentType(this string? str)
         {
-            if (str is not null && stringToType.TryGetValue(str, out ArgumentType type)) return type;
+            if (str is not null)
+            {
+                if (stringToType.TryGetValue(str.ToLower().Trim(), out ArgumentType type)) return type;
+            }
             return ArgumentType.PseudoBool;     // all that cannot be recognized is PseudoBool
         }
 

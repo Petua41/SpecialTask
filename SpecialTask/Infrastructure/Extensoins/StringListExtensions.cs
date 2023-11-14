@@ -3,7 +3,7 @@
     /// <summary>
     /// Provides some extensions to <see cref="IList{T}"/> of <see cref="string"/>s
     /// </summary>
-    internal static class StringListExtensions
+    public static class StringListExtensions
     {
         /// <summary>
         /// Length of the shortest string in the <paramref name="collection"/>

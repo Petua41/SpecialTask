@@ -1,14 +1,9 @@
 ﻿using SpecialTask.Infrastructure.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace SpecialTask.Infrastructure.Extensoins
 {
-    internal static class InternalColorExtensions
+    public static class InternalColorExtensions
     {
         private static readonly Dictionary<InternalColor, Color> wpfColors = new();
 
