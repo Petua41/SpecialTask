@@ -2,16 +2,18 @@
 using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.WindowSystem;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StreakTextureExtensions;
 
 namespace SpecialTask.Drawing.Shapes.Decorators
 {
     internal class StreakDecorator : Shape
     {
-        private STColor streakColor;
+        private InternalColor streakColor;
         private StreakTexture streakTexture;
         private readonly Shape decoratedShape;
 
-        public StreakDecorator(Shape decoratedShape, STColor streakColor, StreakTexture streakTexture)
+        public StreakDecorator(Shape decoratedShape, InternalColor streakColor, StreakTexture streakTexture)
         {
             this.decoratedShape = decoratedShape;
             this.streakColor = streakColor;
@@ -32,11 +34,11 @@ namespace SpecialTask.Drawing.Shapes.Decorators
                 {
                     case "streakColor":
                         oldValue = StreakColor.ToString();
-                        StreakColor = ColorsController.Parse(value);
+                        StreakColor = value.ParseColor();
                         break;
                     case "streakTexture":
                         oldValue = StreakTexture.ToString();
-                        StreakTexture = TextureController.Parse(value);
+                        StreakTexture = value.ParseStreakTexture();
                         break;
                     default:
                         oldValue = decoratedShape.Edit(attribute, value);
@@ -107,7 +109,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             }
         }
 
-        private STColor StreakColor
+        private InternalColor StreakColor
         {
             get => streakColor;
             set

@@ -1,5 +1,5 @@
 ﻿using SpecialTask.Console.Commands.ConcreteCommands;
-using static SpecialTask.Infrastructure.Extensoins.StringKeysDictionaryExtension;
+using static SpecialTask.Infrastructure.Extensoins.StringObjectDictionaryExtension;
 
 namespace SpecialTask.Console.Commands
 {

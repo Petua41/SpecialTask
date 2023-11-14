@@ -1,206 +1,556 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <commands>
-  <!-- We should add some kind of easter egg. Like moo, fortune or draw_logo -->
+  <!-- I should add some kind of easter egg. Like moo or draw_logo -->
   
 	<!-- new -->
-	<command userInput="new circle" commandClass="CreateCircle" supportsUndo="true">Adds circle to the screen
-
-[color:Magenta]Necessary arguments:[color]
-	-x --center_x         X of center
-	-y --center_y         Y of center
-	-C --color            Outline color
-	-r --radius           Radius
-	-t --line_thickness   Outline thickness
-
-[color:Magenta]Unnecessary arguments:[color]
-	-s --streak           Fill with texture
-	-c --streak_color     Color to fill
-	-T --texture          Texture to fill<argument shortArgument="-x" longArgument="--center_x" type="Int" isNecessary="true" commandParameterName="centerX"/>
-		<argument shortArgument="-y" longArgument="--center_y" type="Int" isNecessary="true" commandParameterName="centerY"/>
-		<argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
-		<argument shortArgument="-r" longArgument="--radius" type="Int" isNecessary="true" commandParameterName="radius"/>
-		<argument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" commandParameterName="lineThickness"/>
-		<argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
-		<argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
-		<argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
+	<command userInput="new circle" 
+           commandClass="CreateCircle" 
+           supportsUndo="true">
+    Adds circle to the screen
+		<argument shortArgument="x"
+            longArgument="center_x" type="Int"
+            isNecessary="true"
+            commandParameterName="centerX" >
+      X of center
+    </argument>
+    <argument shortArgument="y"
+              longArgument="center_y" type="Int"
+              isNecessary="true"
+              commandParameterName="centerY" >
+      Y of center
+    </argument>
+    <argument shortArgument="C"
+              longArgument="color" type="Color"
+              isNecessary="true"
+              commandParameterName="color" >
+      Outline color
+    </argument>
+    <argument shortArgument="r"
+              longArgument="radius" type="Int"
+              isNecessary="true"
+              commandParameterName="radius" >
+      Radius
+    </argument>
+    <argument shortArgument="t"
+              longArgument="line_thickness"
+              type="Int" isNecessary="true"
+              commandParameterName="lineThickness" >
+      Outline thickness
+    </argument>
+    <argument shortArgument="s"
+              longArgument="streak"
+              commandParameterName="streak"
+              defaultValue="false" >
+      Add streak (default is false)
+    </argument>
+    <argument shortArgument="c"
+              longArgument="streak_color"
+              type="Color"
+              commandParameterName="streakColor"
+              defaultValue="None" >
+      Streak color (default is transparent)
+    </argument>
+    <argument shortArgument="T"
+              longArgument="texture"
+              type="Texture"
+              commandParameterName="streakTexture"
+              defaultValue="None" >
+      Streak texture (default is transparent)
+    </argument>
 	</command>
-	<command userInput="new rectangle" commandClass="CreateSquare" supportsUndo="true">Adds rectangle to the screen
-
-[color:Magenta]Necessary arguments:[color]
-	-x --left_top_x       X of left-top corner
-	-y --left_top_y       Y of left-top corner
-	-X --right_bottom_x   X of right-bottom corner
-	-Y --right_bottom_y   Y of right-bottom corner
-	-C --color            Outline color
-	-t --line_thickness   Outline thickness
   
-[color:Magenta]Unnecessary arguments:[color]
-	-s --streak           Fill with texture
-	-c --streak_color     Color to fill
-	-T --texture          Texture to fill<argument shortArgument="-x" longArgument="--left_top_x" type="Int" isNecessary="true" commandParameterName="leftTopX"/>
-		<argument shortArgument="-y" longArgument="--left_top_y" type="Int" isNecessary="true" commandParameterName="leftTopY"/>
-		<argument shortArgument="-X" longArgument="--right_bottom_x" type="Int" isNecessary="true" commandParameterName="rightBottomX"/>
-		<argument shortArgument="-Y" longArgument="--right_bottom_y" type="Int" isNecessary="true" commandParameterName="rightBottomY"/>
-		<argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
-		<argument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" commandParameterName="lineThickness"/>
-    <argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
-    <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
-    <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
+	<command userInput="new rectangle" 
+           commandClass="CreateSquare" 
+           supportsUndo="true">
+    Adds rectangle to the screen
+    <argument shortArgument="x"
+            longArgument="left_top_x"
+            type="Int"
+            isNecessary="true"
+            commandParameterName="leftTopX" >
+      X of left-top corner
+    </argument>
+    <argument shortArgument="y"
+              longArgument="left_top_y"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="leftTopY" >
+      Y of left-top corner
+    </argument>
+    <argument shortArgument="X"
+              longArgument="right_bottom_x"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="rightBottomX" >
+      X of right-bottom corner
+    </argument>
+    <argument shortArgument="Y"
+              longArgument="right_bottom_y"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="rightBottomY" >
+      Y of right-bottom corner
+    </argument>
+    <argument shortArgument="C"
+              longArgument="color"
+              type="Color"
+              isNecessary="true"
+              commandParameterName="color" >
+      Outline color
+    </argument>
+    <argument shortArgument="t"
+              longArgument="line_thickness"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="lineThickness" >
+      Outline thickness
+    </argument>
+    <argument shortArgument="s"
+              longArgument="streak"
+              commandParameterName="streak"
+              defaultValue="false" >
+      Add streak (default is false)
+    </argument>
+    <argument shortArgument="c"
+              longArgument="streak_color"
+              type="Color"
+              commandParameterName="streakColor"
+              defaultValue="None" >
+      Streak color (default is transparent)
+    </argument>
+    <argument shortArgument="T"
+              longArgument="texture"
+              type="Texture"
+              commandParameterName="streakTexture"
+              defaultValue="None" >
+      Streak texture (default is transparent)
+    </argument>
 	</command>
-	<command userInput="new line" commandClass="CreateLine" supportsUndo="true">Adds line to the screen
-
-[color:Magenta]Necessary arguments:[color]
-  -x --first_x          X of first point
-  -y --first_y          Y of first point
-  -X --second_x         X of second point
-  -Y --second_y         Y of second point
-  -C --color            Line color
-  -t --line_thickness   Line thickness
-
-[color:Magenta]Unnecessary arguments:[color]
-  -s --streak           Fill with texture (it have no effect, because line has no square. But you still can use it)
-  -c --streak_color     Color to fill
-  -T --texture          Texture to fill<argument shortArgument="-x" longArgument="--first_x" type="Int" isNecessary="true" commandParameterName="firstX"/>
-		<argument shortArgument="-y" longArgument="--first_y" type="Int" isNecessary="true" commandParameterName="firstY"/>
-		<argument shortArgument="-X" longArgument="--second_x" type="Int" isNecessary="true" commandParameterName="secondX"/>
-		<argument shortArgument="-Y" longArgument="--second_y" type="Int" isNecessary="true" commandParameterName="secondY"/>
-		<argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
-		<argument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" commandParameterName="lineThickness"/>
-    <argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
-    <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
-    <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
+  
+	<command userInput="new line" 
+           commandClass="CreateLine" 
+           supportsUndo="true">
+    Adds line to the screen
+    <argument shortArgument="x"
+            longArgument="first_x"
+            type="Int"
+            isNecessary="true"
+            commandParameterName="firstX" >
+      X of first point
+    </argument>
+    <argument shortArgument="y"
+              longArgument="first_y"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="firstY" >
+      Y of first point
+    </argument>
+    <argument shortArgument="X"
+              longArgument="second_x"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="secondX" >
+      X of second point
+    </argument>
+    <argument shortArgument="Y"
+              longArgument="second_y"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="secondY" >
+      Y of second point
+    </argument>
+    <argument shortArgument="C"
+              longArgument="color"
+              type="Color"
+              isNecessary="true"
+              commandParameterName="color" >
+      Line color
+    </argument>
+    <argument shortArgument="t"
+              longArgument="line_thickness"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="lineThickness" >
+      Line thickness
+    </argument>
+    <argument shortArgument="s"
+              longArgument="streak"
+              commandParameterName="streak"
+              defaultValue="false" >
+      Add streak (no effect, default is false)
+    </argument>
+    <argument shortArgument="c"
+              longArgument="streak_color"
+              type="Color"
+              commandParameterName="streakColor"
+              defaultValue="None" >
+      Streak color (no effect, default is transparent)
+    </argument>
+    <argument shortArgument="T"
+              longArgument="texture"
+              type="Texture"
+              commandParameterName="streakTexture"
+              defaultValue="None" >
+      Streak texture (no effect, default is transparent)
+    </argument>
 	</command>
-  <command userInput="new text" commandClass="CreateText" supportsUndo="true">
-Adds rectangle to the screen
-
-[color:Magenta]Necessary arguments:[color]
-  -x --left_top_x       X of left-top corner
-  -y --left_top_y       Y of left-top corner
-  -f --font_size        Font size
-  -t --text             Text
-  -C --color            Text color
-
-[color:Magenta]Unnecessary arguments:[color]
-  -s --streak           Fill with texture (it have no effect, but you still can use it)
-  -c --streak_color     Color to fill
-  -T --texture          Texture to fill<argument shortArgument="-x" longArgument="--left_top_x" type="Int" isNecessary="true" commandParameterName="leftTopX"/>
-    <argument shortArgument="-y" longArgument="--left_top_y" type="Int" isNecessary="true" commandParameterName="leftTopY"/>
-    <argument shortArgument="-f" longArgument="--font_size" type="Int" isNecessary="true" commandParameterName="fontSize"/>
-    <argument shortArgument="-t" longArgument="--text" type="String" isNecessary="true" commandParameterName="textValue"/>
-    <argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
-    <argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
-    <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
-    <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
+  
+  <command userInput="new text" 
+           commandClass="CreateText" 
+           supportsUndo="true">
+    Adds text to the screen
+    <argument shortArgument="x"
+            longArgument="left_top_x"
+            type="Int"
+            isNecessary="true"
+            commandParameterName="leftTopX" >
+      X of left-top corner
+    </argument>
+    <argument shortArgument="y"
+              longArgument="left_top_y"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="leftTopY" >
+      Y of left-top corner
+    </argument>
+    <argument shortArgument="f"
+              longArgument="font_size"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="fontSize" >
+      Font size
+    </argument>
+    <argument shortArgument="t"
+              longArgument="text"
+              type="String"
+              isNecessary="true"
+              commandParameterName="textValue" >
+      Text value
+    </argument>
+    <argument shortArgument="C"
+              longArgument="color"
+              type="Color"
+              isNecessary="true"
+              commandParameterName="color" >
+      Color of text
+    </argument>
+    <argument shortArgument="s"
+              longArgument="streak"
+              commandParameterName="streak"
+              defaultValue="false" >
+      Add streak (no effect, default is false)
+    </argument>
+    <argument shortArgument="c"
+              longArgument="streak_color"
+              type="Color"
+              commandParameterName="streakColor"
+              defaultValue="None" >
+      Streak color (no effect, default is transparent)
+    </argument>
+    <argument shortArgument="T"
+              longArgument="texture"
+              type="Texture"
+              commandParameterName="streakTexture"
+              defaultValue="None" >
+      Streak texture (no effect, default is transparent)
+    </argument>
   </command>
-  <command userInput="new polygon" commandClass="CreatePolygon" supportsUndo="true">
-Adds polygon to the screen
-
-[color:Magenta]Necessary arguments:[color]
-	-p --points           Points, separated by a comma (X1 Y1, X2 Y2, X3 Y3...)
-	-C --color            Line color
-	-t --line_thickness   Line thickness
-
-[color:Magenta]Unnecessary arguments:[color]
-	-s --streak           Fill with texture
-	-c --streak_color     Color to fill
-	-T --texture          Texture to fill<argument shortArgument="-p" longArgument="--points" type="Points" isNecessary="true" commandParameterName="points"/>
-    <argument shortArgument="-C" longArgument="--color" type="Color" isNecessary="true" commandParameterName="color"/>
-    <argument shortArgument="-t" longArgument="--line_thickness" type="Int" isNecessary="true" commandParameterName="lineThickness"/>
-    <argument shortArgument="-s" longArgument="--streak" commandParameterName="streak" defaultValue="false"/>
-    <argument shortArgument="-c" longArgument="--streak_color" type="Color" commandParameterName="streakColor" defaultValue="None"/>
-    <argument shortArgument="-T" longArgument="--texture" type="Texture" commandParameterName="streakTexture" defaultValue="None"/>
+  
+  <command userInput="new polygon" 
+           commandClass="CreatePolygon" 
+           supportsUndo="true">
+    Adds polygon to the screen
+    <argument shortArgument="p"
+            longArgument="points"
+            type="Points"
+            isNecessary="true"
+            commandParameterName="points" >
+      Points (X and Y are separated by a space, pairs are separated by a comma, e. g. X1 Y1, X2 Y2)
+    </argument>
+    <argument shortArgument="C"
+              longArgument="color"
+              type="Color"
+              isNecessary="true"
+              commandParameterName="color" >
+      Outline color
+    </argument>
+    <argument shortArgument="t"
+              longArgument="line_thickness"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="lineThickness" >
+      Outline thickness
+    </argument>
+    <argument shortArgument="s"
+              longArgument="streak"
+              commandParameterName="streak"
+              defaultValue="false" >
+      Add streak (default is false)
+    </argument>
+    <argument shortArgument="c"
+              longArgument="streak_color"
+              type="Color"
+              commandParameterName="streakColor"
+              defaultValue="None" >
+      Streak color (default is transparent)
+    </argument>
+    <argument shortArgument="T"
+              longArgument="texture"
+              type="Texture"
+              commandParameterName="streakTexture"
+              defaultValue="None" >
+      Streak texture (default is transparent)
+    </argument>
   </command>
+  
 	<!-- window -->
-	<command userInput="window create" commandClass="CreateWindow">Creates new window for drawing</command>
-	<command userInput="window delete" commandClass="DeleteWindow">Closes specified window
-
-[color:Magenta]Necessary arguments:[color]
-	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" isNecessary="true" type="Int" commandParameterName="number"/>
+	<command userInput="window create" 
+           commandClass="CreateWindow">
+    Creates new window to draw
+  </command>
+  
+	<command userInput="window delete" 
+           commandClass="DeleteWindow">
+    Closes specified window
+    <argument shortArgument="n"
+            longArgument="number"
+            isNecessary="true"
+            type="Int"
+            commandParameterName="number">
+      Number of window (from window title)
+    </argument>
 	</command>
-	<command userInput="window switch" commandClass="SwitchWindow">Switches to specified window
-
-[color:Magenta]Necessary arguments:[color]
-	-n --number           Number of window (written in window title)<argument shortArgument="-n" longArgument="--number" isNecessary="true" type="Int" commandParameterName="number"/>
+  
+	<command userInput="window switch" 
+           commandClass="SwitchWindow">
+    Switches to specified window
+    <argument shortArgument="n"
+            longArgument="number"
+            isNecessary="true"
+            type="Int"
+            commandParameterName="number" >
+      Number of window (from window title)
+    </argument>
 	</command>
+  
 	<!-- edit -->
-	<command userInput="edit" commandClass="Edit" supportsUndo="true">Select figure on the screen and edit it
-
-[color:Magenta]Unnecessary arguments:[color]
-	-t --creation_time    Display shapes in creation time order	[default]
-	-c --coordinates      Display shapes in coordinates order<argument shortArgument="-t" longArgument="--creation_time" commandParameterName="creationTime" defaultValue="true"/>
-		<argument shortArgument="-c" longArgument="--coordinates" commandParameterName="coordinates" defaultValue="false"/>
+	<command userInput="edit" 
+           commandClass="Edit" 
+           supportsUndo="true">
+    Select figure on the screen and edit it
+    <argument shortArgument="t"
+            longArgument="creation_time"
+            commandParameterName="creationTime"
+            defaultValue="true" >
+      Display fidures in creation-time order (default)
+    </argument>
+    <argument shortArgument="c"
+              longArgument="coordinates"
+              commandParameterName="coordinates"
+              defaultValue="false" >
+      Display figures by ascending coordinates of the center
+    </argument>
 	</command>
+  
 	<!-- select -->
-	<command userInput="select" commandClass="Select">Selects rectangular area, specified by coordinates of left-top and right-bottom corners
-
-[color:Magenta]Necessary arguments:[color]
-	-x --left_top_x       X of left-top corner
-	-y --left_top_y       Y of left-top corner
-	-X --right_bottom_x   X of right-bottom corner
-	-Y --right_bottom_y   Y of right-bottom corner<argument shortArgument="-x" longArgument="--left_top_x" type="Int" isNecessary="true" commandParameterName="leftTopX"/>
-		<argument shortArgument="-y" longArgument="--left_top_y" type="Int" isNecessary="true" commandParameterName="leftTopY"/>
-		<argument shortArgument="-X" longArgument="--right_bottom_x" type="Int" isNecessary="true" commandParameterName="rightBottomX"/>
-		<argument shortArgument="-Y" longArgument="--right_bottom_y" type="Int" isNecessary="true" commandParameterName="rightBottomY"/>
+	<command userInput="select" 
+           commandClass="Select">
+    Selects rectangular area, specified by coordinates of left-top and right-bottom corners
+    <argument shortArgument="x"
+            longArgument="left_top_x"
+            type="Int"
+            isNecessary="true"
+            commandParameterName="leftTopX" >
+      X of left-top corner
+    </argument>
+    <argument shortArgument="y"
+              longArgument="left_top_y"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="leftTopY" >
+      Y of left-top corner
+    </argument>
+    <argument shortArgument="X"
+              longArgument="right_bottom_x"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="rightBottomX" >
+      X of right-bottom corner
+    </argument>
+    <argument shortArgument="Y"
+              longArgument="right_bottom_y"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="rightBottomY" >
+      Y of right-bottom corner
+    </argument>
 	</command>
+  
   <!-- paste -->
-  <command userInput="paste" commandClass="Paste" supportsUndo="true">Pastes selected area<argument shortArgument="-x" longArgument="--leftTopX" type="Int" isNecessary="true" commandParameterName="leftTopX"/>
-    <argument shortArgument="-y" longArgument="--leftTopY" type="Int" commandParameterName="leftTopY"/>
+  <command userInput="paste" 
+           commandClass="Paste" 
+           supportsUndo="true">
+    Pastes selected area
+    <argument shortArgument="x"
+            longArgument="leftTopX"
+            type="Int"
+            isNecessary="true"
+            commandParameterName="leftTopX" >
+      X of left-top corner
+    </argument>
+    <argument shortArgument="y"
+              longArgument="leftTopY"
+              type="Int"
+              commandParameterName="leftTopY" >
+      Y of left-top corner
+    </argument>
   </command>
+  
 	<!-- undo -->
-	<command userInput="undo" commandClass="Undo">Cancels the specified number (default is 1) of last commands
-
-[color:Magenta]Unnecessary arguments:[color]
-	-n --number       Number of commands to cancel<argument shortArgument="-n" longArgument="--number" type="Int" commandParameterName="number" defaultValue="1"/>
+	<command userInput="undo" 
+           commandClass="Undo">
+    Cancels last commands
+    <argument shortArgument="n"
+            longArgument="number"
+            type="Int"
+            commandParameterName="number"
+            defaultValue="1" >
+      Number of commands to undo (default is 1)
+    </argument>
 	</command>
+  
 	<!-- redo -->
-	<command userInput="redo" commandClass="Redo">Repeats the specified number (default is 1) of last cancelled commands
-
-[color:Magenta]Unnecessary arguments:[color]
--n --number         Number of commands to repeat<argument shortArgument="-n" longArgument="--number" type="Int" commandParameterName="number" defaultValue="1"/>
+	<command userInput="redo" 
+           commandClass="Redo">
+    Repeats last cancelled commands
+    <argument shortArgument="n"
+            longArgument="number"
+            type="Int"
+            commandParameterName="number"
+            defaultValue="1" >
+      Number of commands to redo (default is 1)
+    </argument>
 	</command>
+  
 	<!-- save -->
-	<command userInput="save" commandClass="Save">Save file</command>
+	<command userInput="save" 
+           commandClass="Save">
+    Save file
+  </command>
+  
 	<!-- save_as -->
-	<command userInput="save_as" commandClass="SaveAs">Save file as<argument shortArgument="-f" longArgument="--filename" isNecessary="true" type="String" commandParameterName="filename"/>
+	<command userInput="save_as" 
+           commandClass="SaveAs">
+    Save file as
+    <argument shortArgument="f"
+            longArgument="filename"
+            isNecessary="true"
+            type="String"
+            commandParameterName="filename" >
+      Name of file to save (if path is relative, saves to default save directory)
+    </argument>
 	</command>
+  
 	<!-- load -->
-	<command userInput="load" commandClass="Load">Load file<argument shortArgument="-f" longArgument="--filename" type="String" isNecessary="true" commandParameterName="filename"/>
-    <argument shortArgument="-c" longArgument="--clear" defaultValue="false" commandParameterName="clearScreen"/>
+	<command userInput="load" 
+           commandClass="Load">
+    Load file
+    <argument shortArgument="f"
+            longArgument="filename"
+            type="String"
+            isNecessary="true"
+            commandParameterName="filename" >
+      Name of file to save  (if path is relative, saves to default save directory)
+    </argument>
+    <argument shortArgument="c"
+              longArgument="clear"
+              defaultValue="false"
+              commandParameterName="clearScreen" >
+      Clear screen before loading (default is false)
+    </argument>
 	</command>
+  
   <!-- exit -->
-  <command userInput="exit" commandClass="Exit">Close application</command>
+  <command userInput="exit" 
+           commandClass="Exit">
+    Close application
+  </command>
+  
   <!-- colors -->
-  <command userInput="colors" commandClass="Colors">Display list of colors</command>
+  <command userInput="colors" 
+           commandClass="Colors">
+    Display list of colors (colored)
+  </command>
+  
   <!-- textures -->
-  <command userInput="textures" commandClass="Textures">Display list of streak textures</command>
+  <command userInput="textures" 
+           commandClass="Textures">
+    Display list of streak textures (with descriptions)
+  </command>
+  
   <!-- clear -->
-  <command userInput="clear" commandClass="Clear" supportsUndo="true">Clear current screen</command>
+  <command userInput="clear" 
+           commandClass="Clear" 
+           supportsUndo="true">
+    Clear current screen
+  </command>
+  
   <!-- export -->
-  <command userInput="export svg" commandClass="ExportSVG">Export to svg
-[color:Magenta]Necessary arguments:[color]
-	-o --out            Output file
-[color:Magenta]Unnecessary arguments:[color]
-	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue=""/>
-    <argument shortArgument="-o" longArgument="--out" type="String" isNecessary="true" commandParameterName="outFilename"/>
+  <command userInput="export svg" 
+           commandClass="ExportSVG">
+    Export to svg
+    <argument shortArgument="i"
+            longArgument="in"
+            type="String"
+            commandParameterName="inFilename"
+            defaultValue="" >
+      Name of (.std) file to export (if not specified, exports current drawing)
+    </argument>
+
+    <argument shortArgument="o"
+              longArgument="out"
+              type="String"
+              isNecessary="true"
+              commandParameterName="outFilename" >
+      Name of (.svg) file to export to
+    </argument>
   </command>
-  <command userInput="export pdf" commandClass="ExportPDF">Export to pdf
-[color:Magenta]Necessary arguments:[color]
-	-o --out            Output file
-[color:Magenta]Unnecessary arguments:[color]
-	-i --in             Input file. If no specified, exports current screen<argument shortArgument="-i" longArgument="--in" type="String" commandParameterName="inFilename" defaultValue=""/>
-    <argument shortArgument="-o" longArgument="--out" type="String" isNecessary="true" commandParameterName="outFilename"/>
+  
+  <command userInput="export pdf" 
+           commandClass="ExportPDF">
+    Export to pdf (experimental)
+    <argument shortArgument="i" 
+              longArgument="in" 
+              type="String" 
+              commandParameterName="inFilename" 
+              defaultValue=""/>
+    Name of (.std) file to export (if not specified, exports current drawing)
+      <argument shortArgument="o"
+            longArgument="out"
+            type="String"
+            isNecessary="true"
+            commandParameterName="outFilename" >
+      Name of (.pdf) file to export to
+      </argument>
   </command>
+  
   <!-- screenshot -->
-  <command userInput="screenshot" commandClass="Screenshot">Captures a screenshot of current drawing window<argument shortArgument="-f" longArgument="--filename" type="String" isNecessary="true" commandParameterName="filename" />
+  <command userInput="screenshot" 
+           commandClass="Screenshot">
+    Captures a screenshot of current drawing window and saves to .png (experimental)
+      <argument shortArgument="f"
+          longArgument="filename"
+          type="String"
+          isNecessary="true"
+          commandParameterName="filename" >
+      Name of file to save screenshot
+      </argument>
 </command>
 
 	<!-- fictional commands -->
-	<command userInput="new" fictional="true">Adds specified shape to the screen. You cannot invoke this command without specifying shape
-
-[color:Magenta]Unnecessary arguments:[color]
-	-s --streak         Fill with texture
-	-c --streak_color   Color to fill
-	-T --texture        Texture to fill
+	<command userInput="new" 
+           fictional="true">
+    Adds specified shape to the screen. You cannot invoke this command without specifying shape
 
 [color:Magenta]Shapes:[color]
 	circle
@@ -209,18 +559,27 @@ Adds polygon to the screen
 	text
 	polygon
 
-Enter [color:Green]new shape --help[color] to get help on [color:Green]shape[color]</command>
-	<command userInput="window" fictional="true">Controls windows. You cannot invoke this command without specifying concrete action
+Enter [color:Green]new shape --help[color] to get help on [color:Green]shape[color]
+  </command>
+  
+	<command userInput="window" 
+           fictional="true">
+    Controls windows. You cannot invoke this command without specifying concrete action
 [color:Magenta]Possible commands:[color]
 	create
 	switch
-	delete</command>
-  <command userInput="export" fictional="true">Export to other formats. You cannot invoke this command without specifying file format
+	delete
+  </command>
+  
+  <command userInput="export" 
+           fictional="true">
+    Export to other formats. You cannot invoke this command without specifying file format
 [color:Magenta]Availible formats:[color]
 	SVG
-	PDF</command>
+	PDF
+  </command>
 	
-	<!-- common help -->
+	<!-- global help -->
 	<help>
 Special Task 1 ver.1.0.0
 
@@ -241,6 +600,7 @@ Usage: command [arguments]
 	load          Load
 	clear         Clear current screen
 	export        Export to other formats
+  screenshot    Capture a screenshot
 	
 	colors        Get list of colors
 	textures      Get list of streak textures
@@ -262,5 +622,6 @@ You can type [color:Green]command --help[color] to get context help
     See the GNU General Public License for more details.
 
     (c) Petr Senichenkov, 2023
-    Source code: [color:blue]https://github.com/Petua41/SpecialTask.git[color]</help>
+    Source code: [color:blue]https://github.com/Petua41/SpecialTask.git[color]
+  </help>
 </commands>

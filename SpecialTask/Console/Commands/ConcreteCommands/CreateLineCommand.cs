@@ -15,10 +15,10 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         private readonly int firstY;
         private readonly int secondX;
         private readonly int secondY;
-        private readonly STColor color;
+        private readonly InternalColor color;
         private readonly int lineThickness;
         private readonly bool streak;
-        private readonly STColor streakColor;
+        private readonly InternalColor streakColor;
         private readonly StreakTexture streakTexture;
 
         public CreateLineCommand(object[] args)
@@ -27,10 +27,10 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             firstY = (int)args[1];
             secondX = (int)args[2];
             secondY = (int)args[3];
-            color = (STColor)args[4];
+            color = (InternalColor)args[4];
             lineThickness = (int)args[5];
             streak = (bool)args[6];
-            streakColor = (STColor)args[7];
+            streakColor = (InternalColor)args[7];
             streakTexture = (StreakTexture)args[8];
         }
 

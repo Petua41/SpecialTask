@@ -1,8 +1,8 @@
 ﻿using SpecialTask.Console.Commands;
 using SpecialTask.Console.Interfaces;
 using SpecialTask.Infrastructure.Exceptions;
-using static SpecialTask.Console.CommandsParser.XMLCommandsParser;
 using static SpecialTask.Infrastructure.Extensoins.StringListExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Console.CommandsParser
 {
@@ -18,7 +18,7 @@ namespace SpecialTask.Console.CommandsParser
         {
             string xmlContents = Properties.Resources.ConsoleCommands;
 
-            consoleCommands = new(ParseCommandsXML(xmlContents));
+            consoleCommands = new(XMLCommandsParser.ParseCommandsXML(xmlContents));
         }
 
         // This method is like facade: only calls other methods in the right order and handles exceptions
@@ -43,13 +43,14 @@ namespace SpecialTask.Console.CommandsParser
 
             try
             {
-                Dictionary<string, object> argumentValues = ParseArguments(consoleCommand, arguments);
-
-                if (argumentValues.ContainsKey("help"))     // in theory, user can enter "--help false". It`s still --help
+                if (arguments.Contains("-h") || arguments.Contains("--help"))       // don`t parse arguments, if user asks for help
                 {
-                    DisplayHelp(consoleCommand);
+                    HighConsole.NewLine();
+                    HighConsole.Display(consoleCommand.Help);
                     return;
                 }
+
+                Dictionary<string, object> argumentValues = new(consoleCommand.ParseArguments(arguments));
 
                 ICommand command = CreateCommand(consoleCommand, argumentValues);
 
@@ -67,6 +68,18 @@ namespace SpecialTask.Console.CommandsParser
                     $"You cannot call {consoleCommand.NeededUserInput} without \"second-level command\". Try {consoleCommand.NeededUserInput} --help");
             }
             catch (ArgumentParsingError) { /* ignore */ }   // Some required argument is missing || Some extra argument is present || Error casting parameter
+            catch (ExtraArgumentException e)
+            {
+                if (e.LongArgument is not null) HighConsole.DisplayError($"Invalid argument: {commandName}. Try {commandName} -- help");
+                else HighConsole.DisplayError($"Some argument is invalid. Please, contact us and try {commandName} -- help");
+                return;
+            }
+            catch (NecessaryArgumentNotPresentedException e)
+            {
+                if (e.LongArgument is not null) HighConsole.DisplayError($"{e.LongArgument} is necessary. Try {commandName} -- help");
+                else HighConsole.DisplayError($"Some argument is necessary, but not present. Please, contact us and try {commandName} -- help");
+                return;
+            }
         }
 
         public static string Autocomplete(string input)
@@ -85,6 +98,25 @@ namespace SpecialTask.Console.CommandsParser
                 : consoleCommands.Select(x => x.NeededUserInput).Where(x => x.StartsWith(input)).ToList().RemovePrefix(input).LongestCommonPrefix();
         }
 
+        public static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
+        {
+            if (consoleCommand.Fictional)
+            {
+                throw new InvalidOperationException();
+            }
+
+            // Add all default values, that we know
+            foreach (ConsoleCommandArgument argument in consoleCommand.Arguments)
+            {
+                if (!arguments.ContainsKey(argument.CommandParameterName) && argument.DefaultValue is not null)
+                {
+                    arguments.Add(argument.CommandParameterName, argument.DefaultValue);
+                }
+            }
+
+            return CommandCreator.CreateCommand(consoleCommand.CommandType, arguments);
+        }
+
         /// <summary>
         /// Finds ConsoleCommand by user input
         /// </summary>
@@ -93,73 +125,6 @@ namespace SpecialTask.Console.CommandsParser
         {
             commandName = commandName.Trim();
             return consoleCommands.FindIndex(t => t.NeededUserInput == commandName);        // ТАК НАДО ВЕЗДЕ		!!!!!!!!!!!!!!!!
-        }
-
-        private static Dictionary<string, object> ParseArguments(ConsoleCommand consoleCommand, string arguments)
-        {
-            Dictionary<string, object> argumentPairs = new();
-
-            while (arguments.Length > 0)
-            {
-                int startOfNextArgument = arguments.IndexOf('-', 2);
-
-                (string, object) pair;
-                string arg;
-                if (startOfNextArgument > 0)
-                {
-                    arg = arguments[..startOfNextArgument];
-                    arguments = arguments[startOfNextArgument..];
-                }
-                else
-                {
-                    arg = arguments;
-                    arguments = string.Empty;
-                }
-                pair = consoleCommand.CreateArgumentFromString(arg);
-
-                if (!argumentPairs.TryAdd(pair.Item1, pair.Item2)) HighConsole.DisplayError($"Duplicated argument: {pair.Item1}");
-            }
-
-            return argumentPairs;
-        }
-
-        private static void DisplayHelp(ConsoleCommand command)
-        {
-            string? help = command.Help;
-            if (help is null)
-            {
-                HighConsole.DisplayError($"Help for {command.NeededUserInput} not found");
-            }
-            else
-            {
-                HighConsole.Display(help);
-            }
-        }
-
-        private static (string, string) SplitToCommandAndArgs(this string input)
-        {
-            int indexOfFirstMinus = input.IndexOf('-');
-
-            string commandName;
-            string arguments;
-
-            if (indexOfFirstMinus > 0)
-            {
-                if (indexOfFirstMinus == 0)
-                {
-                    return (string.Empty, string.Empty);     // input starts with minus: there is no command
-                }
-
-                commandName = input[..(indexOfFirstMinus - 1)];
-                arguments = input[indexOfFirstMinus..];
-            }
-            else
-            {
-                commandName = input;
-                arguments = string.Empty;
-            }
-
-            return (commandName, arguments);
         }
     }
 }

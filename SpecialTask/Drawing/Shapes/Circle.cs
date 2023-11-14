@@ -2,6 +2,8 @@
 using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
+using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
 
 namespace SpecialTask.Drawing.Shapes
 {
@@ -10,12 +12,12 @@ namespace SpecialTask.Drawing.Shapes
         private int radius;
         private int centerX;
         private int centerY;
-        private STColor color;
+        private InternalColor color;
         private int lineThickness;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Circle(int centerX, int centerY, STColor color, int radius, int lineThickness)
+        public Circle(int centerX, int centerY, InternalColor color, int radius, int lineThickness)
         {
             this.centerX = centerX;
             this.centerY = centerY;
@@ -54,7 +56,7 @@ namespace SpecialTask.Drawing.Shapes
                         break;
                     case "color":
                         oldValue = Color.ToString();
-                        Color = ColorsController.Parse(value);
+                        Color = value.ParseColor();
                         break;
                     case "radius":
                         oldValue = Radius.ToString();
@@ -156,7 +158,7 @@ namespace SpecialTask.Drawing.Shapes
             }
         }
 
-        private STColor Color
+        private InternalColor Color
         {
             get => color;
             set

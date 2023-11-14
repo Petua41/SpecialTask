@@ -11,12 +11,12 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
     {
         private readonly Shape? receiver;
 
-        private readonly STColor streakColor;
+        private readonly InternalColor streakColor;
         private readonly StreakTexture streakTexture;
 
         private StreakDecorator? decorator;
 
-        public AddStreakCommand(Shape shape, STColor streakColor, StreakTexture streakTexture)
+        public AddStreakCommand(Shape shape, InternalColor streakColor, StreakTexture streakTexture)
         {
             receiver = shape;
             this.streakColor = streakColor;

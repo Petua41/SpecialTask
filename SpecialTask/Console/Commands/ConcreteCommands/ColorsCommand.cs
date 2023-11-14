@@ -19,7 +19,8 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         {
             receiver.NewLine();
 
-            string output = string.Join(' ', ColorsController.ColorsList.Select(c => $"[color:{c}]{c}[color]"));
+            string output = string.Join(' ', Enum.GetNames<InternalColor>().
+                Where(c => c != "None").Select(c => $"[color:{c}]{c}[color]"));
 
             receiver.Display(output);
             receiver.NewLine();

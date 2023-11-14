@@ -13,22 +13,22 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
         private readonly int centerX;
         private readonly int centerY;
-        private readonly STColor color;
+        private readonly InternalColor color;
         private readonly int radius;
         private readonly int lineThickness;
         private readonly bool streak;
-        private readonly STColor streakColor;
+        private readonly InternalColor streakColor;
         private readonly StreakTexture streakTexture;
 
         public CreateCircleCommand(object[] args)
         {
             centerX = (int)args[0];
             centerY = (int)args[1];
-            color = (STColor)args[2];
+            color = (InternalColor)args[2];
             radius = (int)args[3];
             lineThickness = (int)args[4];
             streak = (bool)args[5];
-            streakColor = (STColor)args[6];
+            streakColor = (InternalColor)args[6];
             streakTexture = (StreakTexture)args[7];
         }
 

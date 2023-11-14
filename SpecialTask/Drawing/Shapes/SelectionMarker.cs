@@ -14,7 +14,7 @@ namespace SpecialTask.Drawing.Shapes
 
         public SelectionMarker(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY)
         {
-            square = new(leftTopX, leftTopY, rightBottomX, rightBottomY, STColor.Black, 1);
+            square = new(leftTopX, leftTopY, rightBottomX, rightBottomY, InternalColor.Black, 1);
             uniqueName = GetNextUniqueName();
         }
 

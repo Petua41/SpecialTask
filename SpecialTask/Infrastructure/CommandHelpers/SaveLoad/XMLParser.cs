@@ -4,6 +4,8 @@ using SpecialTask.Drawing.Shapes.Decorators;
 using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Exceptions;
 using System.Xml.Linq;
+using static SpecialTask.Infrastructure.Extensoins.ArgumentTypeExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 {
@@ -55,7 +57,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             int radius = int.Parse(dict["radius"]);
             int centerX = int.Parse(dict["centerX"]);
             int centerY = int.Parse(dict["centerY"]);
-            STColor color = ColorsController.Parse(dict["color"]);
+            InternalColor color = dict["color"].ParseColor();
             int lineThickness = int.Parse(dict["lineThickness"]);
 
             return new(centerX, centerY, color, radius, lineThickness);
@@ -67,7 +69,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             int leftTopY = int.Parse(dict["leftTopY"]);
             int rightBottomX = int.Parse(dict["rightBottomX"]);
             int rightBottomY = int.Parse(dict["rightBottomY"]);
-            STColor color = ColorsController.Parse(dict["color"]);
+            InternalColor color = dict["color"].ParseColor();
             int lineThickness = int.Parse(dict["lineThickness"]);
 
             return new(leftTopX, leftTopY, rightBottomX, rightBottomY, color, lineThickness);
@@ -79,7 +81,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             int firstY = int.Parse(dict["firstY"]);
             int secondX = int.Parse(dict["secondX"]);
             int secondY = int.Parse(dict["secondY"]);
-            STColor color = ColorsController.Parse(dict["color"]);
+            InternalColor color = dict["color"].ParseColor();
             int lineThickness = int.Parse(dict["lineThickness"]);
 
             return new(firstX, firstY, secondX, secondY, color, lineThickness);
@@ -91,7 +93,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             int leftTopY = int.Parse(dict["leftTopY"]);
             int fontSize = int.Parse(dict["fontSize"]);
             string textValue = dict["textValue"];
-            STColor color = ColorsController.Parse(dict["color"]);
+            InternalColor color = dict["color"].ParseColor();
 
             return new(leftTopX, leftTopY, fontSize, textValue, color);
         }
@@ -100,7 +102,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
         {
             List<Point> points = (List<Point>)ArgumentType.Points.ParseValue(dict["points"]);
             int lineThickness = int.Parse(dict["lineThickness"]);
-            STColor color = ColorsController.Parse(dict["color"]);
+            InternalColor color = dict["color"].ParseColor();
 
             return new(points, lineThickness, color);
         }
@@ -109,8 +111,8 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
         {
             try
             {
-                STColor streakColor = ColorsController.Parse(dict["streakColor"]);
-                StreakTexture streakTexture = TextureController.Parse(dict["streakTexture"]);
+                InternalColor streakColor = dict["streakColor"].ParseColor();
+                StreakTexture streakTexture = dict["streakTexture"].ParseStreakTexture();
 
                 return new(shape, streakColor, streakTexture);
             }

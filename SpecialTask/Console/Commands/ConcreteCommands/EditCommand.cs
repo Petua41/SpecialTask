@@ -6,6 +6,7 @@ using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Events;
 using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.Iterators;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands
 {
@@ -128,12 +129,12 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
                         DisplayNewAttributePrompt("Streak color");
                         await GetInterString();
 
-                        STColor color = ColorsController.Parse(interString);
+                        InternalColor color = interString.ParseColor();
 
                         DisplayNewAttributePrompt("Streak texture");
                         await GetInterString();
 
-                        StreakTexture texture = TextureController.Parse(interString);
+                        StreakTexture texture = interString.ParseStreakTexture();
 
                         receiver = new AddStreakCommand(shapeToEdit, color, texture);
                         CommandsFacade.Execute(receiver);

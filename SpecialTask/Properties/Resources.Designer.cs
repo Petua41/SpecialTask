@@ -63,19 +63,21 @@ namespace SpecialTask.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
         ///&lt;commands&gt;
-        ///  &lt;!-- We should add some kind of easter egg. Like moo, fortune or draw_logo --&gt;
+        ///  &lt;!-- I should add some kind of easter egg. Like moo or draw_logo --&gt;
         ///  
         ///	&lt;!-- new --&gt;
-        ///	&lt;command userInput=&quot;new circle&quot; commandClass=&quot;CreateCircle&quot; supportsUndo=&quot;true&quot;&gt;Adds circle to the screen
-        ///
-        ///[color:Magenta]Necessary arguments:[color]
-        ///	-x --center_x         X of center
-        ///	-y --center_y         Y of center
-        ///	-C --color            Outline color
-        ///	-r --radius           Radius
-        ///	-t --line_thickness   Outline thickness
-        ///
-        ///[color:Magenta]Unne [rest of string was truncated]&quot;;.
+        ///	&lt;command userInput=&quot;new circle&quot; 
+        ///           commandClass=&quot;CreateCircle&quot; 
+        ///           supportsUndo=&quot;true&quot;&gt;
+        ///    Adds circle to the screen
+        ///		&lt;argument shortArgument=&quot;x&quot;
+        ///            longArgument=&quot;center_x&quot; type=&quot;Int&quot;
+        ///            isNecessary=&quot;true&quot;
+        ///            commandParameterName=&quot;centerX&quot; &gt;
+        ///      X of center
+        ///    &lt;/argument&gt;
+        ///    &lt;argument shortArgument=&quot;y&quot;
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ConsoleCommands {
             get {

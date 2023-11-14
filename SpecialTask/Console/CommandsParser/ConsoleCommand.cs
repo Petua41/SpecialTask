@@ -1,11 +1,16 @@
-﻿using SpecialTask.Infrastructure.Exceptions;
-using SpecialTask.Infrastructure.Enums;
-using SpecialTask.Infrastructure.Extensoins;
+﻿using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
+using System.Text.RegularExpressions;
+using static SpecialTask.Infrastructure.Extensoins.StringListExtensions;
 
 namespace SpecialTask.Console.CommandsParser
 {
-    internal struct ConsoleCommand
+    internal partial struct ConsoleCommand
     {
+        private DictionaryOptionSet? doSet;
+
+        private static readonly Regex expression = Expression();
+
         public readonly string AutocompleteArguments(string argumentsInput)
         {
             string lastArgument = SelectLastLongArgument(argumentsInput).Trim();
@@ -13,39 +18,42 @@ namespace SpecialTask.Console.CommandsParser
             return Arguments.Select(x => x.LongArgument).Where(x => x.StartsWith(lastArgument)).ToList().RemovePrefix(lastArgument).LongestCommonPrefix();
         }
 
-        public readonly (string, object) CreateArgumentFromString(string argument)
+        public IReadOnlyDictionary<string, object> ParseArguments(string arguments)
         {
-            argument = argument.Trim();         // ParseArguments don`t trim arguments, so we`ll make it here
+            doSet = CreateOptionSet();
 
-            if (argument is "-h" or "--help")
+            string[] args = SplitByRegex(arguments);
+            doSet.ParseToDictionary(args);
+
+            if (doSet.NotParsedNecessaryArguments.Count > 0)
             {
-                return ("help", true);
+                string argKey = doSet.NotParsedNecessaryArguments[0];
+                string longArg = GetLongArgumentByName(argKey);
+
+                if (longArg.Length > 0) throw new NecessaryArgumentNotPresentedException($"{longArg} is necessary but not present", longArg);
+                throw new NecessaryArgumentNotPresentedException($"Unknown argument is necessary, but not present");
             }
 
-            foreach (ConsoleCommandArgument arg in Arguments)
+            if (doSet.Extra.Count > 0)
             {
-                if (argument.StartsWith(arg.LongArgument) || argument.StartsWith(arg.ShortArgument))
-                {
-                    string rawValue = argument.Replace(arg.LongArgument, string.Empty).Replace(arg.ShortArgument, string.Empty).Trim();
+                string argKey = doSet.Extra[0];
 
-                    try
-                    {
-                        object value = arg.Type.ParseValue(rawValue);
-                        string paramName = arg.CommandParameterName;
-                        return (paramName, value);
-                    }
-                    catch (FormatException e)     // Error casting string
-                    {
-                        string argType = arg.Type.ToString();
-                        HighConsole.DisplayError(
-                            $"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}. Try {NeededUserInput} --help");
-
-                        throw new ArgumentParsingError($"{arg.LongArgument} should be {argType}. {rawValue} is not {argType}.", e, arg.LongArgument);
-                    }
-                }
+                throw new ExtraArgumentException($"{argKey} is extra", argKey);     // we don`t look for longArg, because it *wrong* argument
             }
-            HighConsole.DisplayError($"Unknown argument: {argument}. Try {NeededUserInput} -- help");
-            throw new ArgumentParsingError($"Unknown argument: {argument}.", argument);
+
+            return doSet.ArgumentValues;
+        }
+
+        /// <returns><see cref="ConsoleCommandArgument.LongArgument"/> if found, <see cref="string.Empty"/> otherwise</returns>
+        private readonly string GetLongArgumentByName(string name)
+        {
+            int indexOfArg = Arguments.FindIndex(arg => arg.CommandParameterName == name);
+            if (indexOfArg > 0)
+            {
+                return Arguments[indexOfArg].LongArgument;
+            }
+
+            return string.Empty;
         }
 
         private static string SelectLastLongArgument(string input)
@@ -58,10 +66,26 @@ namespace SpecialTask.Console.CommandsParser
                 : input[indexOfLastDoubleMinus..];
         }
 
+        private DictionaryOptionSet CreateOptionSet()
+        {
+            doSet = new();
+            foreach (ConsoleCommandArgument argument in Arguments)
+            {
+                doSet.Add($"{argument.ShortArgument}|{argument.LongArgument}=", argument.Description, argument.CommandParameterName,
+                    argument.Type, argument.IsNecessary);
+            }
+
+            return doSet;
+        }
+
+        private static string[] SplitByRegex(string input)
+        {
+            string[] preResult = expression.Split(input);
+            return preResult.Where(s => s != string.Empty).ToArray();
+        }
+
         public string NeededUserInput { get; set; }
 
-        public string? Help { get; set; }
-        
         public string CommandType { get; set; }
 
         public List<ConsoleCommandArgument> Arguments { get; set; }
@@ -69,8 +93,24 @@ namespace SpecialTask.Console.CommandsParser
         public bool SupportsUndo { get; set; }
 
         public bool Fictional { get; set; }         // only for --help. Doesn`t support execution
+
+        public string Description { get; set; }
+
+        public readonly string Help
+        {
+            get
+            {
+                return Description
+                    + Environment.NewLine
+                    + (doSet is null ? string.Empty : Environment.NewLine
+                    + doSet.WriteOptionDescriptions());
+            }
+        }
+
+        [GeneratedRegex("(\\-\\-[^\\-]+)|(\\-[^\\-]+)")]    // I use Regex this way because of two reasons:     1) VS says that it`s faster
+        private static partial Regex Expression();                                                          //  2) explanation will be generated
     }
 
-    internal record struct ConsoleCommandArgument(string ShortArgument, string LongArgument, ArgumentType Type, bool IsNecessary,
+    internal record struct ConsoleCommandArgument(string ShortArgument, string LongArgument, string Description, ArgumentType Type, bool IsNecessary,
         string CommandParameterName, object? DefaultValue);
 }

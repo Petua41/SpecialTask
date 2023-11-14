@@ -14,18 +14,18 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
         private readonly List<Point> points;
         private readonly int lineThickness;
-        private readonly STColor color;
+        private readonly InternalColor color;
         private readonly bool streak;
-        private readonly STColor streakColor;
+        private readonly InternalColor streakColor;
         private readonly StreakTexture streakTexture;
 
         public CreatePolygonCommand(object[] args)
         {
             points = (List<Point>)args[0];
             lineThickness = (int)args[1];
-            color = (STColor)args[2];
+            color = (InternalColor)args[2];
             streak = (bool)args[3];
-            streakColor = (STColor)args[4];
+            streakColor = (InternalColor)args[4];
             streakTexture = (StreakTexture)args[5];
         }
 

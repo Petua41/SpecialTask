@@ -4,9 +4,10 @@ using SpecialTask.Console.Interfaces;
 using SpecialTask.Infrastructure.Collections;
 using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Events;
-using System.Windows;
-using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 using SpecialTask.Infrastructure.Exceptions;
+using System.Windows;
+using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Console
 {
@@ -74,13 +75,13 @@ namespace SpecialTask.Console
         public void DisplayError(string message)
         {
             NewLine();
-            Display(message, STColor.Red);
+            Display(message, InternalColor.Red);
         }
 
         public void Display(string message)
         {
-            Pairs<string, STColor> messageSplittedByColors = message.SplitByColors();
-            foreach (KeyValuePair<string, STColor> kvp in messageSplittedByColors)
+            Pairs<string, InternalColor> messageSplittedByColors = message.SplitByColors();
+            foreach (KeyValuePair<string, InternalColor> kvp in messageSplittedByColors)
             {
                 Display(kvp.Key, kvp.Value);
             }
@@ -88,7 +89,7 @@ namespace SpecialTask.Console
 
         public void NewLine()
         {
-            Display(Environment.NewLine, STColor.None);      // no matter, in which color we display \n
+            Display(Environment.NewLine, InternalColor.None);      // no matter, in which color we display \n
         }
 
         public void DisplayGlobalHelp()
@@ -98,19 +99,19 @@ namespace SpecialTask.Console
 
         public void DisplayPrompt()
         {
-            Display(">> ", STColor.Green);
+            Display(">> ", InternalColor.Green);
         }
 
         public void DisplayQuestion(string message)
         {
             NewLine();
-            Display(message, STColor.Yellow);
+            Display(message, InternalColor.Yellow);
         }
 
         public void DisplayWarning(string message)
         {
             NewLine();
-            Display(message, STColor.Purple);
+            Display(message, InternalColor.Purple);
         }
 
         public void ProcessInputString(string input)
@@ -183,7 +184,7 @@ namespace SpecialTask.Console
 
         public bool TransferringInput { get; set; }
 
-        private void Display(string message, STColor color = STColor.None)
+        private void Display(string message, InternalColor color = InternalColor.None)
         {
             mainWindowInstance.Display(message, color.GetWPFColor());
         }

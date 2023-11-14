@@ -1,6 +1,6 @@
 ﻿namespace SpecialTask.Infrastructure.Extensoins
 {
-    internal static class StringKeysDictionaryExtension
+    internal static class StringObjectDictionaryExtension
     {
         /// <summary>
         /// Creates an array of values, that can be passed as params.

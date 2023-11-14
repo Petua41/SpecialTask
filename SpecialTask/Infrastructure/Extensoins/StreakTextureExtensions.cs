@@ -1,20 +1,16 @@
 ﻿using SpecialTask.Drawing.BrushPrototypes;
+using SpecialTask.Infrastructure.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace SpecialTask.Infrastructure.Enums
+namespace SpecialTask.Infrastructure.Extensoins
 {
-    internal enum StreakTexture
-    {
-        None,
-        SolidColor,
-        HorizontalLines, VerticalLines, Dots, TransparentCircles,               // We can add lines (diagonal, vawes, etc.) endlessly
-        HorizontalTransparentToColorGradient, HorizontalRainbow,                // We can add linear gradients endlessly
-        RadialColorToTransparentGradient,                                       // We can add radial gradients endlessly
-        Water                                                                   // We can add seamless textures really endlessly
-    }
-
-    internal static class TextureController
+    internal static class StreakTextureExtensions
     {
         private static readonly IBrushPrototype horizontalLinesBrush;
         private static readonly IBrushPrototype verticalLinesBrush;
@@ -27,7 +23,7 @@ namespace SpecialTask.Infrastructure.Enums
         private static readonly IBrushPrototype radTranspToColorGradientBrush;
         private static readonly IBrushPrototype waterSeamlessTexture;
 
-        static TextureController()
+        static StreakTextureExtensions()
         {
             horizontalLinesBrush = new GeometryTileTexture(new LineGeometry(new(0, 0), new(10, 0)));
             verticalLinesBrush = new GeometryTileTexture(new LineGeometry(new(0, 0), new(0, 10)));
@@ -45,25 +41,7 @@ namespace SpecialTask.Infrastructure.Enums
 
             waterSeamlessTexture = new SeamlessTexture(Properties.Resources.water_texture);
         }
-
-        public static StreakTexture Parse(string textureName)
-        {
-            return textureName.ToLower() switch
-            {
-                "solid" or "solidcolor" or "color" or "sc" => StreakTexture.SolidColor,
-                "horizontallines" or "hl" => StreakTexture.HorizontalLines,
-                "verticallines" or "vl" => StreakTexture.VerticalLines,
-                "horizontaltransparencygradient" or "htg" or "horizontaltransparenttocolorgradient" => StreakTexture.HorizontalTransparentToColorGradient,
-                "horizontalrainbow" or "rainbow" or "hrb" => StreakTexture.HorizontalRainbow,
-                "radialtarnsparencygradient" or "rtg" or "radialcolortotransparentgradient" => StreakTexture.RadialColorToTransparentGradient,
-                "watertexture" or "water" or "wt" => StreakTexture.Water,
-                "dots" => StreakTexture.Dots,
-                "holes" or "tc" or "transparentcircles" => StreakTexture.TransparentCircles,
-                _ => StreakTexture.None
-            };
-        }
-
-        public static Brush GetWPFTexture(this StreakTexture texture, STColor color)
+        public static Brush GetWPFTexture(this StreakTexture texture, InternalColor color)
         {
             Color wpfColor = color.GetWPFColor();
             return texture switch
@@ -80,14 +58,5 @@ namespace SpecialTask.Infrastructure.Enums
                 _ => Brushes.Transparent
             };
         }
-
-        public static Dictionary<string, string> TexturesWithDescriptions { get; } = new()
-        {
-            { "solid", "Solid color" }, { "horizontallines", "Horizontal lines" }, { "verticallines", "Vertical lines" },
-            { "horizontaltransparencygradient", "Horizontal gradient with transparent on the left and color on the right" },
-            { "rainbow", "Horizontal rainbow gradient. Color is ignored" },
-            { "radialtransparencygradient", "Radial gradient with color in center and transparency on the edge" },
-            { "water", "Water texture. Color is ignored" }, { "dots", "Dots" }, { "holes", "Solid color with transparent round \"holes\""}
-        };
     }
 }

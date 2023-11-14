@@ -1,7 +1,8 @@
-﻿using SpecialTask.Console.Commands;
+﻿using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Exceptions;
-using SpecialTask.Infrastructure.Enums;
 using System.Xml.Linq;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
+using static SpecialTask.Infrastructure.Extensoins.ArgumentTypeExtensions;
 
 namespace SpecialTask.Console.CommandsParser
 {
@@ -13,12 +14,12 @@ namespace SpecialTask.Console.CommandsParser
         private const string ARGUMENT = "argument";
 
         // Attributes:
-        //  Command:
+        //      Command:
         private const string USER_INPUT = "userInput";
         private const string FICTIONAL = "fictional";
         private const string COMMAND_CLASS = "commandClass";
         private const string SUPPORTS_UNDO = "supportsUndo";
-        //  Argument:
+        //      Argument:
         private const string DEFAULT_VALUE = "defaultValue";
         private const string SHORT_ARGUMENT = "shortArgument";
         private const string LONG_ARGUMENT = "longArgument";
@@ -55,33 +56,6 @@ namespace SpecialTask.Console.CommandsParser
             return commands;
         }
 
-        public static ICommand CreateCommand(ConsoleCommand consoleCommand, Dictionary<string, object> arguments)
-        {
-            if (consoleCommand.Fictional)
-            {
-                throw new InvalidOperationException();
-            }
-
-            // Check that all necessary arguments are present
-            foreach (ConsoleCommandArgument argument in consoleCommand.Arguments)
-            {
-                if (!arguments.ContainsKey(argument.CommandParameterName))
-                {
-                    if (argument.IsNecessary)
-                    {
-                        HighConsole.DisplayError($"Missing required argument {argument.LongArgument}. Try {consoleCommand.NeededUserInput} --help");
-                        throw new ArgumentParsingError($"Missing required argument {argument.LongArgument}.", argument.LongArgument);
-                    }
-                    else if (argument.DefaultValue is not null)
-                    {
-                        arguments.Add(argument.CommandParameterName, argument.DefaultValue);
-                    }
-                }
-            }
-
-            return CommandCreator.CreateCommand(consoleCommand.CommandType, arguments);
-        }
-
         private static ConsoleCommand ParseCommandElement(XElement elem)
         {
             List<ConsoleCommandArgument> arguments = new();
@@ -89,12 +63,6 @@ namespace SpecialTask.Console.CommandsParser
             string neededUserInput = elem.Attribute(USER_INPUT)?.Value ?? string.Empty;
 
             bool fictional = (elem.Attribute(FICTIONAL)?.Value ?? FALSE) != FALSE;
-
-            string? help = elem.Value;
-            if (help == string.Empty)
-            {
-                help = null;
-            }
 
             foreach (XElement child in elem.Elements())
             {
@@ -111,7 +79,7 @@ namespace SpecialTask.Console.CommandsParser
             return new ConsoleCommand
             {
                 NeededUserInput = neededUserInput,
-                Help = help,
+                Description = elem.Value.Trim(),
                 CommandType = elem.Attribute(COMMAND_CLASS)?.Value ?? string.Empty,
                 SupportsUndo = (elem.Attribute(SUPPORTS_UNDO)?.Value ?? FALSE) != FALSE,
                 Fictional = fictional,
@@ -121,13 +89,15 @@ namespace SpecialTask.Console.CommandsParser
 
         private static ConsoleCommandArgument ParseArgumentElement(XElement elem)
         {
-            ArgumentType type = ArgumentTypesConstroller.ParseType(elem.Attribute("type")?.Value);
+            string? stringArg = elem.Attribute("type")?.Value;
+
+            ArgumentType type = stringArg.ParseArgumentType();      // ParseArgumentValue accepts null and processes it right way
 
             object? defaultValue = null;
             string? defValueString = elem.Attribute(DEFAULT_VALUE)?.Value;
             if (defValueString is not null)
             {
-                defaultValue = type.ParseValue(defValueString);     // we leave defaultValue null, if there`s no such attribute
+                defaultValue = type.ParseValue(defValueString);     // we leave defaultValue null if there`s no such attribute
             }
 
             return new ConsoleCommandArgument
@@ -137,8 +107,9 @@ namespace SpecialTask.Console.CommandsParser
                 Type = type,
                 IsNecessary = (elem.Attribute(IS_NECESSARY)?.Value ?? FALSE) != FALSE,
                 CommandParameterName = elem.Attribute(COMMAND_PARAMETER_NAME)?.Value ?? string.Empty,
-                DefaultValue = defaultValue
-            };
+                DefaultValue = defaultValue,
+                Description = elem.Value.Trim()
+        };
         }
 
         public static string GlobalHelp { get; private set; } = "[color:purple]Global help not found![color]";

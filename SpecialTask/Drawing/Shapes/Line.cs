@@ -2,6 +2,8 @@
 using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes
 {
@@ -11,12 +13,12 @@ namespace SpecialTask.Drawing.Shapes
         private int firstY;
         private int secondX;
         private int secondY;
-        private STColor color;
+        private InternalColor color;
         private int lineThickness;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Line(int firstX, int firstY, int secondX, int secondY, STColor color, int lineThickness)
+        public Line(int firstX, int firstY, int secondX, int secondY, InternalColor color, int lineThickness)
         {
             this.firstX = firstX;
             this.firstY = firstY;
@@ -65,7 +67,7 @@ namespace SpecialTask.Drawing.Shapes
                         break;
                     case "color":
                         oldValue = Color.ToString();
-                        Color = ColorsController.Parse(value);
+                        Color = value.ParseColor();
                         break;
                     case "linethickness":
                         oldValue = LineThickness.ToString();
@@ -174,7 +176,7 @@ namespace SpecialTask.Drawing.Shapes
             }
         }
 
-        private STColor Color
+        private InternalColor Color
         {
             get => color;
             set

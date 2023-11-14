@@ -2,19 +2,21 @@
 using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
 using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes
 {
     internal class Polygon : Shape
     {
         private List<Point> points;
-        private STColor color;
+        private InternalColor color;
         private int lineThickness;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Polygon(List<Point> points, int lineThickness, STColor color)
+        public Polygon(List<Point> points, int lineThickness, InternalColor color)
         {
             this.points = points;
             this.color = color;
@@ -50,7 +52,7 @@ namespace SpecialTask.Drawing.Shapes
                         break;
                     case "color":
                         oldValue = Color.ToString();
-                        Color = ColorsController.Parse(value);
+                        Color = value.ParseColor();
                         break;
                     default:
                         throw new ArgumentException($"Unknown attribute: {attribute}");
@@ -121,7 +123,7 @@ namespace SpecialTask.Drawing.Shapes
             }
         }
 
-        private STColor Color
+        private InternalColor Color
         {
             get => color;
             set

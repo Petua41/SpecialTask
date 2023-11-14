@@ -1,8 +1,10 @@
 ﻿using SpecialTask.Drawing.Shapes.WPF;
-using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes
 {
@@ -10,13 +12,13 @@ namespace SpecialTask.Drawing.Shapes
     {
         private int leftTopX;
         private int leftTopY;
-        private STColor color;
+        private InternalColor color;
         private int fontSize;
         private string textValue;
 
         private static int firstAvailibleUniqueNumber = 0;
 
-        public Text(int leftTopX, int leftTopY, int fontSize, string textValue, STColor color)
+        public Text(int leftTopX, int leftTopY, int fontSize, string textValue, InternalColor color)
         {
             this.leftTopX = leftTopX;
             this.leftTopY = leftTopY;
@@ -63,7 +65,7 @@ namespace SpecialTask.Drawing.Shapes
                         break;
                     case "color":
                         oldValue = Color.ToString();
-                        Color = ColorsController.Parse(value);
+                        Color = value.ParseColor();
                         break;
                     default:
                         throw new ArgumentException($"Unknown attribute: {attribute}");
@@ -160,7 +162,7 @@ namespace SpecialTask.Drawing.Shapes
             }
         }
 
-        private STColor Color
+        private InternalColor Color
         {
             get => color;
             set
