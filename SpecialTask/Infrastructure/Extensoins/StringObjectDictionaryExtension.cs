@@ -1,4 +1,6 @@
-﻿namespace SpecialTask.Infrastructure.Extensoins
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SpecialTask.Infrastructure.Extensoins
 {
     public static class StringObjectDictionaryExtension
     {

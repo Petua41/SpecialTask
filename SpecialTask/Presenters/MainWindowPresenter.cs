@@ -22,21 +22,6 @@ namespace SpecialTask.Presenters
             Display(message, new SolidColorBrush(color));
         }
 
-        public void Display(string message)
-        {
-            Display(message, defaultForegroundBrush);
-        }
-
-        public void Display(string message, Brush brush)
-        {
-            TextRange range = new(mainWindow.ConsoleTB.ContentEnd, mainWindow.ConsoleTB.ContentEnd)
-            {
-                Text = message
-            };
-            range.ApplyPropertyValue(System.Windows.Controls.Control.ForegroundProperty, brush);
-            ScrollToEnd();
-        }
-
         public void DisplayInputString(string text)
         {
             LowConsole.NewLine();
@@ -81,6 +66,21 @@ namespace SpecialTask.Presenters
             {
                 Autocomplete(mainWindow.ConsoleEntry.Text);
             }
+        }
+
+        private void Display(string message)
+        {
+            Display(message, defaultForegroundBrush);
+        }
+
+        private void Display(string message, Brush brush)
+        {
+            TextRange range = new(mainWindow.ConsoleTB.ContentEnd, mainWindow.ConsoleTB.ContentEnd)
+            {
+                Text = message
+            };
+            range.ApplyPropertyValue(System.Windows.Controls.Control.ForegroundProperty, brush);
+            ScrollToEnd();
         }
 
         private void ScrollToEnd()

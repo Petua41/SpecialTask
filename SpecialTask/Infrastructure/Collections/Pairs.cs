@@ -1,76 +1,30 @@
-﻿using System.Collections;
-using System.Data;
+﻿using System.Data;
 
 namespace SpecialTask.Infrastructure.Collections
 {
-    /// <summary>
-    /// Ordered collection of key-value pairs, that doesn`t requires uniqueness of keys (not map, but collection of pairs)
-    /// </summary>
     public class Pairs<K, V> : List<KeyValuePair<K, V>>
     {
-        private readonly List<KeyValuePair<K, V>> map;
+        public Pairs() : base() { }
 
-        public Pairs()
-        {
-            map = new();
-        }
-
-        public Pairs(IEnumerable<KeyValuePair<K, V>> oldMap) : this()
-        {
-            foreach (KeyValuePair<K, V> pair in oldMap)
-            {
-                Add(pair.Key, pair.Value);
-            }
-        }
+        public Pairs(IEnumerable<KeyValuePair<K, V>> old) : base(old) { }
 
         public void Add(K key, V value)
         {
-            map.Add(new KeyValuePair<K, V>(key, value));
+            Add(new(key, value));
         }
 
-        public new void RemoveAt(int index)
-        {
-            map.RemoveAt(index);
-        }
+        public List<K> Keys => this.Select(x => x.Key).ToList();
 
-        public new int Count => map.Count;
-
-        public new int Capacity => map.Capacity;
-
-        public new KeyValuePair<K, V> this[int index]
-        {
-            get => map[index];
-            set => map[index] = value;
-        }
-
-        public new IEnumerator<KeyValuePair<K, V>> GetEnumerator()
-        {
-            return new PairsEnumerator<K, V>(this);
-        }
-
-        public List<K> Keys => map.Select(kvp => kvp.Key).ToList();
-
-        public List<V> Values => map.Select(kvp => kvp.Value).ToList();
+        public List<V> Values => this.Select(kvp => kvp.Value).ToList();
 
         public override bool Equals(object? obj)
         {
-            return obj is Pairs<K, V> otherMyMap && Keys == otherMyMap.Keys && Values == otherMyMap.Values;
+            return obj is Pairs<K, V> other && Keys == other.Keys && Values == other.Values;
         }
 
         public override int GetHashCode()
         {
-            return map.GetHashCode();
-        }
-
-        public object Clone()
-        {
-            Pairs<K, V> newMap = new();
-            foreach (KeyValuePair<K, V> pair in this)
-            {
-                newMap.Add(pair.Key, pair.Value);
-            }
-
-            return newMap;
+            return base.GetHashCode();
         }
 
         public static bool operator ==(Pairs<K, V> a, object? b)
@@ -83,8 +37,13 @@ namespace SpecialTask.Infrastructure.Collections
             return !(a == b);
         }
 
+        public object Clone()
+        {
+            return new Pairs<K, V>(this);
+        }
+
         /// <summary>
-        /// Creates new MyMap, consisting of all elements from <paramref name="a"/> and all elements from <paramref name="b"/> 
+        /// Creates new Pairs, containing all elements from <paramref name="a"/> and all elements from <paramref name="b"/> 
         /// </summary>
         public static Pairs<K, V> operator +(Pairs<K, V> a, Pairs<K, V> b)
         {

@@ -184,7 +184,7 @@ namespace SpecialTask.Console
 
         public bool TransferringInput { get; set; }
 
-        private void Display(string message, InternalColor color = InternalColor.None)
+        private void Display(string message, InternalColor color = InternalColor.White)
         {
             mainWindowInstance.Display(message, color.GetWPFColor());
         }

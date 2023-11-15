@@ -11,10 +11,5 @@ namespace SpecialTask
         {
             InitializeComponent();
         }
-
-        public void ChangeTitle(string value)
-        {
-            Title = value;
-        }
     }
 }

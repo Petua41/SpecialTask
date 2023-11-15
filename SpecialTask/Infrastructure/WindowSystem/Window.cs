@@ -19,7 +19,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
         public void ChangeTitle(int newNumber)
         {
-            assotiatedWindow.ChangeTitle($"Drawing window {newNumber}");
+            assotiatedWindow.Title = $"Drawing window {newNumber}";
         }
 
         public List<Shape> ShapesOnThisWindow { get; } = new();

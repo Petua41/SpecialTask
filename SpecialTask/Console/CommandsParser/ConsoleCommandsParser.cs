@@ -67,10 +67,9 @@ namespace SpecialTask.Console.CommandsParser
                 HighConsole.DisplayError(
                     $"You cannot call {consoleCommand.NeededUserInput} without \"second-level command\". Try {consoleCommand.NeededUserInput} --help");
             }
-            catch (ArgumentParsingError) { /* ignore */ }   // Some required argument is missing || Some extra argument is present || Error casting parameter
             catch (ExtraArgumentException e)
             {
-                if (e.LongArgument is not null) HighConsole.DisplayError($"Invalid argument: {commandName}. Try {commandName} -- help");
+                if (e.LongArgument is not null) HighConsole.DisplayError($"Invalid argument: {e.LongArgument}. Try {commandName} -- help");
                 else HighConsole.DisplayError($"Some argument is invalid. Please, contact us and try {commandName} -- help");
                 return;
             }

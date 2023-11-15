@@ -25,7 +25,7 @@ namespace SpecialTask.Console.CommandsParser
             string[] args = SplitByRegex(arguments);
             doSet.ParseToDictionary(args);
 
-            if (doSet.NotParsedNecessaryArguments.Count > 0)
+            if (doSet.NotParsedNecessaryArguments.Count > 0)        // this property contains KEYS (NeededUserInput`s) of arguments
             {
                 string argKey = doSet.NotParsedNecessaryArguments[0];
                 string longArg = GetLongArgumentByName(argKey);
@@ -34,11 +34,11 @@ namespace SpecialTask.Console.CommandsParser
                 throw new NecessaryArgumentNotPresentedException($"Unknown argument is necessary, but not present");
             }
 
-            if (doSet.Extra.Count > 0)
+            if (doSet.Extra.Count > 0)                             // this property contains USER INPUT (LongArgument`s) of arguments
             {
-                string argKey = doSet.Extra[0];
+                string longArg = doSet.Extra[0];
 
-                throw new ExtraArgumentException($"{argKey} is extra", argKey);     // we don`t look for longArg, because it *wrong* argument
+                throw new ExtraArgumentException($"{longArg} is extra", longArg);
             }
 
             return doSet.ArgumentValues;
