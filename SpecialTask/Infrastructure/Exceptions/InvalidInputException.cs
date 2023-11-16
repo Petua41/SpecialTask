@@ -8,7 +8,9 @@
     {
         private const string _input = "Input";    // serialization
 
-        [Obsolete("Don`t use InvalidInputException without passing wrong input or message")]
+        /// <summary>
+        /// Don`t use InvalidInputException without passing wrong input or message
+        /// </summary>
         public InvalidInputException() { }
 
         public InvalidInputException(string message) : base(message) { }

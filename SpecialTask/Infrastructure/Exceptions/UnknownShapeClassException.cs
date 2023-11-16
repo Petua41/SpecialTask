@@ -8,7 +8,9 @@
     {
         private const string _shapeClass = "ShapeClass";    // serialization
 
-        [Obsolete("Don`t use UnknownShapeClassException without passing shape class name or message")]
+        /// <summary>
+        /// Don`t use UnknownShapeClassException without passing shape class name or message
+        /// </summary>
         public UnknownShapeClassException() { }
 
         public UnknownShapeClassException(string message) : base(message) { }

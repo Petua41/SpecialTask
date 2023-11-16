@@ -30,7 +30,7 @@ namespace SpecialTask.Infrastructure.Iterators
 
         public IReadOnlyList<Shape> GetCompleteResult()
         {
-            List<Shape> rawList = CurrentWindow.Shapes;
+            List<Shape> rawList = WindowManager.CurrentWindow.Shapes;
             rawList.Sort(new CoordinatesComparer());
             return rawList.Where(sh => sh is not SelectionMarker).ToList();    // Maybe do it manually will be more efficient
         }

@@ -9,7 +9,9 @@
         private const string _attrName = "AttributeName";    // serialization
         private const string _value = "Value";
 
-        [Obsolete("Don`t use ShapeAttributeCastException without passing attribute name or value or message")]
+        /// <summary>
+        /// Don`t use ShapeAttributeCastException without passing attribute name or value or message
+        /// </summary>
         public ShapeAttributeCastException() { }
 
         public ShapeAttributeCastException(string message) : base(message) { }

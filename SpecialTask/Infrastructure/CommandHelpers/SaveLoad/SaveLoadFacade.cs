@@ -17,7 +17,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 
         private SaveLoadFacade()
         {
-            CurrentWindow.SomethingDisplayed += OnSomethingDisplayed;
+            WindowManager.CurrentWindow.SomethingDisplayed += OnSomethingDisplayed;
 
             currentFilename = defaultFilename + DateTime.Now.ToString().Replace(':', '.');
         }
@@ -39,7 +39,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
             }
         }
 
-        public bool NeedsSave => !isSaved && CurrentWindow.Shapes.Count > 0;
+        public bool NeedsSave => !isSaved && WindowManager.CurrentWindow.Shapes.Count > 0;
 
         public void Save()
         {
@@ -84,7 +84,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 
         private static void SaveXML(string filename)
         {
-            XDocument doc = XMLGeneratorVisitor.GenerateXML(CurrentWindow.Shapes);
+            XDocument doc = XMLGeneratorVisitor.GenerateXML(WindowManager.CurrentWindow.Shapes);
 
             using StreamWriter writer = new(filename);
             // Pass on:

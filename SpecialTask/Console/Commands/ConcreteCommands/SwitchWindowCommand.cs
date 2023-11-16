@@ -17,7 +17,6 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             numberOfWindow = (int)args[0];
         }
 
-        [Obsolete]
         public void Execute()
         {
             try { receiver.SwitchToWindow(numberOfWindow); }

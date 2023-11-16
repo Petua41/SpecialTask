@@ -30,7 +30,7 @@ namespace SpecialTask.Infrastructure.Iterators
 
         public IReadOnlyList<Shape> GetCompleteResult()
         {
-            return CurrentWindow.Shapes.Where(sh => sh is not SelectionMarker).ToList();	// TODO: это костыль
+            return WindowManager.CurrentWindow.Shapes.Where(sh => sh is not SelectionMarker).ToList();	// TODO: это костыль
         }
     }
 }

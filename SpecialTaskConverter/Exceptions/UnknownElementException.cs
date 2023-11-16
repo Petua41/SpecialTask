@@ -8,7 +8,9 @@
     {
         private const string _elemTag = "ElementTag";    // do not rename: binary serialization
 
-        [Obsolete("Don`t use UnknownElementException without specifying element tag or message")]
+        /// <summary>
+        /// Don`t use UnknownElementException without specifying element tag or message
+        /// </summary>
         public UnknownElementException() { }
 
         public UnknownElementException(string message) : base(message) { }

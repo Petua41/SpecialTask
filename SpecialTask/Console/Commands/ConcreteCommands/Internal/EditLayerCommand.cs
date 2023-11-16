@@ -29,19 +29,19 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
                 switch (direction)
                 {
                     case LayerDirection.Forward:
-                        oldLayer = CurrentWindow.BringForward(uniqueName);
+                        oldLayer = WindowManager.CurrentWindow.BringForward(uniqueName);
                         layerChanged = true;
                         break;
                     case LayerDirection.Backward:
-                        oldLayer = CurrentWindow.SendBackward(uniqueName);
+                        oldLayer = WindowManager.CurrentWindow.SendBackward(uniqueName);
                         layerChanged = true;
                         break;
                     case LayerDirection.Front:
-                        oldLayer = CurrentWindow.BringToFront(uniqueName);
+                        oldLayer = WindowManager.CurrentWindow.BringToFront(uniqueName);
                         layerChanged = true;
                         break;
                     case LayerDirection.Back:
-                        oldLayer = CurrentWindow.SendToBack(uniqueName);
+                        oldLayer = WindowManager.CurrentWindow.SendToBack(uniqueName);
                         layerChanged = true;
                         break;
                 }
@@ -65,7 +65,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
                 switch (direction)
                 {
                     case LayerDirection.Forward:
-                        try { CurrentWindow.SendBackward(uniqueName); }
+                        try { WindowManager.CurrentWindow.SendBackward(uniqueName); }
                         catch (InvalidOperationException)
                         {
                             Logger.Error($"[undo] Cannot send {uniqueName} backward: already on back");
@@ -73,7 +73,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
                         }
                         break;
                     case LayerDirection.Backward:
-                        try { CurrentWindow.BringForward(uniqueName); }
+                        try { WindowManager.CurrentWindow.BringForward(uniqueName); }
                         catch (InvalidOperationException)
                         {
                             Logger.Error($"[undo] Cannot bring {uniqueName} forward: already on top");
@@ -81,12 +81,12 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
                         }
                         break;
                     case LayerDirection.Front:
-                        try { CurrentWindow.MoveToLayer(uniqueName, oldLayer); }
-                        catch (ArgumentException) { CurrentWindow.SendToBack(uniqueName); }
+                        try { WindowManager.CurrentWindow.MoveToLayer(uniqueName, oldLayer); }
+                        catch (ArgumentException) { WindowManager.CurrentWindow.SendToBack(uniqueName); }
                         break;
                     case LayerDirection.Back:
-                        try { CurrentWindow.MoveToLayer(uniqueName, oldLayer); }
-                        catch (ArgumentException) { CurrentWindow.BringToFront(uniqueName); }
+                        try { WindowManager.CurrentWindow.MoveToLayer(uniqueName, oldLayer); }
+                        catch (ArgumentException) { WindowManager.CurrentWindow.BringToFront(uniqueName); }
                         break;
                 }
             }

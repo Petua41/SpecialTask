@@ -14,7 +14,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
         public void Execute()
         {
-            destroyedShapes = new(CurrentWindow.Shapes);
+            destroyedShapes = new(WindowManager.CurrentWindow.Shapes);
             dsMementos.Clear();
 
             foreach (Shape shape in destroyedShapes)

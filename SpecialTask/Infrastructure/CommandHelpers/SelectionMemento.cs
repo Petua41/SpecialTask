@@ -11,7 +11,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers
 
         public static void SaveArea(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY)
         {
-            savedShapes = CurrentWindow.Shapes.Where(sh => sh is not SelectionMarker &&
+            savedShapes = WindowManager.CurrentWindow.Shapes.Where(sh => sh is not SelectionMarker &&
                 leftTopX <= sh.Center.X && sh.Center.X <= rightBottomX &&
                 leftTopY < sh.Center.Y && sh.Center.Y <= rightBottomY).ToList();
 

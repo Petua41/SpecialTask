@@ -8,7 +8,9 @@
     {
         private const string _shapeClass = "ShapeClass";    // serialization
 
-        [Obsolete("Don`t use ShapeNotFoundException without passing shape name or message")]
+        /// <summary>
+        /// Don`t use ShapeNotFoundException without passing shape name or message
+        /// </summary>
         public ShapeNotFoundException() { }
 
         public ShapeNotFoundException(string message) : base(message) { }

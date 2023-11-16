@@ -8,7 +8,9 @@
     {
         private const string _longArg = "LongArgument";    // serialization
 
-        [Obsolete("Don`t use NecessaryArgumentNotPresentedException without passing long argument or message")]
+        /// <summary>
+        /// Don`t use NecessaryArgumentNotPresentedException without passing long argument or message
+        /// </summary>
         public NecessaryArgumentNotPresentedException() { }
 
         public NecessaryArgumentNotPresentedException(string message) : base(message) { }

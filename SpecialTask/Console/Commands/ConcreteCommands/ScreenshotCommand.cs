@@ -18,7 +18,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
 
         public void Execute()
         {
-            BitmapSource bmp = CurrentWindow.CanvasBitmapSource;
+            BitmapSource bmp = WindowManager.CurrentWindow.CanvasBitmapSource;
 
             PngBitmapEncoder encoder = new();
             encoder.Frames.Add(BitmapFrame.Create(bmp));

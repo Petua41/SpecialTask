@@ -1,4 +1,9 @@
-﻿using SpecialTask.Infrastructure.Events;
+﻿using SpecialTask.Drawing.Shapes;
+using SpecialTask.Infrastructure.CommandHelpers.SaveLoad;
+using SpecialTask.Infrastructure.Events;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace SpecialTask.Infrastructure.WindowSystem
 {
@@ -7,6 +12,73 @@ namespace SpecialTask.Infrastructure.WindowSystem
     /// </summary>
     internal class WindowManager
     {
+        internal static class CurrentWindow
+        {
+            public static void AddShape(Shape shape)
+            {
+                Window.AddShape(shape);
+
+                _ = SaveLoadFacade.Instance;        // so that it will be initialized
+                SomethingDisplayed?.Invoke(null, new());
+            }
+
+            public static void RemoveShape(Shape shape)
+            {
+                Window.RemoveShape(shape);
+            }
+
+            public static int SendBackward(string uniqueName)
+            {
+                return Window.SendBackwards(uniqueName);
+            }
+
+            public static int BringForward(string uniqueName)
+            {
+                return Window.BringForward(uniqueName);
+            }
+
+            public static int SendToBack(string uniqueName)
+            {
+                return Window.SendToBack(uniqueName);
+            }
+
+            public static int BringToFront(string uniqueName)
+            {
+                return Window.BringToFront(uniqueName);
+            }
+
+            public static void MoveToLayer(string uniqueName, int newLayer)
+            {
+                Window.MoveToLayer(uniqueName, newLayer);
+            }
+
+            /// <summary>
+            /// Gets <see cref="BitmapSource"/>, containing an image of current canvas` state
+            /// </summary>
+            public static BitmapSource CanvasBitmapSource
+            // I could return Canvas, but this method guarantees, that Canvas won`t be used for evil
+            // It`s still not perfect solution, but much better
+            {
+                get
+                {
+                    Canvas canvas = Window.Canvas;
+
+                    double width = canvas.ActualWidth;
+                    double height = canvas.ActualHeight;
+
+                    RenderTargetBitmap bmp = new((int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
+                    bmp.Render(canvas);
+
+                    return bmp;
+                }
+            }
+
+            public static List<Shape> Shapes => Window.ShapesOnThisWindow;
+
+            private static Window Window => Instance.CurrentDrawingWindow;   // This method is marked obsolete, because it shouldn`t be used everywhere but here
+
+            public static event EventHandler? SomethingDisplayed;
+        }
 
         private static readonly object syncLock = new();
         private static volatile WindowManager? singleton;
@@ -14,9 +86,8 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
         private WindowManager()
         {
-#pragma warning disable CS0618              // CurrentWindow is marked obsolete, because it`s cannot be used anywhere outside of this class
-            CurrentWindow = new(0);
-            existingWindows = new List<Window> { CurrentWindow };
+            CurrentDrawingWindow = new(0);
+            existingWindows = new List<Window> { CurrentDrawingWindow };
 #pragma warning restore
         }
 
@@ -51,11 +122,10 @@ namespace SpecialTask.Infrastructure.WindowSystem
             RemoveWindowFromLists(numberOfWindow);
         }
 
-        [Obsolete]
         public void SwitchToWindow(int numberOfWindow)
         {
             ValidateWindowNumber(numberOfWindow);                   // here we pass exception on
-            CurrentWindow = existingWindows[numberOfWindow];
+            CurrentDrawingWindow = existingWindows[numberOfWindow];
             WindowSwitchedEvent?.Invoke(this, new WindowSwitchedEventArgs(numberOfWindow));
         }
 
@@ -66,9 +136,6 @@ namespace SpecialTask.Infrastructure.WindowSystem
                 DestroyWindow(i);
             }
         }
-
-        [Obsolete("Please don`t call WindowSystem.Window directly. Use CurrentWindow instead")]
-        public Window CurrentWindow { get; private set; }
 
         public void OnSomeAssotiatedWindowClosed(Window winToDraw)
         {
@@ -99,6 +166,8 @@ namespace SpecialTask.Infrastructure.WindowSystem
                 throw new ArgumentException($"Window {numberOfWindow} doesn`t exist");
             }
         }
+
+        private Window CurrentDrawingWindow { get; set; }
 
         public event WindowSwitchedEventHandler? WindowSwitchedEvent;
     }

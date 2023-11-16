@@ -52,7 +52,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
         public override void Destroy()
         {
             DecoratedShape.Destroy();
-            CurrentWindow.RemoveShape(this);
+            WindowManager.CurrentWindow.RemoveShape(this);
         }
 
         public override Dictionary<string, object> Accept()

@@ -19,12 +19,12 @@ namespace SpecialTask.Drawing.Shapes
 
         public virtual void Display()
         {
-            CurrentWindow.AddShape(this);
+            WindowManager.CurrentWindow.AddShape(this);
         }
 
         public virtual void Destroy()
         {
-            CurrentWindow.RemoveShape(this);
+            WindowManager.CurrentWindow.RemoveShape(this);
             NullifyWPFShape();
         }
 

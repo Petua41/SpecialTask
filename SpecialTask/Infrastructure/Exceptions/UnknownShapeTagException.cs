@@ -8,7 +8,9 @@
     {
         private const string _tag = "Tag";    // serialization
 
-        [Obsolete("Don`t use UnknownShapeTagException without passing unknown tag or message")]
+        /// <summary>
+        /// Don`t use UnknownShapeTagException without passing unknown tag or message
+        /// </summary>
         public UnknownShapeTagException() { }
 
         public UnknownShapeTagException(string message) : base(message) { }
