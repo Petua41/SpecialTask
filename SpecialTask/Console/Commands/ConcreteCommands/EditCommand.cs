@@ -1,11 +1,11 @@
 ﻿using SpecialTask.Console.Commands.ConcreteCommands.Internal;
 using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
-using SpecialTask.Infrastructure.Collections;
 using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Events;
 using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.Iterators;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands
@@ -15,18 +15,17 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
     /// </summary>
     internal class EditCommand : ICommand
     {
+        private enum WhatToDo { EditLayer, EditAttributes, RemoveShape, AddStreak }
+
         private ICommand? receiver = null;
 
         private readonly SortingOrder sortingOrder;
 
-        private IReadOnlyList<Shape> listOfShapes = new List<Shape>();
         private string interString = string.Empty;
         private int selectedNumber = -1;
-        private bool hasStreak = false;
 
         private CancellationTokenSource tokenSource = new();
         private bool ctrlCPressed = false;
-        private Shape? shapeToEdit;
 
         public EditCommand(object[] args)
         {
@@ -38,121 +37,44 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             HighConsole.CtrlCTransferred += OnCtrlCTransferred;
         }
 
-        // TODO: this method is TOO long
         public async void Execute()
         {
+            if (receiver is not null)
+            {   // if it`s redo, repeat previous actions
+                receiver.Execute();
+                return;
+            }
+
             HighConsole.TransferringInput = true;
 
             try
             {
-                listOfShapes = IteratorsFacade.GetCompleteResult();
+                IReadOnlyList<Shape> listOfShapes = IteratorsFacade.GetCompleteResult();
 
-                if (listOfShapes.Count == 0)
+                Shape shapeToEdit = await SelectShape(listOfShapes);
+
+                WhatToDo action = await SelectAction(shapeToEdit is StreakDecorator);
+
+                switch (action)
                 {
-                    HighConsole.DisplayWarning("Nothing to edit");
-                    return;
-                }
-
-                DisplayShapeSelectionPrompt(listOfShapes.Select(sh => sh.UniqueName).ToList());
-
-                await GetSelectedNumber();      // maybe pass "limiting" predicate to this method?
-
-                if (selectedNumber >= listOfShapes.Count)
-                {
-                    throw new InvalidInputException($"{interString} is not valid value for shape number", interString);
-                }
-
-                shapeToEdit = listOfShapes[selectedNumber];
-
-                if (shapeToEdit is StreakDecorator)
-                {
-                    hasStreak = true;
-                }
-
-                DisplayWhatToEditSelectionPrompt(hasStreak);
-
-                await GetSelectedNumber();
-
-                switch (selectedNumber)
-                {
-                    case 0:
-                        // edit layer:
-                        DisplayLayerOperationSelectionPrompt(shapeToEdit.UniqueName);
-
-                        await GetSelectedNumber();
-
-                        LayerDirection dir = selectedNumber switch
-                        {
-                            0 => LayerDirection.Backward,
-                            1 => LayerDirection.Forward,
-                            2 => LayerDirection.Back,
-                            3 => LayerDirection.Front,
-                            _ => throw new InvalidInputException($"{interString} is not valid value for layer operation number", interString)
-                        };
-
-                        receiver = new EditLayerCommand(shapeToEdit.UniqueName, dir);
-                        CommandsFacade.Execute(receiver);
-
+                    case WhatToDo.EditLayer:
+                        await EditLayer(shapeToEdit);
                         break;
-                    case 1:
-                        // edit attributes:
-                        Pairs<string, string> attrsWithNames = shapeToEdit.AttributesToEditWithNames;	// MyMap, because it`s ordered (OrderedDictionary works very wrong)
-
-                        DisplayAttributeSelectionPrompt(shapeToEdit.UniqueName, attrsWithNames.Keys);
-
-                        await GetSelectedNumber();
-
-                        if (selectedNumber >= attrsWithNames.Count)
-                        {
-                            throw new InvalidInputException($"{interString} is not valid value for attribute number", interString);
-                        }
-
-                        KeyValuePair<string, string> kvp = attrsWithNames[selectedNumber];
-
-                        DisplayNewAttributePrompt(kvp.Value);
-
-                        interString = string.Empty;
-
-                        await GetInterString();
-
-                        receiver = new EditShapeAttributesCommand(shape: shapeToEdit, attribute: kvp.Key, newValue: interString);
-                        CommandsFacade.Execute(receiver);
-
+                    case WhatToDo.EditAttributes:
+                        await EditAttributes(shapeToEdit);
                         break;
-                    case 2:
-                        // remove shape:
-                        receiver = new RemoveShapeCommand(shapeToEdit);
-                        CommandsFacade.Execute(receiver);
+                    case WhatToDo.RemoveShape:
+                        RemoveShape(shapeToEdit);
                         break;
-                    case 3:
-                        // add streak:
-                        DisplayNewAttributePrompt("Streak color");
-                        await GetInterString();
-
-                        InternalColor color = interString.ParseColor();
-
-                        DisplayNewAttributePrompt("Streak texture");
-                        await GetInterString();
-
-                        StreakTexture texture = interString.ParseStreakTexture();
-
-                        receiver = new AddStreakCommand(shapeToEdit, color, texture);
-                        CommandsFacade.Execute(receiver);
-
+                    case WhatToDo.AddStreak:
+                        await AddStreak(shapeToEdit);
                         break;
-                    default:
-                        throw new InvalidInputException($"{interString} is not valid value for \"what to do\" selection", interString);
                 }
             }
-            catch (InvalidInputException)
-            {
-                Logger.Error("Edit: invalid input");
-                HighConsole.DisplayError("Invalid input");
-            }
-            catch (KeyboardInterruptException)
-            {
-                Logger.Error("Edit: keyboard interrupt");
-                HighConsole.DisplayError("Kyboard interrupt");
+            catch (Exception e) when (e is InvalidInputException or KeyboardInterruptException or InvalidOperationException)
+            {       // we catch different exceptions, but handle `em same way
+                Logger.Error(e.Message);
+                HighConsole.DisplayError(e.Message);
             }
             finally
             {
@@ -162,11 +84,103 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             }
         }
 
-        private async Task GetSelectedNumber()
+        private async Task<Shape> SelectShape(IReadOnlyList<Shape> listOfShapes)
+        {
+            if (listOfShapes.Count == 0)
+            {
+                throw new InvalidOperationException("Nothing to edit");
+            }
+
+            DisplayShapeSelectionPrompt(listOfShapes.Select(sh => sh.UniqueName).ToList());
+
+            await GetSelectedNumber(listOfShapes.Count - 1);
+
+            return listOfShapes[selectedNumber];
+        }
+
+        private async Task<WhatToDo> SelectAction(bool hasStreak)
+        {
+            DisplayWhatToEditSelectionPrompt(hasStreak);
+
+            await GetSelectedNumber(3);
+
+            return (WhatToDo)selectedNumber;    // selected number is between 0 and 3, so we can do this safely
+        }
+
+        private async Task EditLayer(Shape shapeToEdit)
+        {
+            DisplayLayerOperationSelectionPrompt(shapeToEdit.UniqueName);
+
+            await GetSelectedNumber(3);
+
+            LayerDirection dir = selectedNumber switch
+            {
+                0 => LayerDirection.Backward,
+                1 => LayerDirection.Forward,
+                2 => LayerDirection.Back,
+                3 => LayerDirection.Front,
+                _ => throw new InvalidInputException($"{selectedNumber} is not valid value here")
+            };
+
+            receiver = new EditLayerCommand(shapeToEdit.UniqueName, dir);
+            CommandsFacade.Execute(receiver);
+        }
+
+        private async Task EditAttributes(Shape shapeToEdit)
+        {
+            List<KeyValuePair<string, string>> attrsWithNames = shapeToEdit.AttributesToEditWithNames;
+
+            DisplayAttributeSelectionPrompt(shapeToEdit.UniqueName, attrsWithNames.Keys());
+
+            await GetSelectedNumber(attrsWithNames.Count - 1);
+
+            KeyValuePair<string, string> kvp = attrsWithNames[selectedNumber];
+
+            DisplayNewAttributePrompt(kvp.Value);
+
+            interString = string.Empty;
+
+            await GetInterString();
+
+            receiver = new EditShapeAttributesCommand(shape: shapeToEdit, attribute: kvp.Key, newValue: interString);
+            CommandsFacade.Execute(receiver);
+        }
+
+        private void RemoveShape(Shape shapeToEdit)
+        {
+            receiver = new RemoveShapeCommand(shapeToEdit);
+            CommandsFacade.Execute(receiver);
+        }
+
+        private async Task AddStreak(Shape shapeToEdit)
+        {
+            DisplayNewAttributePrompt("Streak color");
+            await GetInterString();
+
+            InternalColor color = interString.ParseColor();
+
+            DisplayNewAttributePrompt("Streak texture");
+            await GetInterString();
+
+            StreakTexture texture = interString.ParseStreakTexture();
+
+            receiver = new AddStreakCommand(shapeToEdit, color, texture);
+            CommandsFacade.Execute(receiver);
+        }
+
+        private async Task GetSelectedNumber(int maxValue)
         {
             await GetInterString();
 
-            if (!int.TryParse(interString, out selectedNumber)) throw new InvalidInputException($"{interString} is not integer", interString);
+            if (!int.TryParse(interString, out selectedNumber))
+            {
+                throw new InvalidInputException($"{interString} is not integer", interString);
+            }
+
+            if (selectedNumber < 0 || selectedNumber > maxValue)
+            {
+                throw new InvalidInputException($"{selectedNumber} is not valid here");
+            }
         }
 
         private async Task GetInterString()
@@ -180,7 +194,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             HighConsole.NewLine();
             if (ctrlCPressed)
             {
-                throw new KeyboardInterruptException();
+                throw new KeyboardInterruptException("Keyboard interrupt");
             }
         }
 

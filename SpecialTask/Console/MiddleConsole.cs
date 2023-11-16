@@ -1,7 +1,6 @@
 ﻿using SpecialTask.Console.Commands;
 using SpecialTask.Console.CommandsParser;
 using SpecialTask.Console.Interfaces;
-using SpecialTask.Infrastructure.Collections;
 using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Events;
 using SpecialTask.Infrastructure.Exceptions;
@@ -38,7 +37,10 @@ namespace SpecialTask.Console
         {
             get
             {
-                if (singleton is not null) return singleton;
+                if (singleton is not null)
+                {
+                    return singleton;
+                }
 
                 lock (syncLock)
                 {
@@ -52,7 +54,10 @@ namespace SpecialTask.Console
         {
             get
             {
-                if (singleton is not null) return singleton;
+                if (singleton is not null)
+                {
+                    return singleton;
+                }
 
                 lock (syncLock)
                 {
@@ -80,7 +85,7 @@ namespace SpecialTask.Console
 
         public void Display(string message)
         {
-            Pairs<string, InternalColor> messageSplittedByColors = message.SplitByColors();
+            List<KeyValuePair<string, InternalColor>> messageSplittedByColors = message.SplitByColors();
             foreach (KeyValuePair<string, InternalColor> kvp in messageSplittedByColors)
             {
                 Display(kvp.Key, kvp.Value);

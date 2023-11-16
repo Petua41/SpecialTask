@@ -14,18 +14,20 @@ namespace SpecialTask.Console.CommandsParser
         private readonly List<string> necessaryArgs = new();
 
         private readonly Dictionary<string, object> argValues = new();
-        private List<string> extra = new();
 
         public void Add(string prototype, string description, string key, ArgumentType argType, bool isNecessary)
         {
             Add(prototype, description, x => argValues.Add(key, argType.ParseValue(x)));
 
-            if (isNecessary) necessaryArgs.Add(key);
+            if (isNecessary)
+            {
+                necessaryArgs.Add(key);
+            }
         }
 
         public void ParseToDictionary(string[] args)
         {
-            extra = Parse(args);
+            Extra = Parse(args);
         }
 
         public string WriteOptionDescriptions()
@@ -38,10 +40,7 @@ namespace SpecialTask.Console.CommandsParser
             return sb.ToString();
         }
 
-        public IReadOnlyDictionary<string, object> ArgumentValues
-        {
-            get => argValues;
-        }
+        public IReadOnlyDictionary<string, object> ArgumentValues => argValues;
 
         /// <summary>
         /// List of keys (see <see cref="Add(string, string, string, ArgumentType, bool)"/> of arguments, that cannot be found
@@ -55,13 +54,16 @@ namespace SpecialTask.Console.CommandsParser
                 ICollection<string> actualArgs = argValues.Keys;
                 foreach (string expectedArg in necessaryArgs)
                 {
-                    if (!actualArgs.Contains(expectedArg)) result.Add(expectedArg);
+                    if (!actualArgs.Contains(expectedArg))
+                    {
+                        result.Add(expectedArg);
+                    }
                 }
 
                 return result;
             }
         }
 
-        public List<string> Extra => extra;
+        public List<string> Extra { get; private set; } = new();
     }
 }

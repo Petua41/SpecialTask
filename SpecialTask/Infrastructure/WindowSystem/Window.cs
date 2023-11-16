@@ -9,6 +9,8 @@ namespace SpecialTask.Infrastructure.WindowSystem
         private readonly DrawingWindow assotiatedWindow;
         private readonly List<int> zOrder = new();                      // Indices in previous list
 
+        private int freeZIndex = 0;         // so that shape adds to new layer, even if old levels became free (shapes from them were removed)
+
         public Window(int number)
         {
             assotiatedWindow = new();
@@ -32,7 +34,7 @@ namespace SpecialTask.Infrastructure.WindowSystem
         public void AddShape(Shape shape)
         {
             System.Windows.Shapes.Shape wpfShape = shape.WPFShape;
-            int z = ShapesOnThisWindow.Count;
+            int z = freeZIndex++;
 
             ShapesOnThisWindow.Add(shape);
             Canvas.Children.Add(wpfShape);

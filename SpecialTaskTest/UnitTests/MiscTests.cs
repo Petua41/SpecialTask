@@ -8,32 +8,6 @@ namespace SpecialTaskTest
     public class MiscTest
     {
         [Test]
-        public void PairsConstructorTest()
-        {
-            List<KeyValuePair<string, int>> lst = new() { new("one", 1), new("two", 2) };
-            Pairs<string, int> expected = new() { { "one", 1 }, { "two", 2 } };
-            Pairs<string, int> actual = new(lst);
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void PairsCloneTest()
-        {
-            Pairs<string, int> expected = new() { { "one", 1 }, { "two", 2 } };
-            Assert.That(expected.Clone(), Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void PairsAdditionTest()
-        {
-            Pairs<string, int> firstMap = new() { { "one", 1 }, { "two", 2 } };
-            Pairs<string, int> secondMap = new() { { "three", 3 }, { "one", 1 } };
-            Pairs<string, int> expected = new() { { "one", 1 }, { "two", 2 }, { "three", 3 }, { "one", 1 } };
-            Pairs<string, int> actual = firstMap + secondMap;
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
         public void PointsToStringTest()
         {
             List<Point> points = new() { new(10, 10), new(20, 30), new(40, 40) };

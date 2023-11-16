@@ -1,5 +1,6 @@
 ﻿using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
+using SpecialTask.Infrastructure.CommandHelpers;
 using SpecialTask.Infrastructure.Enums;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands
@@ -19,6 +20,8 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         private readonly bool streak;
         private readonly InternalColor streakColor;
         private readonly StreakTexture streakTexture;
+
+        private DeletedShapeMemento? dsMemento;
 
         public CreateCircleCommand(object[] args)
         {
@@ -43,6 +46,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
             }
 
             receiver.Display();
+            dsMemento?.Restore(receiver);   // if it`s redo, restore Z index
         }
 
         public void Unexecute()
@@ -52,6 +56,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
                 throw new InvalidOperationException();
             }
 
+            dsMemento = new(receiver);
             receiver.Destroy();
         }
     }

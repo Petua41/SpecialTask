@@ -1,5 +1,4 @@
 ﻿using SpecialTask.Drawing.BrushPrototypes;
-using SpecialTask.Infrastructure.Collections;
 using SpecialTask.Infrastructure.Enums;
 using System.Windows.Media;
 
@@ -15,7 +14,7 @@ namespace SpecialTask.Drawing.Shapes
         public SelectionMarker(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY)
         {
             square = new(leftTopX, leftTopY, rightBottomX, rightBottomY, InternalColor.Black, 1);
-            uniqueName = GetNextUniqueName();
+            UniqueName = GetNextUniqueName();
         }
 
         public static new string GetNextUniqueName()
@@ -25,9 +24,9 @@ namespace SpecialTask.Drawing.Shapes
 
         public override void Display()
         {
-            square.Display();
+            base.Display();
 
-            DestroyAfterDelay(5000);
+            DestroyAfterDelay(3000);
         }
 
         public override string Edit(string attribute, string value) { throw new InvalidOperationException(); }
@@ -86,6 +85,6 @@ namespace SpecialTask.Drawing.Shapes
             throw new InvalidOperationException();
         }
 
-        public override Pairs<string, string> AttributesToEditWithNames => new();
+        public override List<KeyValuePair<string, string>> AttributesToEditWithNames => new();
     }
 }

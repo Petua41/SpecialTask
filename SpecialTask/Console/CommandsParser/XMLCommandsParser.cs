@@ -1,8 +1,8 @@
 ﻿using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Exceptions;
 using System.Xml.Linq;
-using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 using static SpecialTask.Infrastructure.Extensoins.ArgumentTypeExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Console.CommandsParser
 {
@@ -109,7 +109,7 @@ namespace SpecialTask.Console.CommandsParser
                 CommandParameterName = elem.Attribute(COMMAND_PARAMETER_NAME)?.Value ?? string.Empty,
                 DefaultValue = defaultValue,
                 Description = elem.Value.Trim()
-        };
+            };
         }
 
         public static string GlobalHelp { get; private set; } = "[color:purple]Global help not found![color]";

@@ -3,6 +3,7 @@ using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes
@@ -26,7 +27,7 @@ namespace SpecialTask.Drawing.Shapes
             this.rightBottomY = rightBottomY;
             this.color = color;
             this.lineThickness = lineThickness;
-            uniqueName = GetNextUniqueName();
+            UniqueName = GetNextUniqueName();
 
             ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" },
             { "rightBottomX", "Right-bottom X" }, { "rightBottomY", "Right-bottom Y" }, { "lineThickness", "Outline thickness" },
@@ -139,7 +140,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 leftTopX = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -149,7 +150,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 leftTopY = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -159,7 +160,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 rightBottomX = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -169,7 +170,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 rightBottomY = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -179,7 +180,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 color = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -189,7 +190,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 lineThickness = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 

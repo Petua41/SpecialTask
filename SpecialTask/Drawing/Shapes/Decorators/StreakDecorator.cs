@@ -1,9 +1,9 @@
-﻿using SpecialTask.Infrastructure.Collections;
-using SpecialTask.Infrastructure.Enums;
+﻿using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.WindowSystem;
-using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
 using static SpecialTask.Infrastructure.Extensoins.StreakTextureExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes.Decorators
 {
@@ -11,11 +11,10 @@ namespace SpecialTask.Drawing.Shapes.Decorators
     {
         private InternalColor streakColor;
         private StreakTexture streakTexture;
-        private readonly Shape decoratedShape;
 
         public StreakDecorator(Shape decoratedShape, InternalColor streakColor, StreakTexture streakTexture)
         {
-            this.decoratedShape = decoratedShape;
+            DecoratedShape = decoratedShape;
             this.streakColor = streakColor;
             this.streakTexture = streakTexture;
 
@@ -41,7 +40,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
                         StreakTexture = value.ParseStreakTexture();
                         break;
                     default:
-                        oldValue = decoratedShape.Edit(attribute, value);
+                        oldValue = DecoratedShape.Edit(attribute, value);
                         break;
                 }
             }
@@ -52,7 +51,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
 
         public override void Destroy()
         {
-            decoratedShape.Destroy();
+            DecoratedShape.Destroy();
             CurrentWindow.RemoveShape(this);
         }
 
@@ -63,14 +62,16 @@ namespace SpecialTask.Drawing.Shapes.Decorators
 
         public override void MoveXBy(int offset)
         {
-            decoratedShape.MoveXBy(offset);
-            Redraw();
+            DecoratedShape.MoveXBy(offset);
+            Destroy();
+            Display();
         }
 
         public override void MoveYBy(int offset)
         {
-            decoratedShape.MoveYBy(offset);
-            Redraw();
+            DecoratedShape.MoveYBy(offset);
+            Destroy();
+            Display();
         }
 
         public override Shape Clone()
@@ -78,7 +79,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             return new StreakDecorator(this);
         }
 
-        public override Point Center => decoratedShape.Center;
+        public override Point Center => DecoratedShape.Center;
 
         public override System.Windows.Shapes.Shape WPFShape
         {
@@ -89,7 +90,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
                     return wpfShape;
                 }
 
-                System.Windows.Shapes.Shape shape = decoratedShape.WPFShape;
+                System.Windows.Shapes.Shape shape = DecoratedShape.WPFShape;
                 shape.Fill = streakTexture.GetWPFTexture(streakColor);
 
                 wpfShape = shape;
@@ -97,7 +98,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             }
         }
 
-        private Shape DecoratedShape => decoratedShape;
+        private Shape DecoratedShape { get; }
 
         private StreakTexture StreakTexture
         {
@@ -105,7 +106,7 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             set
             {
                 streakTexture = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -115,12 +116,12 @@ namespace SpecialTask.Drawing.Shapes.Decorators
             set
             {
                 streakColor = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
-        public override Pairs<string, string> AttributesToEditWithNames => decoratedShape.AttributesToEditWithNames + ATTRS_TO_EDIT;
+        public override List<KeyValuePair<string, string>> AttributesToEditWithNames => DecoratedShape.AttributesToEditWithNames.Concatenate(ATTRS_TO_EDIT);
 
-        public override string UniqueName => $"Filled_{decoratedShape.UniqueName}";
+        public override string UniqueName => $"Filled_{DecoratedShape.UniqueName}";
     }
 }

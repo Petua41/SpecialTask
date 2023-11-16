@@ -3,6 +3,7 @@ using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
 using static SpecialTask.Infrastructure.Extensoins.PointListExtensions;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
@@ -21,7 +22,7 @@ namespace SpecialTask.Drawing.Shapes
             this.points = points;
             this.color = color;
             this.lineThickness = lineThickness;
-            uniqueName = GetNextUniqueName();
+            UniqueName = GetNextUniqueName();
 
             ATTRS_TO_EDIT = new() { { "points", "Points" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
         }
@@ -109,7 +110,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 points = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -119,7 +120,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 lineThickness = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -129,7 +130,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 color = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 

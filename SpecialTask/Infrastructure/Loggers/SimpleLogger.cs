@@ -31,7 +31,10 @@ namespace SpecialTask.Infrastructure.Loggers
         {
             get
             {
-                if (singleton is not null) return singleton;
+                if (singleton is not null)
+                {
+                    return singleton;
+                }
 
                 lock (syncLock)
                 {
@@ -107,7 +110,10 @@ namespace SpecialTask.Infrastructure.Loggers
 
         ~SimpleLogger()
         {
-            if (!isDisposed) Dispose();
+            if (!isDisposed)
+            {
+                Dispose();
+            }
         }
     }
 }

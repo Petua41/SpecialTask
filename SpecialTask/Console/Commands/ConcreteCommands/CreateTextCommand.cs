@@ -1,5 +1,6 @@
 ﻿using SpecialTask.Drawing.Shapes;
 using SpecialTask.Drawing.Shapes.Decorators;
+using SpecialTask.Infrastructure.CommandHelpers;
 using SpecialTask.Infrastructure.Enums;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands
@@ -19,6 +20,8 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         private readonly bool streak;
         private readonly InternalColor streakColor;
         private readonly StreakTexture streakTexture;
+
+        private DeletedShapeMemento? dsMemento;
 
         public CreateTextCommand(object[] args)
         {
@@ -41,6 +44,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
                 receiver = new StreakDecorator(receiver, streakColor, streakTexture);
             }
 
+            dsMemento?.Restore(receiver);   // if it`s redo, restore Z index
             receiver.Display();
         }
 
@@ -51,6 +55,7 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
                 throw new InvalidOperationException();
             }
 
+            dsMemento = new(receiver);
             receiver.Destroy();
         }
     }

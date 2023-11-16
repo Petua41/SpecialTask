@@ -1,4 +1,5 @@
 ﻿using SpecialTask.Drawing.Shapes;
+using SpecialTask.Infrastructure.CommandHelpers;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
 {
@@ -9,6 +10,8 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
     {
         private readonly Shape receiver;
 
+        private DeletedShapeMemento? dsMemento;
+
         public RemoveShapeCommand(Shape shape)
         {
             receiver = shape;
@@ -16,12 +19,14 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
 
         public void Execute()
         {
+            dsMemento = new(receiver);
             receiver.Destroy();
         }
 
         public void Unexecute()
         {
-            receiver.Redraw();
+            receiver.Display();
+            dsMemento?.Restore(receiver);
         }
     }
 }

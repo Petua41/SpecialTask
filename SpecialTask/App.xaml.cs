@@ -65,9 +65,15 @@ namespace SpecialTask
 
             optionSet.Parse(command_line_args);
 
-            if (undo_stack_depth > 0) LowConsole.ChangeUndoStackDepth(undo_stack_depth);
+            if (undo_stack_depth > 0)
+            {
+                LowConsole.ChangeUndoStackDepth(undo_stack_depth);
+            }
 
-            if (defaultSaveDir.Length > 0) PathsController.DefaultSaveDirectory = defaultSaveDir;
+            if (defaultSaveDir.Length > 0)
+            {
+                PathsController.DefaultSaveDirectory = defaultSaveDir;
+            }
         }
     }
 }

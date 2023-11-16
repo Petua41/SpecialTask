@@ -1,4 +1,5 @@
 ﻿using SpecialTask.Drawing.Shapes;
+using SpecialTask.Infrastructure.CommandHelpers;
 using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands
@@ -9,13 +10,16 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
     internal class ClearCommand : ICommand
     {
         private List<Shape> destroyedShapes = new();
+        private readonly Dictionary<string, DeletedShapeMemento> dsMementos = new();
 
         public void Execute()
         {
             destroyedShapes = new(CurrentWindow.Shapes);
+            dsMementos.Clear();
 
             foreach (Shape shape in destroyedShapes)
             {
+                dsMementos.Add(shape.UniqueName, new(shape));
                 shape.Destroy();
             }
         }
@@ -24,7 +28,8 @@ namespace SpecialTask.Console.Commands.ConcreteCommands
         {
             foreach (Shape shape in destroyedShapes)
             {
-                shape.Redraw();
+                shape.Display();
+                if (dsMementos.TryGetValue(shape.UniqueName, out DeletedShapeMemento? dsMemento)) dsMemento.Restore(shape);
             }
 
             destroyedShapes.Clear();

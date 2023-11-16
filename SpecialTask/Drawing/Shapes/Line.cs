@@ -3,6 +3,7 @@ using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes
@@ -26,7 +27,7 @@ namespace SpecialTask.Drawing.Shapes
             this.secondY = secondY;
             this.color = color;
             this.lineThickness = lineThickness;
-            uniqueName = GetNextUniqueName();
+            UniqueName = GetNextUniqueName();
 
             ATTRS_TO_EDIT = new() { { "firstX", "First X"}, { "firstY", "First Y" },
             { "secondX", "Second X" }, { "secondY", "Second Y" }, { "lineThickness", "Line thickness" },
@@ -142,7 +143,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 firstX = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -152,7 +153,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 firstY = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -162,7 +163,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 secondX = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -172,7 +173,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 secondY = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -182,7 +183,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 color = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -192,7 +193,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 lineThickness = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
     }

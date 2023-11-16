@@ -63,9 +63,39 @@ namespace SpecialTaskTest.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Circle_and_square {
+            get {
+                object obj = ResourceManager.GetObject("Circle_and_square", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Circle_line_square {
+            get {
+                object obj = ResourceManager.GetObject("Circle_line_square", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Dots {
             get {
                 object obj = ResourceManager.GetObject("Dots", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Empty_screen {
+            get {
+                object obj = ResourceManager.GetObject("Empty_screen", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -96,6 +126,16 @@ namespace SpecialTaskTest.Properties {
         internal static System.Drawing.Bitmap Horizontal_lines {
             get {
                 object obj = ResourceManager.GetObject("Horizontal_lines", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Pasted_circle {
+            get {
+                object obj = ResourceManager.GetObject("Pasted_circle", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -176,6 +216,16 @@ namespace SpecialTaskTest.Properties {
         internal static System.Drawing.Bitmap Solid_color {
             get {
                 object obj = ResourceManager.GetObject("Solid_color", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Square_circle_line {
+            get {
+                object obj = ResourceManager.GetObject("Square_circle_line", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

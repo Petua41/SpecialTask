@@ -11,7 +11,7 @@
         public KeyboardInterruptException(string message) : base(message) { }
 
         public KeyboardInterruptException(string message, Exception inner) : base(message, inner) { }
-        
+
         protected KeyboardInterruptException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }

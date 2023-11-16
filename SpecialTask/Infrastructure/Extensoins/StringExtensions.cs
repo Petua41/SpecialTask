@@ -1,11 +1,11 @@
-﻿using SpecialTask.Infrastructure.Collections;
-using SpecialTask.Infrastructure.Enums;
+﻿using SpecialTask.Infrastructure.Enums;
+using System.Text.RegularExpressions;
 
 namespace SpecialTask.Infrastructure.Extensoins
 {
-    public static class StringExtensions
+    public static partial class StringExtensions
     {
-        private const InternalColor defaultColor = InternalColor.White; 
+        private const InternalColor defaultColor = InternalColor.White;
 
         private static readonly Dictionary<string, ArgumentType> stringToType = new();
         private static readonly Dictionary<string, InternalColor> colorNames = new();
@@ -28,43 +28,30 @@ namespace SpecialTask.Infrastructure.Extensoins
             }
         }
 
-        // This method is TOO LONG
-        public static Pairs<string, InternalColor> SplitByColors(this string message)
+        public static List<KeyValuePair<string, InternalColor>> SplitByColors(this string message)
         {
-            Pairs<string, InternalColor> messageSplittedByColors = new();
+            Regex expr = ColorRegex();
+            string[] arr = expr.Split(message).Where(s => s != string.Empty).ToArray();
+
+            List<KeyValuePair<string, InternalColor>> messageSplittedByColors = new();
 
             InternalColor lastColor = defaultColor;
-            do
+            foreach (string str in arr)
             {
-                int indexOfNextColorChange = message.IndexOf("[color");
-
-                if (indexOfNextColorChange == -1)
+                if (str == "[color]")
                 {
-                    messageSplittedByColors.Add(message, lastColor);
-                    message = string.Empty;
+                    lastColor = defaultColor;
                 }
-                else if (indexOfNextColorChange == 0)
+                else if (str.StartsWith("[color:"))
                 {
-                    int endOfColorSequence = message.IndexOf("]");
-                    string colorSequence = message[..(endOfColorSequence + 1)];
-                    if (colorSequence == "[color]")
-                    {
-                        lastColor = defaultColor;
-                    }
-                    else
-                    {
-                        string colorName = colorSequence[7..^1];
-                        lastColor = colorName.ParseColor();
-                    }
-                    message = message[(endOfColorSequence + 1)..];
+                    string colorName = str[7..^1];          // Maybe I can do it better (using Regex or something else)
+                    lastColor = colorName.ParseColor();
                 }
                 else
                 {
-                    string currentPartOfMessage = message[..indexOfNextColorChange];
-                    message = message[indexOfNextColorChange..];
-                    messageSplittedByColors.Add(currentPartOfMessage, lastColor);
+                    messageSplittedByColors.Add(str, lastColor);
                 }
-            } while (message.Length > 0);
+            }
 
             return messageSplittedByColors;
         }
@@ -104,7 +91,10 @@ namespace SpecialTask.Infrastructure.Extensoins
         {
             if (str is not null)
             {
-                if (stringToType.TryGetValue(str.ToLower().Trim(), out ArgumentType type)) return type;
+                if (stringToType.TryGetValue(str.ToLower().Trim(), out ArgumentType type))
+                {
+                    return type;
+                }
             }
             return ArgumentType.PseudoBool;     // all that cannot be recognized is PseudoBool
         }
@@ -113,8 +103,7 @@ namespace SpecialTask.Infrastructure.Extensoins
         {
             colorString = colorString.Trim().ToLower();
 
-            if (colorNames.TryGetValue(colorString, out InternalColor result)) return result;
-            else return InternalColor.None;
+            return colorNames.TryGetValue(colorString, out InternalColor result) ? result : InternalColor.None;
         }
 
         public static StreakTexture ParseStreakTexture(this string textureName)
@@ -133,5 +122,8 @@ namespace SpecialTask.Infrastructure.Extensoins
                 _ => StreakTexture.None
             };
         }
+
+        [GeneratedRegex(@"(\[color\:[^\]]+?\])|(\[color\])")]
+        private static partial Regex ColorRegex();
     }
 }

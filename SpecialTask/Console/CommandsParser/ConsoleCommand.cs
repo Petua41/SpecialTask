@@ -25,16 +25,14 @@ namespace SpecialTask.Console.CommandsParser
             string[] args = SplitByRegex(arguments);
             doSet.ParseToDictionary(args);
 
-            if (doSet.NotParsedNecessaryArguments.Count > 0)        // this property contains KEYS (NeededUserInput`s) of arguments
+            if (doSet.NotParsedNecessaryArguments.Count > 0)
             {
                 string argKey = doSet.NotParsedNecessaryArguments[0];
-                string longArg = GetLongArgumentByName(argKey);
 
-                if (longArg.Length > 0) throw new NecessaryArgumentNotPresentedException($"{longArg} is necessary but not present", longArg);
-                throw new NecessaryArgumentNotPresentedException($"Unknown argument is necessary, but not present");
+                throw new NecessaryArgumentNotPresentedException($"{argKey} is necessary but not present", argKey);
             }
 
-            if (doSet.Extra.Count > 0)                             // this property contains USER INPUT (LongArgument`s) of arguments
+            if (doSet.Extra.Count > 0)
             {
                 string longArg = doSet.Extra[0];
 
@@ -42,18 +40,6 @@ namespace SpecialTask.Console.CommandsParser
             }
 
             return doSet.ArgumentValues;
-        }
-
-        /// <returns><see cref="ConsoleCommandArgument.LongArgument"/> if found, <see cref="string.Empty"/> otherwise</returns>
-        private readonly string GetLongArgumentByName(string name)
-        {
-            int indexOfArg = Arguments.FindIndex(arg => arg.CommandParameterName == name);
-            if (indexOfArg > 0)
-            {
-                return Arguments[indexOfArg].LongArgument;
-            }
-
-            return string.Empty;
         }
 
         private static string SelectLastLongArgument(string input)
@@ -96,16 +82,10 @@ namespace SpecialTask.Console.CommandsParser
 
         public string Description { get; set; }
 
-        public readonly string Help
-        {
-            get
-            {
-                return Description
+        public readonly string Help => Description
                     + Environment.NewLine
                     + (doSet is null ? string.Empty : Environment.NewLine
                     + doSet.WriteOptionDescriptions());
-            }
-        }
 
         [GeneratedRegex("(\\-\\-[^\\-]+)|(\\-[^\\-]+)")]    // I use Regex this way because of two reasons:     1) VS says that it`s faster
         private static partial Regex Expression();                                                          //  2) explanation will be generated

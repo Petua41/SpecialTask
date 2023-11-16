@@ -39,14 +39,7 @@ namespace SpecialTask.Infrastructure
             get => logsDir is null
                     ? throw new InvalidOperationException("You should call InitPaths before you can get LogsDirectory")
                     : logsDir.FullName;
-            private set
-            {
-                if (!Directory.Exists(value))
-                {
-                    logsDir = Directory.CreateDirectory(value);
-                }
-                else logsDir = new DirectoryInfo(value);
-            }
+            private set => logsDir = !Directory.Exists(value) ? Directory.CreateDirectory(value) : new DirectoryInfo(value);
         }
 
         public static string DateTimeFilename => DateTime.Now.ToString("dd.MM.yyy_HH.mm.ss");

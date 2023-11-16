@@ -2,7 +2,7 @@
 
 namespace SpecialTaskTest.IntegrationTests.CommandsTests
 {
-    internal class ReguralNew: TestsBase
+    internal class NewTests: TestsBase
     {
         [Test]
         public void RegularNewCircleTest()

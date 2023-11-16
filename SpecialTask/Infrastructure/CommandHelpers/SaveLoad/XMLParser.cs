@@ -42,7 +42,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
                     _ => throw new UnknownShapeTagException($"Unknown shape XML tag: {shapeType}", shapeType)
                 };
 
-                if (dict.ContainsKey("streak") && dict["streak"] == "true")
+                if (dict.TryGetValue("streak", out string? value) && value == "true")
                 {
                     shape = ParseStreakDecorator(dict, shape);
                 }

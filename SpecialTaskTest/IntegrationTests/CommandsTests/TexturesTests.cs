@@ -2,7 +2,7 @@
 
 namespace SpecialTaskTest.IntegrationTests.CommandsTests
 {
-    internal class Textures : TestsBase
+    internal class TexturesTests : TestsBase
     {
         [Test]
         public void SolidColorTest()

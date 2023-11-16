@@ -1,8 +1,8 @@
 ﻿using SpecialTask.Console.Commands;
 using SpecialTask.Console.Interfaces;
 using SpecialTask.Infrastructure.Exceptions;
-using static SpecialTask.Infrastructure.Extensoins.StringListExtensions;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
+using static SpecialTask.Infrastructure.Extensoins.StringListExtensions;
 
 namespace SpecialTask.Console.CommandsParser
 {
@@ -69,14 +69,28 @@ namespace SpecialTask.Console.CommandsParser
             }
             catch (ExtraArgumentException e)
             {
-                if (e.LongArgument is not null) HighConsole.DisplayError($"Invalid argument: {e.LongArgument}. Try {commandName} -- help");
-                else HighConsole.DisplayError($"Some argument is invalid. Please, contact us and try {commandName} -- help");
+                if (e.LongArgument is not null)
+                {
+                    HighConsole.DisplayError($"Invalid argument: {e.LongArgument}. Try {commandName} -- help");
+                }
+                else
+                {
+                    HighConsole.DisplayError($"Some argument is invalid. Please, contact us and try {commandName} -- help");
+                }
+
                 return;
             }
             catch (NecessaryArgumentNotPresentedException e)
             {
-                if (e.LongArgument is not null) HighConsole.DisplayError($"{e.LongArgument} is necessary. Try {commandName} -- help");
-                else HighConsole.DisplayError($"Some argument is necessary, but not present. Please, contact us and try {commandName} -- help");
+                if (e.LongArgument is not null)
+                {
+                    HighConsole.DisplayError($"{e.LongArgument} is necessary. Try {commandName} -- help");
+                }
+                else
+                {
+                    HighConsole.DisplayError($"Some argument is necessary, but not present. Please, contact us and try {commandName} -- help");
+                }
+
                 return;
             }
         }
@@ -123,7 +137,7 @@ namespace SpecialTask.Console.CommandsParser
         private static int SelectCommand(string commandName)
         {
             commandName = commandName.Trim();
-            return consoleCommands.FindIndex(t => t.NeededUserInput == commandName);        // ТАК НАДО ВЕЗДЕ		!!!!!!!!!!!!!!!!
+            return consoleCommands.FindIndex(t => t.NeededUserInput == commandName);
         }
     }
 }

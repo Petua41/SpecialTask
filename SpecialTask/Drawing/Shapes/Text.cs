@@ -4,6 +4,7 @@ using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes
@@ -25,7 +26,7 @@ namespace SpecialTask.Drawing.Shapes
             this.color = color;
             this.textValue = textValue;
             this.fontSize = fontSize;
-            uniqueName = GetNextUniqueName();
+            UniqueName = GetNextUniqueName();
 
             ATTRS_TO_EDIT = new() { { "leftTopX", "Left-top X"}, { "leftTopY", "Left-top Y" }, { "fontSize", "Font size" },
                 { "text", "Text" }, { "color", "Text color" } };
@@ -128,7 +129,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 leftTopX = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -138,7 +139,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 leftTopY = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -148,7 +149,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 fontSize = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -158,7 +159,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 textValue = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -168,7 +169,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 color = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 

@@ -11,7 +11,7 @@
         public VisitorInvalidAcceptError(string message) : base(message) { }
 
         public VisitorInvalidAcceptError(string message, Exception inner) : base(message, inner) { }
-        
+
         protected VisitorInvalidAcceptError(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }

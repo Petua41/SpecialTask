@@ -1,5 +1,4 @@
-﻿using SpecialTask.Infrastructure.Collections;
-using SpecialTask.Infrastructure.WindowSystem;
+﻿using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Drawing.Shapes
 {
@@ -7,8 +6,8 @@ namespace SpecialTask.Drawing.Shapes
     {
         private static int firstAvailibleUniqueNumber = 0;
         protected System.Windows.Shapes.Shape? wpfShape;
-        protected string uniqueName = string.Empty;
-        protected Pairs<string, string> ATTRS_TO_EDIT = new();
+        protected List<KeyValuePair<string, string>> ATTRS_TO_EDIT = new();
+        protected int oldZindex = -1;
 
         public static string GetNextUniqueName()
         {
@@ -23,17 +22,10 @@ namespace SpecialTask.Drawing.Shapes
             CurrentWindow.AddShape(this);
         }
 
-        // It`s kinda template method
-        public virtual void Redraw()
-        {
-            Destroy();
-            NullifyWPFShape();
-            Display();
-        }
-
         public virtual void Destroy()
         {
             CurrentWindow.RemoveShape(this);
+            NullifyWPFShape();
         }
 
         public abstract Dictionary<string, object> Accept();
@@ -44,9 +36,9 @@ namespace SpecialTask.Drawing.Shapes
 
         public abstract Shape Clone();
 
-        public virtual Pairs<string, string> AttributesToEditWithNames => ATTRS_TO_EDIT;
+        public virtual List<KeyValuePair<string, string>> AttributesToEditWithNames => ATTRS_TO_EDIT;
 
-        public virtual string UniqueName => uniqueName;
+        public virtual string UniqueName { get; protected set; } = string.Empty;
 
         /// <summary>
         /// Windows.Shapes.Shape instance that can be added to Canvas

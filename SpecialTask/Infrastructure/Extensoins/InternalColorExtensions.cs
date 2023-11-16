@@ -20,8 +20,7 @@ namespace SpecialTask.Infrastructure.Extensoins
 
         public static Color GetWPFColor(this InternalColor color)
         {
-            if (wpfColors.TryGetValue(color, out Color result)) return result;
-            else return Colors.Transparent;
+            return wpfColors.TryGetValue(color, out Color result) ? result : Colors.Transparent;
         }
 
         public static (byte, byte, byte) SplitHexValue(uint hexValue)         // it`s private, but I wanna test it

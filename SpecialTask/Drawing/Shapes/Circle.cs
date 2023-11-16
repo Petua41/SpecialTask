@@ -2,8 +2,9 @@
 using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
+using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes
 {
@@ -24,7 +25,7 @@ namespace SpecialTask.Drawing.Shapes
             this.color = color;
             this.radius = radius;
             this.lineThickness = lineThickness;
-            uniqueName = GetNextUniqueName();
+            UniqueName = GetNextUniqueName();
 
             ATTRS_TO_EDIT = new() { { "centerX", "Center X"}, { "centerY", "Center Y" },
             { "radius", "Radius" }, { "lineThickness", "Outline thickness" }, { "color", "Outline color" } };
@@ -134,7 +135,8 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 centerX = value;
-                base.Redraw();
+                base.Destroy();
+                base.Display();
             }
         }
 
@@ -144,7 +146,8 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 centerY = value;
-                base.Redraw();
+                base.Destroy(); 
+                base.Display();
             }
         }
 
@@ -154,7 +157,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 radius = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -164,7 +167,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 color = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
 
@@ -174,7 +177,7 @@ namespace SpecialTask.Drawing.Shapes
             set
             {
                 lineThickness = value;
-                base.Redraw();
+                base.Destroy(); base.Display(); ;
             }
         }
     }

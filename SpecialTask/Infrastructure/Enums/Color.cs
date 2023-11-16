@@ -1,6 +1,4 @@
-﻿using System.Windows.Media;
-
-namespace SpecialTask.Infrastructure.Enums
+﻿namespace SpecialTask.Infrastructure.Enums
 {
     public enum InternalColor : uint   // it`s standard ANSI colors (values are similar to ones in xterm) with None and Purple added
     {
