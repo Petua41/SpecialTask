@@ -30,21 +30,18 @@ namespace SpecialTask.Console.Commands.ConcreteCommands.Internal
                 {
                     case LayerDirection.Forward:
                         oldLayer = WindowManager.CurrentWindow.BringForward(uniqueName);
-                        layerChanged = true;
                         break;
                     case LayerDirection.Backward:
                         oldLayer = WindowManager.CurrentWindow.SendBackward(uniqueName);
-                        layerChanged = true;
                         break;
                     case LayerDirection.Front:
                         oldLayer = WindowManager.CurrentWindow.BringToFront(uniqueName);
-                        layerChanged = true;
                         break;
                     case LayerDirection.Back:
                         oldLayer = WindowManager.CurrentWindow.SendToBack(uniqueName);
-                        layerChanged = true;
                         break;
                 }
+                layerChanged = true;
             }
             catch (ShapeNotFoundException)
             {

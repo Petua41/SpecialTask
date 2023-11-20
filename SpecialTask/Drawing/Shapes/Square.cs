@@ -3,7 +3,7 @@ using SpecialTask.Infrastructure.Exceptions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static SpecialTask.Infrastructure.Extensoins.InternalColorExtensions;
-using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtensions;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Drawing.Shapes

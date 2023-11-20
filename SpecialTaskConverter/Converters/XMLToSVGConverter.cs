@@ -147,16 +147,18 @@ namespace SpecialTaskConverter.Converters
             string? streakColor = inElem.Attribute("streakColor")?.Value;
             string? streakTexture = inElem.Attribute("streakTexture")?.Value;
 
-            if (streakColor is null || streakTexture is null)
+            if (streakColor is not null && streakTexture is not null)
             {
-                return;
+                XAttribute? streak = ConvertTexture(streakColor, streakTexture);
+                if (streak is not null)
+                {
+                    outElem.Add(streak);
+                    return;
+                }
             }
 
-            XAttribute? streak = ConvertTexture(streakColor, streakTexture);
-            if (streak is not null)
-            {
-                outElem.Add(streak);
-            }
+            XAttribute noStreak = new("fill-opacity", 0);
+            outElem.Add(noStreak);
         }
 
         private XAttribute? ConvertTexture(string color, string texture)

@@ -3,12 +3,12 @@ using SpecialTask.Infrastructure.WindowSystem;
 
 namespace SpecialTask.Infrastructure.Iterators
 {
-    internal class CreationTimeIterator : IIterator
+    internal class ZOrderIterator : IIterator
     {
         private static readonly object syncLock = new();
-        private static volatile CreationTimeIterator? singleton;
+        private static volatile ZOrderIterator? singleton;
 
-        private CreationTimeIterator() { }
+        private ZOrderIterator() { }
 
         public static IIterator Instance
         {
@@ -29,7 +29,10 @@ namespace SpecialTask.Infrastructure.Iterators
 
         public IReadOnlyList<Shape> GetCompleteResult()
         {
-            return WindowManager.CurrentWindow.Shapes.Where(sh => sh is not SelectionMarker).ToList();	// TODO: это костыль
+            List<Shape> shapes = WindowManager.CurrentWindow.Shapes;
+            List<int> zOrder = WindowManager.CurrentWindow.ZOrder;
+
+            return shapes.Zip(zOrder).OrderBy(tp => tp.Second).Select(tp => tp.First).ToList();     // I could do this by inserting shapes to final list, but I don`t sure if it will be readable
         }
     }
 }

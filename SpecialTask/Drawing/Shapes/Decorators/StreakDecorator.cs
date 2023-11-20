@@ -1,7 +1,7 @@
 ﻿using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.WindowSystem;
-using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtensions;
 using static SpecialTask.Infrastructure.Extensoins.StreakTextureExtensions;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 

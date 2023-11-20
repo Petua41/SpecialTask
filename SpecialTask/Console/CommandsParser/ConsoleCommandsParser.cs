@@ -77,21 +77,14 @@ namespace SpecialTask.Console.CommandsParser
                 {
                     HighConsole.DisplayError($"Some argument is invalid. Please, contact us and try {commandName} -- help");
                 }
-
-                return;
             }
             catch (NecessaryArgumentNotPresentedException e)
             {
-                if (e.LongArgument is not null)
-                {
-                    HighConsole.DisplayError($"{e.LongArgument} is necessary. Try {commandName} -- help");
-                }
-                else
-                {
-                    HighConsole.DisplayError($"Some argument is necessary, but not present. Please, contact us and try {commandName} -- help");
-                }
-
-                return;
+                HighConsole.DisplayError($"{e.LongArgument} is necessary. Try {commandName} -- help");
+            }
+            catch (ArgumentMissingValueException e)
+            {
+                HighConsole.DisplayError($"{e.LongArgument} requires value. Try {commandName} --help");
             }
         }
 

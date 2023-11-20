@@ -1,5 +1,5 @@
 using SpecialTask.Infrastructure.Enums;
-using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtensions;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTaskTest

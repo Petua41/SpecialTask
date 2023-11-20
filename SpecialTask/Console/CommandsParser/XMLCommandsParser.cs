@@ -25,6 +25,7 @@ namespace SpecialTask.Console.CommandsParser
         private const string LONG_ARGUMENT = "longArgument";
         private const string IS_NECESSARY = "isNecessary";
         private const string COMMAND_PARAMETER_NAME = "commandParameterName";
+        private const string DESCRIPTION = "description";
 
         // Values:
         private const string FALSE = "false";
@@ -89,9 +90,8 @@ namespace SpecialTask.Console.CommandsParser
 
         private static ConsoleCommandArgument ParseArgumentElement(XElement elem)
         {
-            string? stringArg = elem.Attribute("type")?.Value;
-
-            ArgumentType type = stringArg.ParseArgumentType();      // ParseArgumentValue accepts null and processes it right way
+            string? stringType = elem.Attribute("type")?.Value;
+            ArgumentType type = stringType.ParseArgumentType();      // ParseArgumentValue accepts null and processes it right way
 
             object? defaultValue = null;
             string? defValueString = elem.Attribute(DEFAULT_VALUE)?.Value;
@@ -108,7 +108,7 @@ namespace SpecialTask.Console.CommandsParser
                 IsNecessary = (elem.Attribute(IS_NECESSARY)?.Value ?? FALSE) != FALSE,
                 CommandParameterName = elem.Attribute(COMMAND_PARAMETER_NAME)?.Value ?? string.Empty,
                 DefaultValue = defaultValue,
-                Description = elem.Value.Trim()
+                Description = elem.Attribute(DESCRIPTION)?.Value ?? string.Empty
             };
         }
 

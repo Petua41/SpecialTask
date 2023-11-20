@@ -71,13 +71,11 @@ namespace SpecialTask.Properties {
         ///           supportsUndo=&quot;true&quot;&gt;
         ///    Adds circle to the screen
         ///		&lt;argument shortArgument=&quot;x&quot;
-        ///            longArgument=&quot;center_x&quot; type=&quot;Int&quot;
-        ///            isNecessary=&quot;true&quot;
-        ///            commandParameterName=&quot;centerX&quot; &gt;
-        ///      X of center
-        ///    &lt;/argument&gt;
-        ///    &lt;argument shortArgument=&quot;y&quot;
-        ///   [rest of string was truncated]&quot;;.
+        ///              longArgument=&quot;center_x&quot; type=&quot;Int&quot;
+        ///              isNecessary=&quot;true&quot;
+        ///              commandParameterName=&quot;centerX&quot;
+        ///              description=&quot;X of center&quot; /&gt;
+        ///    &lt;argument shortArgu [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ConsoleCommands {
             get {

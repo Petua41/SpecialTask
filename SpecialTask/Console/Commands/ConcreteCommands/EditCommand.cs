@@ -5,7 +5,7 @@ using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Events;
 using SpecialTask.Infrastructure.Exceptions;
 using SpecialTask.Infrastructure.Iterators;
-using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtension;
+using static SpecialTask.Infrastructure.Extensoins.KeyValuePairListExtensions;
 using static SpecialTask.Infrastructure.Extensoins.StringExtensions;
 
 namespace SpecialTask.Console.Commands.ConcreteCommands

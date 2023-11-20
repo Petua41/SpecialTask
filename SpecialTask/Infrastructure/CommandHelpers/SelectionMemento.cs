@@ -19,10 +19,13 @@ namespace SpecialTask.Infrastructure.CommandHelpers
             savedLeftTopY = leftTopY;
         }
 
+        /// <returns>List of new (pasted) shapes</returns>
         public static List<Shape> PasteArea(int leftTopX, int leftTopY)
         {
             int xOffset = leftTopX - savedLeftTopX;
             int yOffset = leftTopY - savedLeftTopY;
+
+            List<Shape> pastedShapes = new();
 
             foreach (Shape shape in savedShapes)
             {
@@ -32,9 +35,11 @@ namespace SpecialTask.Infrastructure.CommandHelpers
 
                 sh.MoveXBy(xOffset);
                 sh.MoveYBy(yOffset);
+
+                pastedShapes.Add(sh);
             }
 
-            return savedShapes;
+            return pastedShapes;
         }
     }
 }

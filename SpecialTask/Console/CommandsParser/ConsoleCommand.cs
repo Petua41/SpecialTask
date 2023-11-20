@@ -1,4 +1,5 @@
-﻿using SpecialTask.Infrastructure.Enums;
+﻿using Mono.Options;
+using SpecialTask.Infrastructure.Enums;
 using SpecialTask.Infrastructure.Exceptions;
 using System.Text.RegularExpressions;
 using static SpecialTask.Infrastructure.Extensoins.StringListExtensions;
@@ -23,7 +24,14 @@ namespace SpecialTask.Console.CommandsParser
             doSet = CreateOptionSet();
 
             string[] args = SplitByRegex(arguments);
-            doSet.ParseToDictionary(args);
+            try
+            {
+                doSet.ParseToDictionary(args);
+            }
+            catch (OptionException e) when (e.Message.StartsWith("Missing required value"))
+            {
+                throw new ArgumentMissingValueException($"Argument {e.OptionName} requires value, but value not provided", e.OptionName);
+            }
 
             if (doSet.NotParsedNecessaryArguments.Count > 0)
             {
@@ -34,9 +42,10 @@ namespace SpecialTask.Console.CommandsParser
 
             if (doSet.Extra.Count > 0)
             {
-                string longArg = doSet.Extra[0];
-
-                throw new ExtraArgumentException($"{longArg} is extra", longArg);
+                foreach (string longArg in doSet.Extra)
+                {
+                    if (longArg != " ") throw new ExtraArgumentException($"{longArg} is extra", longArg);   // check " ", because we added it 32 lines below
+                }
             }
 
             return doSet.ArgumentValues;
@@ -57,8 +66,8 @@ namespace SpecialTask.Console.CommandsParser
             doSet = new();
             foreach (ConsoleCommandArgument argument in Arguments)
             {
-                doSet.Add($"{argument.ShortArgument}|{argument.LongArgument}=", argument.Description, argument.CommandParameterName,
-                    argument.Type, argument.IsNecessary);
+                doSet.Add($"{argument.ShortArgument}|{argument.LongArgument}{(argument.Type == ArgumentType.PseudoBool ? string.Empty : "=")}", 
+                    argument.Description, argument.CommandParameterName, argument.Type, argument.IsNecessary);
             }
 
             return doSet;
@@ -78,14 +87,20 @@ namespace SpecialTask.Console.CommandsParser
 
         public bool SupportsUndo { get; set; }
 
-        public bool Fictional { get; set; }         // only for --help. Doesn`t support execution
+        public bool Fictional { get; set; }
 
         public string Description { get; set; }
 
-        public readonly string Help => Description
-                    + Environment.NewLine
-                    + (doSet is null ? string.Empty : Environment.NewLine
-                    + doSet.WriteOptionDescriptions());
+        public string Help
+        {
+            get
+            {
+                doSet = CreateOptionSet();
+
+                string optionDescriptions = doSet.WriteOptionDescriptions();
+                return Description + Environment.NewLine + optionDescriptions;
+            }
+        }
 
         [GeneratedRegex("(\\-\\-[^\\-]+)|(\\-[^\\-]+)")]    // I use Regex this way because of two reasons:     1) VS says that it`s faster
         private static partial Regex Expression();                                                          //  2) explanation will be generated

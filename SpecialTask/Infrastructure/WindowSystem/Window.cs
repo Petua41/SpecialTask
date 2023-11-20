@@ -186,6 +186,8 @@ namespace SpecialTask.Infrastructure.WindowSystem
             return;
         }
 
+        public List<int> ZOrder => zOrder;
+
         private void RemoveShapeFromLists(string uniqueName)
         {
             int index = ShapesOnThisWindow.FindIndex(sh => sh.UniqueName == uniqueName);

@@ -1,6 +1,6 @@
 ﻿namespace SpecialTask.Infrastructure.Extensoins
 {
-    public static class KeyValuePairListExtension
+    public static class KeyValuePairListExtensions
     {
         /// <summary>
         /// Shorthand to add <see cref="KeyValuePair"/> to list by adding <paramref name="key"/> and <paramref name="value"/>

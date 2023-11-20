@@ -75,7 +75,9 @@ namespace SpecialTask.Infrastructure.WindowSystem
 
             public static List<Shape> Shapes => Window.ShapesOnThisWindow;
 
-            private static Window Window => Instance.CurrentDrawingWindow;   // This method is marked obsolete, because it shouldn`t be used everywhere but here
+            public static List<int> ZOrder => Window.ZOrder;
+
+            private static Window Window => Instance.CurrentDrawingWindow;
 
             public static event EventHandler? SomethingDisplayed;
         }
@@ -88,7 +90,6 @@ namespace SpecialTask.Infrastructure.WindowSystem
         {
             CurrentDrawingWindow = new(0);
             existingWindows = new List<Window> { CurrentDrawingWindow };
-#pragma warning restore
         }
 
         public static WindowManager Instance

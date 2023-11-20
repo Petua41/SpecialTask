@@ -9,7 +9,7 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 {
     internal static class XMLGeneratorVisitor
     {
-        public static XDocument GenerateXML(List<Shape> shapes)
+        public static XDocument GenerateXML(IEnumerable<Shape> shapes)
         {
             XDocument document = new();
             XElement parent = new("shapes");

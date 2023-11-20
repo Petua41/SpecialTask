@@ -8,55 +8,47 @@
            supportsUndo="true">
     Adds circle to the screen
 		<argument shortArgument="x"
-            longArgument="center_x" type="Int"
-            isNecessary="true"
-            commandParameterName="centerX" >
-      X of center
-    </argument>
+              longArgument="center_x" type="Int"
+              isNecessary="true"
+              commandParameterName="centerX"
+              description="X of center" />
     <argument shortArgument="y"
               longArgument="center_y" type="Int"
               isNecessary="true"
-              commandParameterName="centerY" >
-      Y of center
-    </argument>
+              commandParameterName="centerY"
+              description="Y of center" />
     <argument shortArgument="C"
               longArgument="color" type="Color"
               isNecessary="true"
-              commandParameterName="color" >
-      Outline color
-    </argument>
+              commandParameterName="color"
+              description="Outline color" />
     <argument shortArgument="r"
               longArgument="radius" type="Int"
               isNecessary="true"
-              commandParameterName="radius" >
-      Radius
-    </argument>
+              commandParameterName="radius"
+              description="Radius" />
     <argument shortArgument="t"
               longArgument="line_thickness"
               type="Int" isNecessary="true"
-              commandParameterName="lineThickness" >
-      Outline thickness
-    </argument>
+              commandParameterName="lineThickness"
+              description="Outline thickness" />
     <argument shortArgument="s"
               longArgument="streak"
               commandParameterName="streak"
-              defaultValue="false" >
-      Add streak (default is false)
-    </argument>
+              defaultValue="false"
+              description="Add streak (default is false)" /> 
     <argument shortArgument="c"
               longArgument="streak_color"
               type="Color"
               commandParameterName="streakColor"
-              defaultValue="None" >
-      Streak color (default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak color (default is transparent)" />
     <argument shortArgument="T"
               longArgument="texture"
               type="Texture"
               commandParameterName="streakTexture"
-              defaultValue="None" >
-      Streak texture (default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak texture (default is transparent)" />
 	</command>
   
 	<command userInput="new rectangle" 
@@ -64,67 +56,58 @@
            supportsUndo="true">
     Adds rectangle to the screen
     <argument shortArgument="x"
-            longArgument="left_top_x"
-            type="Int"
-            isNecessary="true"
-            commandParameterName="leftTopX" >
-      X of left-top corner
-    </argument>
+              longArgument="left_top_x"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="leftTopX"
+              description="X of left-top corner" />
     <argument shortArgument="y"
               longArgument="left_top_y"
               type="Int"
               isNecessary="true"
-              commandParameterName="leftTopY" >
-      Y of left-top corner
-    </argument>
+              commandParameterName="leftTopY"
+              description="Y of left-top corner" />
     <argument shortArgument="X"
               longArgument="right_bottom_x"
               type="Int"
               isNecessary="true"
-              commandParameterName="rightBottomX" >
-      X of right-bottom corner
-    </argument>
+              commandParameterName="rightBottomX"
+              description="X of right-bottom corner" />
     <argument shortArgument="Y"
               longArgument="right_bottom_y"
               type="Int"
               isNecessary="true"
-              commandParameterName="rightBottomY" >
-      Y of right-bottom corner
-    </argument>
+              commandParameterName="rightBottomY"
+              description="Y of right-bottom corner" />
     <argument shortArgument="C"
               longArgument="color"
               type="Color"
               isNecessary="true"
-              commandParameterName="color" >
-      Outline color
-    </argument>
+              commandParameterName="color"
+              description="Outline color" />
     <argument shortArgument="t"
               longArgument="line_thickness"
               type="Int"
               isNecessary="true"
-              commandParameterName="lineThickness" >
-      Outline thickness
-    </argument>
+              commandParameterName="lineThickness"
+              description="Outline thickness" />
     <argument shortArgument="s"
               longArgument="streak"
               commandParameterName="streak"
-              defaultValue="false" >
-      Add streak (default is false)
-    </argument>
+              defaultValue="false"
+              description="Add streak (default is false)" />
     <argument shortArgument="c"
               longArgument="streak_color"
               type="Color"
               commandParameterName="streakColor"
-              defaultValue="None" >
-      Streak color (default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak color (default is transparent)" />
     <argument shortArgument="T"
               longArgument="texture"
               type="Texture"
               commandParameterName="streakTexture"
-              defaultValue="None" >
-      Streak texture (default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak texture (default is transparent)" />
 	</command>
   
 	<command userInput="new line" 
@@ -132,67 +115,58 @@
            supportsUndo="true">
     Adds line to the screen
     <argument shortArgument="x"
-            longArgument="first_x"
-            type="Int"
-            isNecessary="true"
-            commandParameterName="firstX" >
-      X of first point
-    </argument>
+              longArgument="first_x"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="firstX"
+              description="X of first point" />
     <argument shortArgument="y"
               longArgument="first_y"
               type="Int"
               isNecessary="true"
-              commandParameterName="firstY" >
-      Y of first point
-    </argument>
+              commandParameterName="firstY"
+              description="Y of first point" />
     <argument shortArgument="X"
               longArgument="second_x"
               type="Int"
               isNecessary="true"
-              commandParameterName="secondX" >
-      X of second point
-    </argument>
+              commandParameterName="secondX"
+              description="X of second point" />
     <argument shortArgument="Y"
               longArgument="second_y"
               type="Int"
               isNecessary="true"
-              commandParameterName="secondY" >
-      Y of second point
-    </argument>
+              commandParameterName="secondY"
+              description="Y of second point" />
     <argument shortArgument="C"
               longArgument="color"
               type="Color"
               isNecessary="true"
-              commandParameterName="color" >
-      Line color
-    </argument>
+              commandParameterName="color"
+              description="Line color" />
     <argument shortArgument="t"
               longArgument="line_thickness"
               type="Int"
               isNecessary="true"
-              commandParameterName="lineThickness" >
-      Line thickness
-    </argument>
+              commandParameterName="lineThickness"
+              description="Line thickness" />
     <argument shortArgument="s"
               longArgument="streak"
               commandParameterName="streak"
-              defaultValue="false" >
-      Add streak (no effect, default is false)
-    </argument>
+              defaultValue="false"
+              description="Add streak (no effect, default is false)" />
     <argument shortArgument="c"
               longArgument="streak_color"
               type="Color"
               commandParameterName="streakColor"
-              defaultValue="None" >
-      Streak color (no effect, default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak color (no effect, default is transparent)" />
     <argument shortArgument="T"
               longArgument="texture"
               type="Texture"
               commandParameterName="streakTexture"
-              defaultValue="None" >
-      Streak texture (no effect, default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak texture (no effect, default is transparent)" />
 	</command>
   
   <command userInput="new text" 
@@ -200,60 +174,52 @@
            supportsUndo="true">
     Adds text to the screen
     <argument shortArgument="x"
-            longArgument="left_top_x"
-            type="Int"
-            isNecessary="true"
-            commandParameterName="leftTopX" >
-      X of left-top corner
-    </argument>
+              longArgument="left_top_x"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="leftTopX"
+              description="X of left-top corner" />
     <argument shortArgument="y"
               longArgument="left_top_y"
               type="Int"
               isNecessary="true"
-              commandParameterName="leftTopY" >
-      Y of left-top corner
-    </argument>
+              commandParameterName="leftTopY"
+              description="Y of left-top corner" />
     <argument shortArgument="f"
               longArgument="font_size"
               type="Int"
               isNecessary="true"
-              commandParameterName="fontSize" >
-      Font size
-    </argument>
+              commandParameterName="fontSize"
+              description="Font size" />
     <argument shortArgument="t"
               longArgument="text"
               type="String"
               isNecessary="true"
-              commandParameterName="textValue" >
-      Text value
-    </argument>
+              commandParameterName="textValue"
+              description="Text value" />
     <argument shortArgument="C"
               longArgument="color"
               type="Color"
               isNecessary="true"
-              commandParameterName="color" >
-      Color of text
-    </argument>
+              commandParameterName="color"
+              description="Color of text" />
     <argument shortArgument="s"
               longArgument="streak"
               commandParameterName="streak"
-              defaultValue="false" >
-      Add streak (no effect, default is false)
-    </argument>
+              defaultValue="false"
+              description="Add streak (no effect, default is false)" />
     <argument shortArgument="c"
               longArgument="streak_color"
               type="Color"
               commandParameterName="streakColor"
-              defaultValue="None" >
-      Streak color (no effect, default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak color (no effect, default is transparent)" />
     <argument shortArgument="T"
               longArgument="texture"
               type="Texture"
               commandParameterName="streakTexture"
-              defaultValue="None" >
-      Streak texture (no effect, default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak texture (no effect, default is transparent)" />
   </command>
   
   <command userInput="new polygon" 
@@ -261,46 +227,40 @@
            supportsUndo="true">
     Adds polygon to the screen
     <argument shortArgument="p"
-            longArgument="points"
-            type="Points"
-            isNecessary="true"
-            commandParameterName="points" >
-      Points (X and Y are separated by a space, pairs are separated by a comma, e. g. X1 Y1, X2 Y2)
-    </argument>
+              longArgument="points"
+              type="Points"
+              isNecessary="true"
+              commandParameterName="points"
+              description="Points (X and Y are separated by a space, pairs are separated by a comma, e. g. X1 Y1, X2 Y2)" />
     <argument shortArgument="C"
               longArgument="color"
               type="Color"
               isNecessary="true"
-              commandParameterName="color" >
-      Outline color
-    </argument>
+              commandParameterName="color"
+              description="Outline color" />
     <argument shortArgument="t"
               longArgument="line_thickness"
               type="Int"
               isNecessary="true"
-              commandParameterName="lineThickness" >
-      Outline thickness
-    </argument>
+              commandParameterName="lineThickness"
+              description="Outline thickness" />
     <argument shortArgument="s"
               longArgument="streak"
               commandParameterName="streak"
-              defaultValue="false" >
-      Add streak (default is false)
-    </argument>
+              defaultValue="false"
+              description="Add streak (default is false)" />
     <argument shortArgument="c"
               longArgument="streak_color"
               type="Color"
               commandParameterName="streakColor"
-              defaultValue="None" >
-      Streak color (default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak color (default is transparent)" />
     <argument shortArgument="T"
               longArgument="texture"
               type="Texture"
               commandParameterName="streakTexture"
-              defaultValue="None" >
-      Streak texture (default is transparent)
-    </argument>
+              defaultValue="None"
+              description="Streak texture (default is transparent)" />
   </command>
   
 	<!-- window -->
@@ -313,24 +273,22 @@
            commandClass="DeleteWindow">
     Closes specified window
     <argument shortArgument="n"
-            longArgument="number"
-            isNecessary="true"
-            type="Int"
-            commandParameterName="number">
-      Number of window (from window title)
-    </argument>
+              longArgument="number"
+              isNecessary="true"
+              type="Int"
+              commandParameterName="number"
+              description="Number of window (from window title)" />
 	</command>
   
 	<command userInput="window switch" 
            commandClass="SwitchWindow">
     Switches to specified window
     <argument shortArgument="n"
-            longArgument="number"
-            isNecessary="true"
-            type="Int"
-            commandParameterName="number" >
-      Number of window (from window title)
-    </argument>
+              longArgument="number"
+              isNecessary="true"
+              type="Int"
+              commandParameterName="number"
+              description="Number of window (from window title)" />
 	</command>
   
 	<!-- edit -->
@@ -339,17 +297,15 @@
            supportsUndo="true">
     Select figure on the screen and edit it
     <argument shortArgument="t"
-            longArgument="creation_time"
-            commandParameterName="creationTime"
-            defaultValue="true" >
-      Display fidures in creation-time order (default)
-    </argument>
+              longArgument="creation_time"
+              commandParameterName="creationTime"
+              defaultValue="true"
+              description=" Display figures in creation-time order (default)" />
     <argument shortArgument="c"
               longArgument="coordinates"
               commandParameterName="coordinates"
-              defaultValue="false" >
-      Display figures by ascending coordinates of the center
-    </argument>
+              defaultValue="false"
+              description="Display figures by ascending coordinates of the center" />
 	</command>
   
 	<!-- select -->
@@ -357,33 +313,29 @@
            commandClass="Select">
     Selects rectangular area, specified by coordinates of left-top and right-bottom corners
     <argument shortArgument="x"
-            longArgument="left_top_x"
-            type="Int"
-            isNecessary="true"
-            commandParameterName="leftTopX" >
-      X of left-top corner
-    </argument>
+              longArgument="left_top_x"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="leftTopX"
+              description="X of left-top corner" />
     <argument shortArgument="y"
               longArgument="left_top_y"
               type="Int"
               isNecessary="true"
-              commandParameterName="leftTopY" >
-      Y of left-top corner
-    </argument>
+              commandParameterName="leftTopY"
+              description="Y of left-top corner" />
     <argument shortArgument="X"
               longArgument="right_bottom_x"
               type="Int"
               isNecessary="true"
-              commandParameterName="rightBottomX" >
-      X of right-bottom corner
-    </argument>
+              commandParameterName="rightBottomX"
+              description="X of right-bottom corner" />
     <argument shortArgument="Y"
               longArgument="right_bottom_y"
               type="Int"
               isNecessary="true"
-              commandParameterName="rightBottomY" >
-      Y of right-bottom corner
-    </argument>
+              commandParameterName="rightBottomY"
+              description="Y of right-bottom corner" />
 	</command>
   
   <!-- paste -->
@@ -392,18 +344,16 @@
            supportsUndo="true">
     Pastes selected area
     <argument shortArgument="x"
-            longArgument="leftTopX"
-            type="Int"
-            isNecessary="true"
-            commandParameterName="leftTopX" >
-      X of left-top corner
-    </argument>
+              longArgument="leftTopX"
+              type="Int"
+              isNecessary="true"
+              commandParameterName="leftTopX"
+              description="X of left-top corner" />
     <argument shortArgument="y"
               longArgument="leftTopY"
               type="Int"
-              commandParameterName="leftTopY" >
-      Y of left-top corner
-    </argument>
+              commandParameterName="leftTopY"
+              description="Y of left-top corner" />
   </command>
   
 	<!-- undo -->
@@ -411,12 +361,11 @@
            commandClass="Undo">
     Cancels last commands
     <argument shortArgument="n"
-            longArgument="number"
-            type="Int"
-            commandParameterName="number"
-            defaultValue="1" >
-      Number of commands to undo (default is 1)
-    </argument>
+              longArgument="number"
+              type="Int"
+              commandParameterName="number"
+              defaultValue="1"
+              description="Number of commands to undo (default is 1)" />
 	</command>
   
 	<!-- redo -->
@@ -424,12 +373,11 @@
            commandClass="Redo">
     Repeats last cancelled commands
     <argument shortArgument="n"
-            longArgument="number"
-            type="Int"
-            commandParameterName="number"
-            defaultValue="1" >
-      Number of commands to redo (default is 1)
-    </argument>
+              longArgument="number"
+              type="Int"
+              commandParameterName="number"
+              defaultValue="1"
+              description="Number of commands to redo (default is 1)" />
 	</command>
   
 	<!-- save -->
@@ -443,12 +391,11 @@
            commandClass="SaveAs">
     Save file as
     <argument shortArgument="f"
-            longArgument="filename"
-            isNecessary="true"
-            type="String"
-            commandParameterName="filename" >
-      Name of file to save (if path is relative, saves to default save directory)
-    </argument>
+              longArgument="filename"
+              isNecessary="true"
+              type="String"
+              commandParameterName="filename"
+              description="Name of file to save (if path is relative, saves to default save directory)" />
 	</command>
   
 	<!-- load -->
@@ -456,18 +403,16 @@
            commandClass="Load">
     Load file
     <argument shortArgument="f"
-            longArgument="filename"
-            type="String"
-            isNecessary="true"
-            commandParameterName="filename" >
-      Name of file to save  (if path is relative, saves to default save directory)
-    </argument>
+              longArgument="filename"
+              type="String"
+              isNecessary="true"
+              commandParameterName="filename"
+              description="Name of file to save  (if path is relative, saves to default save directory)" />
     <argument shortArgument="c"
               longArgument="clear"
               defaultValue="false"
-              commandParameterName="clearScreen" >
-      Clear screen before loading (default is false)
-    </argument>
+              commandParameterName="clearScreen"
+              description="Clear screen before loading (default is false)" />
 	</command>
   
   <!-- exit -->
@@ -500,38 +445,35 @@
            commandClass="ExportSVG">
     Export to svg
     <argument shortArgument="i"
-            longArgument="in"
-            type="String"
-            commandParameterName="inFilename"
-            defaultValue="" >
-      Name of (.std) file to export (if not specified, exports current drawing)
-    </argument>
+              longArgument="in"
+              type="String"
+              commandParameterName="inFilename"
+              defaultValue=""
+              description="Name of (.std) file to export (if not specified, exports current drawing)" />
 
     <argument shortArgument="o"
               longArgument="out"
               type="String"
               isNecessary="true"
-              commandParameterName="outFilename" >
-      Name of (.svg) file to export to
-    </argument>
+              commandParameterName="outFilename"
+              description="Name of (.svg) file to export to" />
   </command>
   
   <command userInput="export pdf" 
            commandClass="ExportPDF">
     Export to pdf (experimental)
-    <argument shortArgument="i" 
-              longArgument="in" 
-              type="String" 
-              commandParameterName="inFilename" 
-              defaultValue=""/>
-    Name of (.std) file to export (if not specified, exports current drawing)
-      <argument shortArgument="o"
+    <argument shortArgument="i"
+            longArgument="in"
+            type="String"
+            commandParameterName="inFilename"
+            defaultValue=""
+            description="Name of (.std) file to export (if not specified, exports current drawing)" />
+    <argument shortArgument="o"
             longArgument="out"
             type="String"
             isNecessary="true"
-            commandParameterName="outFilename" >
-      Name of (.pdf) file to export to
-      </argument>
+            commandParameterName="outFilename"
+            description="Name of (.pdf) file to export to" />
   </command>
   
   <!-- screenshot -->
@@ -539,12 +481,11 @@
            commandClass="Screenshot">
     Captures a screenshot of current drawing window and saves to .png (experimental)
       <argument shortArgument="f"
-          longArgument="filename"
-          type="String"
-          isNecessary="true"
-          commandParameterName="filename" >
-      Name of file to save screenshot
-      </argument>
+                longArgument="filename"
+                type="String"
+                isNecessary="true"
+                commandParameterName="filename"
+                description="Name of file to save screenshot" />
 </command>
 
 	<!-- fictional commands -->

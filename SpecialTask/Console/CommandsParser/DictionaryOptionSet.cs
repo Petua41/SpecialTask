@@ -43,7 +43,7 @@ namespace SpecialTask.Console.CommandsParser
         public IReadOnlyDictionary<string, object> ArgumentValues => argValues;
 
         /// <summary>
-        /// List of keys (see <see cref="Add(string, string, string, ArgumentType, bool)"/> of arguments, that cannot be found
+        /// List of keys (see <see cref="Add(string, string, string, ArgumentType, bool)"/>) of arguments, that cannot be found
         /// </summary>
         public List<string> NotParsedNecessaryArguments
         {

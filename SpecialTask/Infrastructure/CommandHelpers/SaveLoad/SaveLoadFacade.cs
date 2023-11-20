@@ -1,4 +1,5 @@
-﻿using SpecialTask.Infrastructure.WindowSystem;
+﻿using SpecialTask.Infrastructure.Iterators;
+using SpecialTask.Infrastructure.WindowSystem;
 using System.IO;
 using System.Xml.Linq;
 
@@ -84,7 +85,9 @@ namespace SpecialTask.Infrastructure.CommandHelpers.SaveLoad
 
         private static void SaveXML(string filename)
         {
-            XDocument doc = XMLGeneratorVisitor.GenerateXML(WindowManager.CurrentWindow.Shapes);
+            IteratorsFacade.SetConcreteIterator(SortingOrder.ZOrder);
+
+            XDocument doc = XMLGeneratorVisitor.GenerateXML(IteratorsFacade.GetCompleteResult());
 
             using StreamWriter writer = new(filename);
             // Pass on:
