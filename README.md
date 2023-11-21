@@ -1,5 +1,6 @@
 # First special task
 
+## Task
 Сделать графический 2d редактор с текстовым управлением. Человек в консоли вводит команды наподобие `circle (100, 100, 5, red, 2)` и на форме рисуется круг с центром в точке (100, 100), красный с толщиной линии 2 пикселя. Сделать набор таких объектов (примитивов) — линия, квадрат, многоугольник, текст, заливка, штрих, и прочие по усмотрению. Но так, чтобы было интересно.
 
 Должны быть команды:
@@ -24,3 +25,14 @@ UPD: может быть полезно (или нет)
 На самом деле это просто какое-то упражнение, но упражнение на что именно? На знание языка? Не совсем — люди, получающие это задание, и так уже знают нормально) Это упражнение на объектный дизайн. Предполагается что вы изучите 5-10 паттернов проектирования и примените не менее 6 штук в данной программе — обоснованно и с умом. Где брать знание? Книжка банды четырех (хардкор + философия от основателей концепции) и книжка от head first (если надо вот прямо сейчас). 
 
 Сроки на задачу: где-то месяц, так, чтобы было 4 подобных задачи за семестр. При этом, приходите показывайте промежуточные версии и задавайте вопросы.
+
+## Installation
+Just download zip archive, unpack it, and run .exe file
+Or you can build app yourself, using console dotnet or your IDE tools
+
+## Usage
+You can type `help` and see all availible commands
+If you need to use some command-line options, you should run app from command-line
+### Command-line options
+`-d  --undo_stack_depth=VALUE`    change number of commands, that you can undo
+`-s  --default_save_dir=VALUE`    change default save directory (if you enter relative path, it's considered as from *default save directory*
