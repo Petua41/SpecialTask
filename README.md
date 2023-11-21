@@ -27,12 +27,12 @@ UPD: может быть полезно (или нет)
 Сроки на задачу: где-то месяц, так, чтобы было 4 подобных задачи за семестр. При этом, приходите показывайте промежуточные версии и задавайте вопросы.
 
 ## Installation
-Just download zip archive, unpack it, and run .exe file
+Just download zip archive, unpack it, and run .exe file \
 Or you can build app yourself, using console dotnet or your IDE tools
 
 ## Usage
-You can type `help` and see all availible commands
+You can type `help` and see all availible commands \
 If you need to use some command-line options, you should run app from command-line
 ### Command-line options
-`-d  --undo_stack_depth=VALUE`    change number of commands, that you can undo
+`-d  --undo_stack_depth=VALUE`    change number of commands, that you can undo \
 `-s  --default_save_dir=VALUE`    change default save directory (if you enter relative path, it's considered as from *default save directory*
