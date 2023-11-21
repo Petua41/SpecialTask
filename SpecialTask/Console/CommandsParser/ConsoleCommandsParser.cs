@@ -86,6 +86,10 @@ namespace SpecialTask.Console.CommandsParser
             {
                 HighConsole.DisplayError($"{e.LongArgument} requires value. Try {commandName} --help");
             }
+            catch (ArgumentValueFormatException e)
+            {
+                HighConsole.DisplayError(e.Message + $". Try {commandName} --help");    // e.Message contains all necessary information
+            }
         }
 
         public static string Autocomplete(string input)

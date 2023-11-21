@@ -83,6 +83,16 @@ namespace SpecialTaskTest.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Circle_with_zero_centerX {
+            get {
+                object obj = ResourceManager.GetObject("Circle_with_zero_centerX", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Dots {
             get {
                 object obj = ResourceManager.GetObject("Dots", resourceCulture);

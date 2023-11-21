@@ -1,4 +1,5 @@
 ﻿using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
 
 namespace SpecialTask.Infrastructure.Extensoins
 {
@@ -8,7 +9,7 @@ namespace SpecialTask.Infrastructure.Extensoins
         {
             return type switch
             {
-                ArgumentType.Int => int.Parse(value),
+                ArgumentType.Int => Math.Clamp(int.Parse(value), 0, 1_000_000),     // clamp value, so that all numbers are positive and not too big
                 ArgumentType.Color => value.ParseColor(),
                 ArgumentType.String => value,
                 ArgumentType.Texture => value.ParseStreakTexture(),

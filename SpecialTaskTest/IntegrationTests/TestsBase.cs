@@ -2,8 +2,8 @@
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Input;
 using FlaUI.UIA3;
-using System.Drawing.Imaging;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using static System.Threading.Thread;
 
@@ -11,7 +11,7 @@ namespace SpecialTaskTest.IntegrationTests
 {
     class TestsBase
     {
-        private const string EXEC_NAME = "C:\\Users\\Petua\\source\\repos\\SpecialTask\\SpecialTask\\bin\\Debug\\net7.0-windows\\SpecialTask.exe";
+        private const string EXEC_NAME = "..\\..\\..\\..\\SpecialTask\\bin\\Debug\\net7.0-windows\\SpecialTask.exe";
         private readonly string DIR_FOR_SCREENSHOTS = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + "\\Temp";
 
         protected Application app;
@@ -52,7 +52,7 @@ namespace SpecialTaskTest.IntegrationTests
         protected void EnterCommand(string command)
         {
             consoleEntry.Focus();
-            
+
             Keyboard.Type(command);
             Wait.UntilInputIsProcessed();
 
@@ -80,6 +80,8 @@ namespace SpecialTaskTest.IntegrationTests
         }
 
         protected List<Window> Windows => app.GetAllTopLevelWindows(automation).ToList();
+
+        protected string ConsoleOutput => FindElementOnMainWindow("ConsoleTB").AsTextBox().ToString();
 
         private static bool CompareBitmaps(Bitmap bmp1, Bitmap bmp2)
         {

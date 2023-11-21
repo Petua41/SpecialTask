@@ -13,5 +13,12 @@ namespace SpecialTaskTest.IntegrationTests
             Window? drawingWindow1 = windows.Find(x => x.Title == "Drawing window 0");
             Assert.That(mainWindow, Is.Not.Null);
         }
+
+        [Test]
+        public void CommandHelpTest()
+        {
+            EnterCommand("new circle --help");
+            Assert.That(ConsoleOutput, Does.Contain("Adds circle to the screen"));
+        }
     }
 }

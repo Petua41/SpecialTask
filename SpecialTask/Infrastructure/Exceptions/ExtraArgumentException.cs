@@ -9,7 +9,7 @@
         private const string _longArg = "LongArgument";    // serialization
 
         /// <summary>
-        /// Don`t use NecessaryArgumentNotPresentedException without passing long argument or message
+        /// Don`t use ExtraArgumentException without passing long argument or message
         /// </summary>
         public ExtraArgumentException() { }
 

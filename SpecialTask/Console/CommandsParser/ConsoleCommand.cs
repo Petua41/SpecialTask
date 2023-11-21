@@ -21,6 +21,7 @@ namespace SpecialTask.Console.CommandsParser
 
         public IReadOnlyDictionary<string, object> ParseArguments(string arguments)
         {
+            
             doSet = CreateOptionSet();
 
             string[] args = SplitByRegex(arguments);
@@ -76,7 +77,7 @@ namespace SpecialTask.Console.CommandsParser
         private static string[] SplitByRegex(string input)
         {
             string[] preResult = expression.Split(input);
-            return preResult.Where(s => s != string.Empty).ToArray();
+            return preResult.Where(s => s != string.Empty).Select(s => s.Trim()).ToArray();
         }
 
         public string NeededUserInput { get; set; }

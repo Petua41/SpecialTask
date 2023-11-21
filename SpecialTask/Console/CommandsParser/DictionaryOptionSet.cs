@@ -1,5 +1,6 @@
 ﻿using Mono.Options;
 using SpecialTask.Infrastructure.Enums;
+using SpecialTask.Infrastructure.Exceptions;
 using System.IO;
 using System.Text;
 using static SpecialTask.Infrastructure.Extensoins.ArgumentTypeExtensions;
@@ -17,9 +18,20 @@ namespace SpecialTask.Console.CommandsParser
 
         public void Add(string prototype, string description, string key, ArgumentType argType, bool isNecessary)
         {
-            Add(prototype, description, x => argValues.Add(key, argType.ParseValue(x)));
+            Add(prototype, description, x =>
+            {
+                try 
+                { 
+                    object value = argType.ParseValue(x); 
+                }
+                catch (FormatException e) 
+                { 
+                    throw new ArgumentValueFormatException($"Value for {key} should be {argType}. {x} is not {argType}", e, key, x); 
+                }
+                argValues.TryAdd(key, argType.ParseValue(x));     // ignore duplicated arguments
+            });
 
-            if (isNecessary)
+            if (isNecessary && !necessaryArgs.Contains(key))
             {
                 necessaryArgs.Add(key);
             }

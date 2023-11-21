@@ -108,7 +108,7 @@ namespace SpecialTask.Infrastructure.Extensoins
 
         public static StreakTexture ParseStreakTexture(this string textureName)
         {
-            return textureName.ToLower() switch
+            return textureName.Trim().ToLower() switch
             {
                 "solid" or "solidcolor" or "color" or "sc" => StreakTexture.SolidColor,
                 "horizontallines" or "hl" => StreakTexture.HorizontalLines,

@@ -557,6 +557,8 @@ You can type [color:Green]command --help[color] to get context help
 	Alt+Shift+Z  Redo
 	Alt+C        Interrupt
 
+[color:Magenta]Note that all numbers are considered as positive integers no more than 10^6[color]
+
     ------- GNU GPL v.3 -------
     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
